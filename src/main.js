@@ -13,7 +13,7 @@ document.querySelector('#app').innerHTML = `
   </div>
   <div>
     <h1>JS nâng cao</h1>
-    <h3>ĐẠT ĐZ FREE FIRE</h3>
+    <h3>ĐẠT ĐZ </h3>
     <h1>Bố là Vũ Đình Quang<h1>
     <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
   </div>
