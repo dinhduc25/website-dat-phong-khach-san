@@ -14,7 +14,7 @@ document.querySelector('#app').innerHTML = `
   <div>
     <h1>Ông hoàng: Đinh Đức</h1>
     <h3>ĐẠT ĐZ FREE FIRE</h3>
-    <h1>Vũ Đình Quang là con Bố Đức<h1>
+    <h1>Tao là bố chúng mày<h1>
     <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
   </div>
   <button id="counter" type="button" class="counter"></button>
