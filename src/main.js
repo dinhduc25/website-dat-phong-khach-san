@@ -12,8 +12,9 @@ document.querySelector('#app').innerHTML = `
     <img src="${viteLogo}" class="vite" alt="Vite logo" />
   </div>
   <div>
-    <h1>JS nâng cao</h1>
-    <h3>ĐẠT ĐZ </h3>
+    <h1>Ông hoàng: Đinh Đức</h1>
+    <h3>ĐẠT ĐZ FREE FIRE</h3>
+>>>>>>> ecc7b8b5aff673b0cefb14adac6282f5726bbea6
     <h1>Bố là Vũ Đình Quang<h1>
     <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
   </div>
