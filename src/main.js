@@ -15,11 +15,15 @@ document.querySelector('#app').innerHTML = `
     <h1>Ông hoàng: Đinh Đức</h1>
     <h3>ĐẠT ĐZ FREE FIRE</h3>
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> ecc7b8b5aff673b0cefb14adac6282f5726bbea6
     <h1>Bố là Vũ Đình Quang<h1>
 =======
     <h1>Vũ Đình Quang là con Bố Đức<h1>
 >>>>>>> 60ba7d78281e6faa10858fd14f8d1cc9e11193da
+=======
+    <h1>Tao là bố chúng mày<h1>
+>>>>>>> 3d9efefa41758521cfcff53d42645da7e327eb42
     <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
   </div>
   <button id="counter" type="button" class="counter"></button>
