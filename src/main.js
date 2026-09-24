@@ -12,7 +12,6 @@ document.querySelector('#app').innerHTML = `
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Traveloka - Đặt phòng khách sạn giá rẻ, uy tín & ưu đãi tốt nhất</title>
   <meta name="description" content="Tìm và đặt phòng khách sạn giá rẻ tại Traveloka. Hơn 500.000 khách sạn, resort, biệt thự và homestay với giá cuối cùng minh bạch, không phí ẩn.">
-  <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏨</text></svg>">
 </head>
 <body>
@@ -140,8 +139,10 @@ document.querySelector('#app').innerHTML = `
           </svg>
           Cam kết giá tốt nhất - Giá cuối cùng minh bạch
         </div>
-        <h1 class="hero-title">Tìm & Đặt phòng khách sạn lý tưởng</h1>
-        <p class="hero-subtitle">Khám phá hơn 500.000 khách sạn, khu nghỉ dưỡng và căn hộ sang trọng với ưu đãi tiết kiệm tới 40%</p>
+        <div class="hero-chip2">
+          <h1 class="hero-title">Tìm & Đặt phòng khách sạn lý tưởng</h1>
+          <p class="hero-subtitle">Khám phá hơn 500.000 khách sạn, khu nghỉ dưỡng và căn hộ sang trọng với ưu đãi tiết kiệm tới 40%</p>
+        </div>
       </div>
     </div>
   </section>

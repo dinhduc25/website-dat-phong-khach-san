@@ -321,8 +321,11 @@ img {
    HERO BANNER
    ======================================================== */
 .hero-wrapper {
-  background: linear-gradient(180deg, #0194f3 0%, #006ec1 65%, #005a9e 100%);
-  color: #ffffff;
+  background-image: url("./assets/banner.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #353535;
   padding: 44px 0 105px;
   position: relative;
   overflow: hidden;
@@ -345,6 +348,19 @@ img {
   z-index: 2;
 }
 
+.hero-chip2{
+  display:block;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
 .hero-chip {
   display: inline-flex;
   align-items: center;
@@ -375,7 +391,7 @@ img {
 
 .hero-subtitle {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.92);
+  color: #353535;
   font-weight: 400;
 }
 
