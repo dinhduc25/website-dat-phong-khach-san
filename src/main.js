@@ -1117,7 +1117,7 @@ document.querySelector('#app').innerHTML = `
       </div>
 
       <div class="footer-legal-bottom">
-        <p>&copy; 2026 Traveloka Hotel Services Pte. Ltd. Giữ toàn bộ bản quyền.</p>
+        <p>&copy; 2026 Lotte Hotel Services Pte. Ltd. Giữ toàn bộ bản quyền.</p>
         <p>Giấy chứng nhận đăng ký kinh doanh & thương mại điện tử cấp bởi Bộ Công Thương.</p>
       </div>
     </div>
