@@ -1067,7 +1067,7 @@ document.querySelector('#app').innerHTML = `
     <div class="container">
       <div class="footer-columns">
         <div class="footer-col footer-col-brand">
-          <h3>traveloka<span>hotel</span></h3>
+          <h3>Lotte<span>hotel</span></h3>
           <p>Nền tảng đặt phòng khách sạn trực tuyến hàng đầu, mang đến hàng trăm nghìn chỗ ở tuyệt vời với mức giá tối ưu và dịch vụ chăm sóc tận tâm.</p>
           <h4>Phương thức thanh toán an toàn</h4>
           <div class="payment-tags-wrap">
@@ -1081,7 +1081,7 @@ document.querySelector('#app').innerHTML = `
         </div>
 
         <div class="footer-col">
-          <h4>Về Traveloka Hotel</h4>
+          <h4>Về Lotte Hotel</h4>
           <ul class="footer-links-list">
             <li><a href="#">Cách đặt chỗ</a></li>
             <li><a href="#">Liên hệ chúng tôi</a></li>
