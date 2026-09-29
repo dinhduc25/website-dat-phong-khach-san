@@ -1706,3 +1706,14 @@ img {
     text-align: center;
   }
 }
+/* ======================================================
+   POPUP SỐ KHÁCH VÀ PHÒNG
+   ====================================================== */
+
+.guest-popup {
+  display: none;
+}
+
+.guest-popup.show {
+  display: block;
+}

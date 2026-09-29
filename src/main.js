@@ -66,7 +66,11 @@ document.querySelector('#app').innerHTML = `
               <line x1="8" y1="2" x2="8" y2="6"></line>
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
+<<<<<<< HEAD
             Đặt chỗ của tôi
+=======
+            Đặt chỗ của mình
+>>>>>>> 37656dd2bf04e34af829c41522295259da182b3a
           </a>
         </nav>
 
@@ -1067,7 +1071,7 @@ document.querySelector('#app').innerHTML = `
     <div class="container">
       <div class="footer-columns">
         <div class="footer-col footer-col-brand">
-          <h3>traveloka<span>hotel</span></h3>
+          <h3>Lotte<span>hotel</span></h3>
           <p>Nền tảng đặt phòng khách sạn trực tuyến hàng đầu, mang đến hàng trăm nghìn chỗ ở tuyệt vời với mức giá tối ưu và dịch vụ chăm sóc tận tâm.</p>
           <h4>Phương thức thanh toán an toàn</h4>
           <div class="payment-tags-wrap">
@@ -1081,7 +1085,7 @@ document.querySelector('#app').innerHTML = `
         </div>
 
         <div class="footer-col">
-          <h4>Về Traveloka Hotel</h4>
+          <h4>Về Lotte Hotel</h4>
           <ul class="footer-links-list">
             <li><a href="#">Cách đặt chỗ</a></li>
             <li><a href="#">Liên hệ chúng tôi</a></li>
@@ -1129,4 +1133,637 @@ document.querySelector('#app').innerHTML = `
 
 `
 
-setupCounter(document.querySelector('#counter'))
+// ======================================================
+// CHỨC NĂNG ĐẶT PHÒNG KHÁCH SẠN
+// ======================================================
+
+// 1. LẤY CÁC PHẦN TỬ TRÊN GIAO DIỆN
+const destinationInput = document.querySelector('#destination-input');
+
+const checkinDate = document.querySelector('#checkin-date');
+const checkoutDate = document.querySelector('#checkout-date');
+const nightsCount = document.querySelector('#nights-count');
+
+const guestFieldBox = document.querySelector('#guest-field-box');
+const guestSummaryText = document.querySelector('#guest-summary-text');
+const guestPopup = document.querySelector('#guest-popup');
+
+const btnSearchHotels = document.querySelector('#btn-search-hotels');
+
+
+// ======================================================
+// 2. ĐẶT NGÀY MẶC ĐỊNH
+// ======================================================
+
+const today = new Date();
+
+const tomorrow = new Date();
+tomorrow.setDate(today.getDate() + 1);
+
+const afterTomorrow = new Date();
+afterTomorrow.setDate(today.getDate() + 3);
+
+
+// Chuyển Date thành YYYY-MM-DD
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+
+// Ngày nhận phòng mặc định
+checkinDate.value = formatDate(tomorrow);
+
+// Ngày trả phòng mặc định
+checkoutDate.value = formatDate(afterTomorrow);
+
+// Không cho chọn ngày quá khứ
+checkinDate.min = formatDate(today);
+checkoutDate.min = formatDate(tomorrow);
+
+
+// ======================================================
+// 3. TÍNH SỐ ĐÊM
+// ======================================================
+
+function calculateNights() {
+
+  const checkin = new Date(checkinDate.value);
+  const checkout = new Date(checkoutDate.value);
+
+  if (!checkinDate.value || !checkoutDate.value) {
+    nightsCount.textContent = 'Chưa chọn ngày';
+    return;
+  }
+
+  const difference = checkout - checkin;
+
+  const nights = Math.ceil(
+    difference / (1000 * 60 * 60 * 24)
+  );
+
+  if (nights <= 0) {
+
+    nightsCount.textContent = 'Ngày không hợp lệ';
+
+    return;
+  }
+
+  nightsCount.textContent = `${nights} đêm`;
+}
+
+
+// Khi thay đổi ngày nhận phòng
+checkinDate.addEventListener('change', function () {
+
+  // Ngày trả phòng phải sau ngày nhận phòng
+  const newMinCheckout = new Date(this.value);
+
+  newMinCheckout.setDate(
+    newMinCheckout.getDate() + 1
+  );
+
+  checkoutDate.min = formatDate(newMinCheckout);
+
+
+  // Nếu ngày trả phòng hiện tại không hợp lệ
+  if (
+    checkoutDate.value &&
+    checkoutDate.value <= this.value
+  ) {
+
+    checkoutDate.value =
+      formatDate(newMinCheckout);
+  }
+
+  calculateNights();
+});
+
+
+// Khi thay đổi ngày trả phòng
+checkoutDate.addEventListener(
+  'change',
+  calculateNights
+);
+
+
+// Tính ngay khi mở trang
+calculateNights();
+
+
+// ======================================================
+// 4. CHỌN ĐỊA ĐIỂM / TÊN KHÁCH SẠN
+// ======================================================
+
+const suggestionItems =
+  document.querySelectorAll('.suggestion-item');
+
+
+// Khi click vào địa điểm gợi ý
+suggestionItems.forEach(function (item) {
+
+  item.addEventListener('click', function () {
+
+    const city =
+      this.getAttribute('data-city');
+
+    if (city) {
+
+      destinationInput.value = city;
+
+    }
+
+    // Ẩn danh sách gợi ý
+    const popup =
+      document.querySelector(
+        '#dest-suggestions-popup'
+      );
+
+    if (popup) {
+      popup.style.display = 'none';
+    }
+  });
+
+});
+
+
+// Khi click vào ô địa điểm
+destinationInput.addEventListener(
+  'focus',
+  function () {
+
+    const popup =
+      document.querySelector(
+        '#dest-suggestions-popup'
+      );
+
+    if (popup) {
+      popup.style.display = 'block';
+    }
+
+  }
+);
+
+
+// ======================================================
+// 5. TÌM KIẾM THEO TÊN KHÁCH SẠN / ĐỊA ĐIỂM
+// ======================================================
+
+destinationInput.addEventListener(
+  'input',
+  function () {
+
+    const keyword =
+      this.value.toLowerCase().trim();
+
+    suggestionItems.forEach(function (item) {
+
+      const city =
+        item.getAttribute('data-city')
+          ?.toLowerCase() || '';
+
+      const text =
+        item.textContent.toLowerCase();
+
+      if (
+        city.includes(keyword) ||
+        text.includes(keyword)
+      ) {
+
+        item.style.display = 'flex';
+
+      } else {
+
+        item.style.display = 'none';
+
+      }
+
+    });
+
+  }
+);
+
+
+// ======================================================
+// 6. SỐ KHÁCH
+// ======================================================
+
+let adults = 2;
+let children = 0;
+let rooms = 1;
+
+
+// Lấy các ô hiển thị
+const valAdults =
+  document.querySelector('#val-adults');
+
+const valChildren =
+  document.querySelector('#val-children');
+
+const valRooms =
+  document.querySelector('#val-rooms');
+
+
+// Cập nhật giao diện
+function updateGuestDisplay() {
+
+  valAdults.textContent = adults;
+  valChildren.textContent = children;
+  valRooms.textContent = rooms;
+
+
+  guestSummaryText.textContent =
+    `${adults} người lớn, ` +
+    `${children} trẻ em, ` +
+    `${rooms} phòng`;
+}
+
+
+// ======================================================
+// 7. NGƯỜI LỚN
+// ======================================================
+
+document
+  .querySelector('#btn-minus-adults')
+  .addEventListener('click', function () {
+
+    if (adults > 1) {
+      adults--;
+    }
+
+    updateGuestDisplay();
+
+  });
+
+
+document
+  .querySelector('#btn-plus-adults')
+  .addEventListener('click', function () {
+
+    if (adults < 20) {
+      adults++;
+    }
+
+    updateGuestDisplay();
+
+  });
+
+
+// ======================================================
+// 8. TRẺ EM
+// ======================================================
+
+document
+  .querySelector('#btn-minus-children')
+  .addEventListener('click', function () {
+
+    if (children > 0) {
+      children--;
+    }
+
+    updateGuestDisplay();
+
+  });
+
+
+document
+  .querySelector('#btn-plus-children')
+  .addEventListener('click', function () {
+
+    if (children < 10) {
+      children++;
+    }
+
+    updateGuestDisplay();
+
+  });
+
+
+// ======================================================
+// 9. SỐ PHÒNG
+// ======================================================
+
+document
+  .querySelector('#btn-minus-rooms')
+  .addEventListener('click', function () {
+
+    if (rooms > 1) {
+      rooms--;
+    }
+
+    updateGuestDisplay();
+
+  });
+
+
+document
+  .querySelector('#btn-plus-rooms')
+  .addEventListener('click', function () {
+
+    if (rooms < 10) {
+      rooms++;
+    }
+
+    updateGuestDisplay();
+
+  });
+
+
+// ======================================================
+// 10. MỞ / ĐÓNG KHUNG SỐ KHÁCH
+// ======================================================
+
+guestSummaryText.addEventListener(
+  'click',
+  function () {
+
+    guestPopup.classList.toggle('show');
+
+  }
+);
+
+
+// Khi click vào phần "Số khách và Phòng"
+guestFieldBox.addEventListener(
+  'click',
+  function (event) {
+
+    // Không xử lý lại khi click nút tăng giảm
+    if (
+      event.target.closest('.counter-btns')
+    ) {
+      return;
+    }
+
+    guestPopup.classList.toggle('show');
+
+  }
+);
+
+
+// ======================================================
+// 11. NÚT "XONG"
+// ======================================================
+
+const btnApplyGuests =
+  document.querySelector(
+    '#btn-apply-guests'
+  );
+
+
+btnApplyGuests.addEventListener(
+  'click',
+  function () {
+
+    guestPopup.classList.remove('show');
+
+    updateGuestDisplay();
+
+  }
+);
+
+
+// ======================================================
+// 12. CLICK RA NGOÀI ĐỂ ĐÓNG POPUP
+// ======================================================
+
+document.addEventListener(
+  'click',
+  function (event) {
+
+    // Đóng popup khách
+    if (
+      !guestFieldBox.contains(event.target)
+    ) {
+
+      guestPopup.classList.remove('show');
+
+    }
+
+
+    // Đóng popup địa điểm
+    const destinationBox =
+      document.querySelector(
+        '#destination-box'
+      );
+
+    const destinationPopup =
+      document.querySelector(
+        '#dest-suggestions-popup'
+      );
+
+
+    if (
+      destinationBox &&
+      destinationPopup &&
+      !destinationBox.contains(event.target)
+    ) {
+
+      destinationPopup.style.display =
+        'none';
+
+    }
+
+  }
+);
+
+
+// ======================================================
+// 13. CÁC NÚT ĐIỂM ĐẾN GỢI Ý
+// ======================================================
+
+const cityPills =
+  document.querySelectorAll('.city-pill');
+
+
+cityPills.forEach(function (button) {
+
+  button.addEventListener(
+    'click',
+    function () {
+
+      destinationInput.value =
+        this.textContent.trim();
+
+      // Cuộn lên phần tìm kiếm
+      destinationInput.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+
+      // Hiển thị lại popup
+      const popup =
+        document.querySelector(
+          '#dest-suggestions-popup'
+        );
+
+      if (popup) {
+        popup.style.display = 'block';
+      }
+
+    }
+  );
+
+});
+
+
+// ======================================================
+// 14. NÚT "TÌM KHÁCH SẠN"
+// ======================================================
+
+btnSearchHotels.addEventListener(
+  'click',
+  function () {
+
+    const destination =
+      destinationInput.value.trim();
+
+    const checkin =
+      checkinDate.value;
+
+    const checkout =
+      checkoutDate.value;
+
+
+    // Kiểm tra địa điểm
+    if (!destination) {
+
+      alert(
+        'Vui lòng nhập địa điểm hoặc tên khách sạn!'
+      );
+
+      destinationInput.focus();
+
+      return;
+    }
+
+
+    // Kiểm tra ngày
+    if (!checkin || !checkout) {
+
+      alert(
+        'Vui lòng chọn ngày nhận phòng và trả phòng!'
+      );
+
+      return;
+    }
+
+
+    // Kiểm tra ngày
+    if (checkout <= checkin) {
+
+      alert(
+        'Ngày trả phòng phải sau ngày nhận phòng!'
+      );
+
+      return;
+    }
+
+
+    // Tính số đêm
+    const checkinObj =
+      new Date(checkin);
+
+    const checkoutObj =
+      new Date(checkout);
+
+    const nights =
+      Math.ceil(
+        (checkoutObj - checkinObj) /
+        (1000 * 60 * 60 * 24)
+      );
+
+
+    // Hiển thị kết quả
+    alert(
+      'THÔNG TIN TÌM KIẾM\n\n' +
+
+      '📍 Địa điểm: ' +
+      destination +
+
+      '\n📅 Nhận phòng: ' +
+      checkin +
+
+      '\n📅 Trả phòng: ' +
+      checkout +
+
+      '\n🌙 Số đêm: ' +
+      nights +
+
+      '\n👨 Người lớn: ' +
+      adults +
+
+      '\n👶 Trẻ em: ' +
+      children +
+
+      '\n🛏️ Số phòng: ' +
+      rooms
+    );
+
+
+    // Cuộn xuống danh sách khách sạn
+    const hotelSection =
+      document.querySelector(
+        '#featured-hotels-section'
+      );
+
+
+    if (hotelSection) {
+
+      hotelSection.scrollIntoView({
+        behavior: 'smooth'
+      });
+
+    }
+
+  }
+);
+
+
+// ======================================================
+// 15. CẬP NHẬT GIAO DIỆN BAN ĐẦU
+// ======================================================
+
+updateGuestDisplay();
+calculateNights();
+
+
+// ======================================================
+// 16. IN THÔNG TIN ĐẶT PHÒNG RA CONSOLE
+// ======================================================
+
+function getBookingInformation() {
+
+  return {
+
+    destination:
+      destinationInput.value,
+
+    checkin:
+      checkinDate.value,
+
+    checkout:
+      checkoutDate.value,
+
+    adults:
+      adults,
+
+    children:
+      children,
+
+    rooms:
+      rooms
+
+  };
+
+}
+
+
+// Có thể kiểm tra bằng F12 -> Console
+console.log(
+  'Thông tin đặt phòng:',
+  getBookingInformation()
+);
