@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký tài khoản - Lotte Hotel Hanoi</title>
+  <meta name="description" content="Đăng ký tài khoản Lotte Hotel Hanoi để tận hưởng đặc quyền thành viên và nhận ngay voucher giảm 30% cho lần đặt đầu tiên.">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏨</text></svg>">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="auth-header">
+    <div class="auth-header-container">
+      <a href="index.html" class="auth-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"></path>
+            <path d="M21 15v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5"></path>
+            <path d="M2 13h20"></path>
+            <circle cx="7" cy="8" r="1.5"></circle>
+            <path d="M12 8h6"></path>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <span class="brand-name">LOTTE HOTEL <span>HANOI</span></span>
+          <span class="brand-tagline">Đặt phòng khách sạn quanh khu vực Hà Nội</span>
+        </div>
+      </a>
+
+      <a href="index.html" class="btn-back-home">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Trang chủ
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN AUTH CONTAINER -->
+  <main class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <div class="auth-card-badge">Đặc quyền thành viên</div>
+        <h1 class="auth-title">Đăng ký tài khoản</h1>
+        <p class="auth-subtitle">Tạo tài khoản lưu trữ phòng đặt và nhận voucher HANOI30 giảm 30%</p>
+      </div>
+
+      <!-- FORM REGISTER (LƯU VÀO MẢNG) -->
+      <form id="register-form-page" class="auth-form">
+        <div class="form-group">
+          <label class="form-label" for="reg-fullname">Họ và tên</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </span>
+            <input type="text" id="reg-fullname" class="form-input" placeholder="Ví dụ: Nguyễn Văn An" required autocomplete="name">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Địa chỉ Email</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </span>
+            <input type="email" id="reg-email" class="form-input" placeholder="name@example.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-phone">Số điện thoại</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </span>
+            <input type="tel" id="reg-phone" class="form-input" placeholder="0912345678" required autocomplete="tel">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Mật khẩu</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <input type="password" id="reg-password" class="form-input" placeholder="Tối thiểu 6 ký tự" required autocomplete="new-password">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-confirm">Xác nhận mật khẩu</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <input type="password" id="reg-confirm" class="form-input" placeholder="Nhập lại mật khẩu" required autocomplete="new-password">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          Đăng Ký & Lưu Vào Mảng
+        </button>
+      </form>
+
+      <div class="auth-footer-nav">
+        Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("register-form-page");
+      if (form) {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = document.getElementById("reg-fullname").value.trim();
+          const email = document.getElementById("reg-email").value.trim();
+          const phone = document.getElementById("reg-phone").value.trim();
+          const pass = document.getElementById("reg-password").value;
+          const confirm = document.getElementById("reg-confirm").value;
+
+          if (pass.length < 6) {
+            alert("Mật khẩu phải có ít nhất 6 ký tự!");
+            return;
+          }
+
+          if (pass !== confirm) {
+            alert("Mật khẩu xác nhận không khớp!");
+            return;
+          }
+
+          const { emailExisted, phoneExisted } = checkUserConflictInArray(email, phone);
+          if (emailExisted) {
+            alert("Email này đã được đăng ký tài khoản!");
+            return;
+          }
+          if (phoneExisted) {
+            alert("Số điện thoại này đã được đăng ký!");
+            return;
+          }
+
+          const newUser = {
+            fullName: name,
+            email: email,
+            phone: phone,
+            password: pass,
+            role: "Khách hàng Mới (Lotte Member)"
+          };
+
+          registerUserToArray(newUser);
+          alert(`Đăng ký thành công tài khoản cho ${newUser.fullName}! Đang chuyển hướng về trang chủ...`);
+          window.location.href = "index.html";
+        });
+      }
+    });
+  </script>
+</body>
+</html>

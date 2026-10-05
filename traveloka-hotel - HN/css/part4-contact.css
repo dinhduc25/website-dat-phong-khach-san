@@ -1,0 +1,288 @@
+/* ==========================================================================
+   DỰ ÁN: LOTTE HOTEL HANOI & ĐẶT PHÒNG KHÁCH SẠN PHONG CÁCH TRAVELOKA
+   PHẦN 4: LIÊN HỆ, KIỂM THỬ & TÍCH HỢP HỆ THỐNG
+   PHỤ TRÁCH: THÀNH VIÊN 4
+   DANH SÁCH ĐẦU VIỆC THỰC HIỆN:
+   - STT 31: Xây dựng trang / khu vực Liên hệ trực tuyến
+   - STT 32: Thiết kế Form liên hệ & Đóng góp ý kiến khách hàng
+   - STT 33: Xử lý giao diện kiểm tra dữ liệu (Validation states, lỗi, thành công)
+   - STT 34: Xây dựng khu vực thông tin hỗ trợ (FAQ, Tổng đài 24/7, Giải đáp)
+   - STT 35: Xây dựng khu vực địa chỉ Lotte Hotel & Bản đồ định vị liên hệ
+   - STT 36: Kiểm tra Responsive toàn website (Kiểm thử đa thiết bị)
+   - STT 37: Kiểm thử các chức năng JavaScript tự động
+   - STT 38: Kiểm thử quy trình tìm kiếm và đặt phòng hoàn tất
+   - STT 39: Tích hợp các module của 4 thành viên thành một khối thống nhất
+   - STT 40: Kiểm tra lỗi, tối ưu hiệu năng và hoàn thiện phiên bản cuối
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   STT 31, 34 & 35: KHU VỰC LIÊN HỆ & THÔNG TIN HỖ TRỢ
+   -------------------------------------------------------------------------- */
+.contact-section-wrapper {
+  background: #ffffff;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  padding: 50px 0;
+  margin-top: 40px;
+}
+
+.contact-layout-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 36px;
+  align-items: start;
+}
+
+/* Thông tin liên hệ & Hỗ trợ */
+.contact-info-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.c-info-card {
+  background: #f8fafc;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: var(--transition, all 0.22s ease);
+}
+
+.c-info-card:hover {
+  background: #ffffff;
+  border-color: var(--primary, #0194f3);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(3, 18, 26, 0.08));
+}
+
+.c-info-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--primary-light, #e8f5fd);
+  color: var(--primary, #0194f3);
+  border-radius: var(--radius-sm, 6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.c-info-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.c-info-text h4 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main, #1c2430);
+  margin-bottom: 3px;
+}
+
+.c-info-text p {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #4a5568);
+  line-height: 1.4;
+}
+
+.c-info-text a {
+  color: var(--primary, #0194f3);
+  font-weight: 700;
+}
+
+.contact-map-box {
+  border-radius: var(--radius-md, 10px);
+  overflow: hidden;
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: #e2e8f0;
+  height: 200px;
+  position: relative;
+}
+
+.contact-map-box iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* --------------------------------------------------------------------------
+   STT 32 & 33: THIẾT KẾ FORM LIÊN HỆ & KIỂM TRA HỢP LỆ (VALIDATION)
+   -------------------------------------------------------------------------- */
+.contact-form-box {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-xl, 22px);
+  padding: 28px;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(3, 18, 26, 0.08));
+}
+
+.contact-form-header {
+  margin-bottom: 20px;
+}
+
+.contact-form-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-main, #1c2430);
+}
+
+.contact-form-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted, #718096);
+  margin-top: 4px;
+}
+
+.contact-input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Validation Feedback Styles */
+.form-input.is-invalid {
+  border-color: var(--danger, #e53e3e) !important;
+  background-color: #fffaf0;
+}
+
+.form-input.is-valid {
+  border-color: var(--success, #059669) !important;
+  background-color: #f0fdf4;
+}
+
+.validation-feedback {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 4px;
+  display: none;
+}
+
+.validation-feedback.error {
+  color: var(--danger, #e53e3e);
+  display: block;
+}
+
+.validation-feedback.success {
+  color: var(--success, #059669);
+  display: block;
+}
+
+.btn-submit-contact {
+  width: 100%;
+  padding: 13px;
+  background: var(--primary, #0194f3);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: var(--radius-md, 10px);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition, all 0.22s ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.btn-submit-contact:hover {
+  background: var(--primary-dark, #0070ba);
+  box-shadow: 0 4px 14px rgba(1, 148, 243, 0.35);
+}
+
+/* --------------------------------------------------------------------------
+   STT 37, 38 & 39: BẢNG ĐIỀU KHIỂN KIỂM THỬ TỰ ĐỘNG & TÍCH HỢP (TEST RUNNER)
+   -------------------------------------------------------------------------- */
+.test-suite-floating-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #065f46;
+  color: #a7f3d0;
+  padding: 10px 16px;
+  border-radius: var(--radius-full, 9999px);
+  box-shadow: 0 6px 20px rgba(6, 95, 70, 0.35);
+  border: 1.5px solid #10b981;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: var(--transition, all 0.22s ease);
+}
+
+.test-suite-floating-btn:hover {
+  transform: translateY(-2px);
+  background: #047857;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(6, 95, 70, 0.45);
+}
+
+.test-badge-pass {
+  background: #10b981;
+  color: #064e3b;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+/* Modal báo cáo kiểm thử tự động */
+.test-report-dialog {
+  max-width: 640px;
+}
+
+.test-suite-console {
+  background: #0f172a;
+  color: #38bdf8;
+  padding: 16px;
+  border-radius: var(--radius-md, 10px);
+  font-family: Consolas, monospace;
+  font-size: 0.82rem;
+  max-height: 340px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+.test-log-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed #1e293b;
+  padding: 4px 0;
+}
+
+.test-log-pass {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.test-log-task {
+  color: #e2e8f0;
+}
+
+/* --------------------------------------------------------------------------
+   STT 36: KIỂM TRA RESPONSIVE CHO LIÊN HỆ & TÍCH HỢP
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .contact-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-info-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .contact-input-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .contact-form-box {
+    padding: 20px;
+  }
+}

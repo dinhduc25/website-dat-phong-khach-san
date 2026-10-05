@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lotte Hotel Hanoi - Đặt phòng khách sạn quanh khu vực Hà Nội phong cách Traveloka</title>
+  <meta name="description" content="Đặt phòng khách sạn 5 sao Lotte Hotel Hanoi và các chỗ ở đẳng cấp quanh khu vực Hà Nội. Cam kết giá cuối cùng minh bạch, không phí ẩn, ưu đãi tốt nhất phong cách Traveloka.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏨</text></svg>">
+
+  <!-- ======================================================================
+       CÁC FILE CSS ĐƯỢC CHIA TÁCH RIÊNG THEO 4 THÀNH VIÊN ĐỂ DỄ KIỂM SOÁT
+       ====================================================================== -->
+  <!-- THÀNH VIÊN 1: Trang chủ & Giao diện chung (STT 1 - 10) -->
+  <link rel="stylesheet" href="css/part1-home.css">
+
+  <!-- THÀNH VIÊN 2: Phòng & Thông tin khách sạn (STT 11 - 20) -->
+  <link rel="stylesheet" href="css/part2-rooms.css">
+
+  <!-- THÀNH VIÊN 3: Tìm kiếm & Đặt phòng (STT 21 - 30) -->
+  <link rel="stylesheet" href="css/part3-booking.css">
+
+  <!-- THÀNH VIÊN 4: Liên hệ, Kiểm thử & Tích hợp (STT 31 - 40) -->
+  <link rel="stylesheet" href="css/part4-contact.css">
+
+  <!-- MASTER STYLESHEET (Dự phòng và tương thích ngược) -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ======================================================================
+       PHẦN 1: TRANG CHỦ & GIAO DIỆN CHUNG (THÀNH VIÊN 1 - STT 1 ĐẾN 10)
+       File đảm nhận: css/part1-home.css | js/part1-home.js
+       Nhiệm vụ: Phân tích bố cục, Header, Nav, Hero Banner, Promos, Footer,
+                 Toast, Modal Auth, Responsive Trang chủ.
+       ====================================================================== -->
+
+  <!-- STT 2 & 3: HEADER & TOP BAR NAVIGATION -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-top">
+        <!-- Logo thương hiệu -->
+        <a href="index.html" class="brand-logo">
+          <div class="brand-badge-icon">
+            <img src="./css/images/logo.jpg" alt="Lotte Hotel Logo" width="40" height="40" style="border-radius: 10px;">
+          </div>
+          <div class="brand-title">
+            <span class="brand-main">LOTTE HOTEL <span class="brand-highlight">HANOI</span></span>
+            <span class="brand-sub">Hệ thống khách sạn Hà Nội</span>
+          </div>
+        </a>
+
+        <!-- Menu hỗ trợ & Điều hướng chính -->
+        <nav class="header-nav">
+          <a href="#promotions-section" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+            Khuyến mãi
+            <span class="nav-tag-badge">HOT</span>
+          </a>
+          <a href="#featured-hotels-section" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11"></path>
+            </svg>
+            Phòng nghỉ
+          </a>
+          <a href="#contact-section" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            Liên hệ
+          </a>
+          <a href="#" class="nav-link" onclick="openWishlistModal(); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Đã lưu
+            <span class="nav-badge-count" id="nav-wishlist-count" style="display: none;">0</span>
+          </a>
+          <a href="#" class="nav-link" onclick="openMyBookingsModal(); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Đặt chỗ của tôi
+            <span class="nav-badge-count" id="nav-bookings-count" style="display: none;">0</span>
+          </a>
+          <a href="admin.html" id="admin-nav-link" class="nav-link" style="display: none; color: #c5a059; font-weight: 700; background: #faf5eb; padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(197, 160, 89, 0.4);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Quản trị
+            <span class="nav-tag-badge" style="background: #c5a059; color: #fff;">ADMIN</span>
+          </a>
+        </nav>
+
+        <!-- User Actions (Đăng nhập / Đăng ký hoặc Hồ sơ người dùng)
+        <div class="header-actions">
+          <div class="lang-currency-btn" title="Đổi ngôn ngữ và tiền tệ">
+            <svg class="flag-vn" viewBox="0 0 30 20">
+              <rect width="30" height="20" fill="#DA251D"/>
+              <polygon points="15,4 16.8,9.5 22.6,9.5 17.9,12.9 19.7,18.4 15,15 10.3,18.4 12.1,12.9 7.4,9.5 13.2,9.5" fill="#FFFF00"/>
+            </svg>
+            <span>VND</span>
+          </div> -->
+
+          <!-- Nút khi chưa đăng nhập -->
+          <div id="auth-guest-actions" style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-outline" onclick="openAuthModal('login')">Đăng nhập</button>
+            <button type="button" class="btn btn-primary" onclick="openAuthModal('register')">Đăng ký</button>
+          </div>
+
+          <!-- Menu khi đã đăng nhập -->
+          <div id="auth-user-menu" class="user-profile-menu" style="display: none;">
+            <button type="button" class="user-profile-btn" id="user-profile-trigger">
+              <div class="user-avatar" id="user-display-avatar">N</div>
+              <span id="user-display-name">Nguyễn Lotte</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="user-dropdown" id="user-profile-dropdown">
+              <div class="user-dropdown-header">
+                <div class="user-dropdown-name" id="dropdown-user-name">Khách hàng Lotte</div>
+                <div class="user-dropdown-email" id="user-display-email">demo@lottehotel.vn</div>
+                <div style="font-size: 0.72rem; color: var(--lotte-gold-dark); font-weight: 800; margin-top: 4px;">⭐ Hạng Vàng - Lotte Club</div>
+              </div>
+              <a href="admin.html" id="admin-dropdown-link" class="user-dropdown-item" style="display: none; color: #c5a059; font-weight: 700; border-bottom: 1px solid #f1f5f9;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Cổng Quản Trị Hệ Thống (Admin)
+              </a>
+              <div class="user-dropdown-item" onclick="openMyBookingsModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Đặt chỗ của tôi
+              </div>
+              <div class="user-dropdown-item" onclick="openWishlistModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                Khách sạn đã lưu
+              </div>
+              <div class="user-dropdown-item logout" id="btn-header-logout">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Đăng xuất
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Subnav Bar -->
+    <div class="subnav-bar">
+      <div class="container">
+        <ul class="subnav-list">
+          <li class="subnav-item active">
+            <a href="#featured-hotels-section" onclick="resetHotelFilters()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"></path>
+              </svg>
+              Tất cả khách sạn
+            </a>
+          </li>
+          <li class="subnav-item">
+            <a href="#featured-hotels-section" onclick="document.querySelector('.filter-tab[data-filter=\'5star\']').click(); return false;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              Khách sạn 5 sao cao cấp
+            </a>
+          </li>
+          <li class="subnav-item">
+            <a href="#featured-hotels-section" onclick="document.querySelector('.filter-tab[data-filter=\'boutique\']').click(); return false;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              Boutique Phố Cổ
+            </a>
+          </li>
+          <li class="subnav-item">
+            <a href="#featured-hotels-section" onclick="document.querySelector('.filter-tab[data-filter=\'apartment\']').click(); return false;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                <path d="M9 22v-4h6v4M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01"></path>
+              </svg>
+              Căn hộ dịch vụ công tác
+            </a>
+          </li>
+          <li class="subnav-item">
+            <a href="#featured-hotels-section" onclick="document.querySelector('.filter-tab[data-filter=\'resort\']').click(); return false;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+              </svg>
+              Resort & Biệt thự ven đô
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- STT 6: HERO BANNER TRANG CHỦ -->
+  <section class="hero-wrapper">
+    <div class="hero-pattern"></div>
+    <div class="container">
+      <div class="hero-header">
+        <div class="hero-chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Cam kết giá tốt nhất - Phong cách Traveloka chuyên biệt
+        </div>
+        <h1 class="hero-title">Lotte Hotel Hanoi & Chỗ Ở <span>Quanh Khu Vực Hà Nội</span></h1>
+        <p class="hero-subtitle">Khám phá khách sạn 5 sao Lotte Hotel Hanoi cùng hơn 300+ khách sạn, căn hộ cao cấp và resort sinh thái ven đô với ưu đãi độc quyền tiết kiệm đến 40%</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       PHẦN 3: TÌM KIẾM & ĐẶT PHÒNG (THÀNH VIÊN 3 - STT 21 ĐẾN 30)
+       File đảm nhận: css/part3-booking.css | js/part3-booking.js
+       Nhiệm vụ: Form tìm kiếm, Điểm đến, Ngày nhận/trả, Số khách/phòng,
+                 Bộ lọc, Bảng tính giá, Modal đặt phòng, Đặt chỗ của tôi.
+       ====================================================================== -->
+
+  <!-- STT 22, 23, 24, 25, 26: SEARCH BOX WIDGET TRỌNG TÂM TRAVELOKA STYLE -->
+  <section class="search-widget-container">
+    <div class="container">
+      <div class="search-card">
+        <div class="search-category-tabs">
+          <button type="button" class="cat-tab-btn active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11"></path>
+            </svg>
+            Khách sạn & Khu nghỉ dưỡng
+          </button>
+          <button type="button" class="cat-tab-btn" onclick="document.querySelector('.filter-tab[data-filter=\'apartment\']').click(); triggerSearch();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+              <path d="M9 22v-4h6v4M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01"></path>
+            </svg>
+            Căn hộ dịch vụ
+          </button>
+          <button type="button" class="cat-tab-btn" onclick="document.querySelector('.filter-tab[data-filter=\'resort\']').click(); triggerSearch();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
+            Resort sinh thái ven đô
+          </button>
+        </div>
+
+        <form class="search-form-grid" onsubmit="return false;">
+          <!-- Ô 1: Vị trí / Tên khách sạn quanh Hà Nội (STT 22) -->
+          <div class="search-field-box" id="destination-box">
+            <div class="field-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              Điểm đến hoặc Tên khách sạn tại Hà Nội
+            </div>
+            <div class="field-value-line">
+              <input type="text" id="destination-input" class="field-input" placeholder="Nhập khu vực, quận hoặc Lotte Hotel..." value="Toàn bộ Hà Nội" autocomplete="off">
+            </div>
+            <div class="field-subtext">Hơn 450 khách sạn & căn hộ có sẵn</div>
+
+            <!-- Suggestions Dropdown -->
+            <div class="dest-suggestions-popup" id="dest-suggestions-popup">
+              <div class="popup-heading">Khu vực nổi bật quanh Hà Nội</div>
+              <div class="suggestion-item" data-place="Quận Ba Đình" data-district="Ba Đình">
+                <div class="sugg-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
+                <div class="sugg-text">
+                  <h5>Quận Ba Đình</h5>
+                  <p>Lotte Center Hanoi, Liễu Giai &bull; 85 khách sạn</p>
+                </div>
+              </div>
+              <div class="suggestion-item" data-place="Quận Hoàn Kiếm" data-district="Hoàn Kiếm">
+                <div class="sugg-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
+                <div class="sugg-text">
+                  <h5>Quận Hoàn Kiếm</h5>
+                  <p>Phố Cổ, Hồ Gươm, Nhà Thờ Lớn &bull; 160 khách sạn</p>
+                </div>
+              </div>
+              <div class="suggestion-item" data-place="Quận Tây Hồ" data-district="Tây Hồ">
+                <div class="sugg-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
+                <div class="sugg-text">
+                  <h5>Quận Tây Hồ</h5>
+                  <p>Ven Hồ Tây lãng mạn, Quảng An &bull; 95 khách sạn</p>
+                </div>
+              </div>
+              <div class="suggestion-item" data-place="Quận Cầu Giấy" data-district="Cầu Giấy">
+                <div class="sugg-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
+                <div class="sugg-text">
+                  <h5>Quận Cầu Giấy</h5>
+                  <p>Trung tâm công nghệ, Duy Tân &bull; 70 khách sạn</p>
+                </div>
+              </div>
+              <div class="suggestion-item" data-place="Ba Vì & Sóc Sơn" data-district="Ba Vì">
+                <div class="sugg-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
+                <div class="sugg-text">
+                  <h5>Ngoại thành Ba Vì - Sóc Sơn</h5>
+                  <p>Khu nghỉ dưỡng sinh thái, rừng thông &bull; 40 resort</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ô 2: Ngày nhận phòng & Ngày trả phòng kèm số đêm (STT 23, 24) -->
+          <div class="search-field-box">
+            <div class="field-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              Ngày nhận - Ngày trả phòng
+            </div>
+            <div class="dates-inner-grid">
+              <div class="date-col">
+                <label>Nhận phòng</label>
+                <input type="date" id="checkin-date" class="date-picker-native">
+              </div>
+              <div class="nights-badge" id="nights-count">2 đêm</div>
+              <div class="date-col">
+                <label>Trả phòng</label>
+                <input type="date" id="checkout-date" class="date-picker-native">
+              </div>
+            </div>
+            <div class="field-subtext">Nhận phòng lúc 14:00 &bull; Trả phòng lúc 12:00</div>
+          </div>
+
+          <!-- Ô 3: Số lượng khách & Phòng (STT 25, 26) -->
+          <div class="search-field-box" id="guest-field-box">
+            <div class="field-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Số khách & Số phòng
+            </div>
+            <div class="field-value-line">
+              <div class="field-input" id="guest-summary-text" style="font-size: 0.95rem;">2 người lớn, 0 trẻ em, 1 phòng</div>
+            </div>
+            <div class="field-subtext">Tối đa 10 người lớn mỗi đơn</div>
+
+            <!-- Guest Popup -->
+            <div class="guest-popup" id="guest-popup">
+              <div class="guest-counter-row">
+                <div class="counter-info">
+                  <h5>Người lớn</h5>
+                  <p>Từ 12 tuổi trở lên</p>
+                </div>
+                <div class="counter-controls">
+                  <button type="button" class="btn-counter" id="btn-minus-adults">-</button>
+                  <span class="counter-value" id="val-adults">2</span>
+                  <button type="button" class="btn-counter" id="btn-plus-adults">+</button>
+                </div>
+              </div>
+              <div class="guest-counter-row">
+                <div class="counter-info">
+                  <h5>Trẻ em</h5>
+                  <p>Dưới 12 tuổi</p>
+                </div>
+                <div class="counter-controls">
+                  <button type="button" class="btn-counter" id="btn-minus-children" disabled>-</button>
+                  <span class="counter-value" id="val-children">0</span>
+                  <button type="button" class="btn-counter" id="btn-plus-children">+</button>
+                </div>
+              </div>
+              <div class="guest-counter-row">
+                <div class="counter-info">
+                  <h5>Số phòng</h5>
+                  <p>Số lượng phòng cần đặt</p>
+                </div>
+                <div class="counter-controls">
+                  <button type="button" class="btn-counter" id="btn-minus-rooms" disabled>-</button>
+                  <span class="counter-value" id="val-rooms">1</span>
+                  <button type="button" class="btn-counter" id="btn-plus-rooms">+</button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary popup-footer-btn" id="btn-apply-guests">Áp Dụng</button>
+            </div>
+          </div>
+
+          <!-- Nút CTA Tìm kiếm chính (STT 28) -->
+          <button type="button" class="btn-search-main" id="btn-search-hotels">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Tìm khách sạn
+          </button>
+        </form>
+
+        <!-- Tùy chọn nâng cao & Vị trí nhanh -->
+        <div class="search-bottom-options">
+          <div class="checkbox-group">
+            <label class="custom-checkbox">
+              <input type="checkbox" id="check-business-trip">
+              <span>Tôi đi công tác</span>
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" id="check-pay-at-hotel">
+              <span>Thanh toán tại khách sạn (Pay at hotel)</span>
+            </label>
+          </div>
+
+          <div class="quick-hanoi-locations">
+            <span>Khu vực nhanh:</span>
+            <span class="area-chip" data-district="Ba Đình">Quận Ba Đình</span>
+            <span class="area-chip" data-district="Hoàn Kiếm">Phố Cổ</span>
+            <span class="area-chip" data-district="Tây Hồ">Hồ Tây</span>
+            <span class="area-chip" data-district="Cầu Giấy">Cầu Giấy</span>
+            <span class="area-chip" data-district="Ba Vì">Ba Vì</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STT 7 (THÀNH VIÊN 1): PROMOTIONS & VOUCHERS -->
+  <section class="section" id="promotions-section">
+    <div class="container">
+      <div class="section-top">
+        <div>
+          <span class="section-tag">Ưu đãi độc quyền</span>
+          <h2 class="section-title">Chương trình khuyến mãi & Mã giảm giá</h2>
+          <p class="section-desc">Sao chép mã giảm giá để áp dụng ngay khi tiến hành đặt phòng Lotte Hotel và đối tác</p>
+        </div>
+      </div>
+
+      <div class="promo-grid">
+        <!-- Voucher 1 -->
+        <div class="promo-ticket">
+          <div class="promo-left gold-bg">
+            <div class="promo-percent">500K</div>
+            <div class="promo-type">Lotte Club</div>
+          </div>
+          <div class="promo-right">
+            <div>
+              <h3 class="promo-title">Giảm 500.000₫ phòng Suite Lotte Hotel</h3>
+              <p class="promo-condition">Áp dụng đơn đặt phòng từ 2 đêm tại Lotte Hotel Hanoi</p>
+            </div>
+            <div class="promo-bottom-bar">
+              <span class="coupon-code">LOTTE500</span>
+              <button type="button" class="btn-copy-coupon" data-code="LOTTE500">Sao chép mã</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Voucher 2 -->
+        <div class="promo-ticket">
+          <div class="promo-left">
+            <div class="promo-percent">30%</div>
+            <div class="promo-type">Khách Mới</div>
+          </div>
+          <div class="promo-right">
+            <div>
+              <h3 class="promo-title">Giảm 30% đặt phòng lần đầu tiên</h3>
+              <p class="promo-condition">Dành riêng cho thành viên mới đăng ký tài khoản hôm nay</p>
+            </div>
+            <div class="promo-bottom-bar">
+              <span class="coupon-code">HANOI30</span>
+              <button type="button" class="btn-copy-coupon" data-code="HANOI30">Sao chép mã</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Voucher 3 -->
+        <div class="promo-ticket">
+          <div class="promo-left blue-bg">
+            <div class="promo-percent">15%</div>
+            <div class="promo-type">Staycation</div>
+          </div>
+          <div class="promo-right">
+            <div>
+              <h3 class="promo-title">Flash Sale Nghỉ Dưỡng Cuối Tuần</h3>
+              <p class="promo-condition">Giảm thêm 15% tối đa 350.000₫ cho tất cả khách sạn Hà Nội</p>
+            </div>
+            <div class="promo-bottom-bar">
+              <span class="coupon-code">WEEKEND15</span>
+              <button type="button" class="btn-copy-coupon" data-code="WEEKEND15">Sao chép mã</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STT 7 (THÀNH VIÊN 1): ĐỊA ĐIỂM THỊNH HÀNH QUANH HÀ NỘI -->
+  <section class="section" style="padding-top: 10px;">
+    <div class="container">
+      <div class="section-top">
+        <div>
+          <span class="section-tag">Địa điểm quanh thủ đô</span>
+          <h2 class="section-title">Khu vực lưu trú thịnh hành tại Hà Nội</h2>
+          <p class="section-desc">Chọn điểm dừng chân lý tưởng từ trung tâm phố cổ đến không gian nghỉ dưỡng ven đô</p>
+        </div>
+        <a href="#featured-hotels-section" class="link-all" onclick="resetHotelFilters()">Xem tất cả khu vực ➔</a>
+      </div>
+
+      <div class="dest-grid">
+        <!-- 1. Ba Đình -->
+        <div class="dest-card" onclick="document.getElementById('destination-input').value = 'Quận Ba Đình'; triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80" alt="Quận Ba Đình" class="dest-card-img" loading="lazy">
+          <div class="dest-card-overlay">
+            <span class="dest-card-tag">Tâm điểm Lotte</span>
+            <h3 class="dest-card-name">Quận Ba Đình</h3>
+            <div class="dest-card-meta">
+              <span>85 khách sạn</span>
+              <span class="dest-card-price">Từ 1.450.000₫</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Hoàn Kiếm -->
+        <div class="dest-card" onclick="document.getElementById('destination-input').value = 'Quận Hoàn Kiếm'; triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80" alt="Quận Hoàn Kiếm" class="dest-card-img" loading="lazy">
+          <div class="dest-card-overlay">
+            <span class="dest-card-tag">Phố Cổ nghìn năm</span>
+            <h3 class="dest-card-name">Quận Hoàn Kiếm</h3>
+            <div class="dest-card-meta">
+              <span>160 chỗ nghỉ</span>
+              <span class="dest-card-price">Từ 650.000₫</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Tây Hồ -->
+        <div class="dest-card" onclick="document.getElementById('destination-input').value = 'Quận Tây Hồ'; triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80" alt="Quận Tây Hồ" class="dest-card-img" loading="lazy">
+          <div class="dest-card-overlay">
+            <span class="dest-card-tag">View hồ thơ mộng</span>
+            <h3 class="dest-card-name">Quận Tây Hồ</h3>
+            <div class="dest-card-meta">
+              <span>95 khách sạn & resort</span>
+              <span class="dest-card-price">Từ 980.000₫</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Cầu Giấy -->
+        <div class="dest-card" onclick="document.getElementById('destination-input').value = 'Quận Cầu Giấy'; triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80" alt="Quận Cầu Giấy" class="dest-card-img" loading="lazy">
+          <div class="dest-card-overlay">
+            <span class="dest-card-tag">Đô thị hiện đại</span>
+            <h3 class="dest-card-name">Quận Cầu Giấy</h3>
+            <div class="dest-card-meta">
+              <span>70 căn hộ dịch vụ</span>
+              <span class="dest-card-price">Từ 550.000₫</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Ba Vì -->
+        <div class="dest-card" onclick="document.getElementById('destination-input').value = 'Ba Vì'; triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" alt="Ba Vì" class="dest-card-img" loading="lazy">
+          <div class="dest-card-overlay">
+            <span class="dest-card-tag">Mây ngàn thiên nhiên</span>
+            <h3 class="dest-card-name">Ba Vì Resort</h3>
+            <div class="dest-card-meta">
+              <span>25 khu sinh thái</span>
+              <span class="dest-card-price">Từ 1.250.000₫</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Sóc Sơn -->
+        <div class="dest-card" onclick="document.getElementById('destination-input').value = 'Sóc Sơn'; triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80" alt="Sóc Sơn" class="dest-card-img" loading="lazy">
+          <div class="dest-card-overlay">
+            <span class="dest-card-tag">Glamping rừng thông</span>
+            <h3 class="dest-card-name">Sóc Sơn Villa</h3>
+            <div class="dest-card-meta">
+              <span>20 biệt thự</span>
+              <span class="dest-card-price">Từ 1.600.000₫</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       PHẦN 2: PHÒNG & THÔNG TIN KHÁCH SẠN (THÀNH VIÊN 2 - STT 11 ĐẾN 20)
+       File đảm nhận: css/part2-rooms.css | js/part2-rooms.js
+       Nhiệm vụ: Cơ sở dữ liệu phòng, Khung lưới phòng, Thiết kế Card phòng,
+                 Hiển thị thông tin & tiện nghi, Modal chi tiết phòng, Wishlist.
+       ====================================================================== -->
+
+  <!-- STT 8, 15, 16 & 27: KHU VỰC KHÁCH SẠN VÀ PHÒNG NỔI BẬT HÀ NỘI -->
+  <section class="section" id="featured-hotels-section">
+    <div class="container">
+      <div class="section-top">
+        <div>
+          <span class="section-tag">Khách sạn nổi bật giá tốt</span>
+          <h2 class="section-title">Khách sạn hàng đầu quanh khu vực Hà Nội</h2>
+          <p class="section-desc">Giá cuối cùng đã bao gồm thuế & phí, cam kết phòng thật - giá thật</p>
+        </div>
+      </div>
+
+      <!-- Banner kết quả tìm kiếm (STT 28 - Thành viên 3) -->
+      <div class="search-results-banner" id="search-results-banner" style="display: none;">
+        <span class="search-results-text" id="search-results-text">Tìm thấy 9 khách sạn phù hợp tại Hà Nội</span>
+        <button type="button" class="btn-reset-filter" onclick="resetHotelFilters()">Bỏ lọc & Đặt lại</button>
+      </div>
+
+      <!-- Bộ lọc nhanh & Sắp xếp (STT 27 - Thành viên 3) -->
+      <div class="filter-tabs-bar">
+        <div class="filter-tabs-group">
+          <button type="button" class="filter-tab active" data-filter="all">Tất cả (9)</button>
+          <button type="button" class="filter-tab" data-filter="5star">Khách sạn 5 sao</button>
+          <button type="button" class="filter-tab" data-filter="badinh">Quận Ba Đình</button>
+          <button type="button" class="filter-tab" data-filter="hoankiem">Quận Hoàn Kiếm</button>
+          <button type="button" class="filter-tab" data-filter="tayho">Quận Tây Hồ</button>
+          <button type="button" class="filter-tab" data-filter="caugiay">Quận Cầu Giấy</button>
+          <button type="button" class="filter-tab" data-filter="resort">Nghỉ dưỡng ven đô</button>
+          <button type="button" class="filter-tab" data-filter="under1500">Dưới 1.5 triệu</button>
+        </div>
+
+        <div class="sort-group">
+          <span class="sort-label">Sắp xếp:</span>
+          <select id="sort-hotels-select" class="sort-select">
+            <option value="featured">Được đề xuất nhiều nhất</option>
+            <option value="price-asc">Giá thấp đến cao</option>
+            <option value="price-desc">Giá cao đến thấp</option>
+            <option value="rating">Điểm đánh giá cao nhất</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Lưới khách sạn & Card phòng (STT 15, 16, 17 - Rendered via js/part2-rooms.js) -->
+      <div class="hotel-grid" id="hotel-grid-container">
+        <!-- Rendered via js/part2-rooms.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- STT 7 (THÀNH VIÊN 1): LOẠI HÌNH LƯU TRÚ -->
+  <section class="section" style="padding-top: 10px;">
+    <div class="container">
+      <div class="section-top">
+        <div>
+          <span class="section-tag">Loại hình lưu trú</span>
+          <h2 class="section-title">Đa dạng lựa chọn cho mọi chuyến đi</h2>
+          <p class="section-desc">Từ kỳ nghỉ công tác hiện đại đến chuyến nghỉ dưỡng cuối tuần bên gia đình</p>
+        </div>
+      </div>
+
+      <div class="types-grid">
+        <div class="type-card" onclick="document.querySelector('.filter-tab[data-filter=\'5star\']').click(); triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=400&q=80" alt="Khách sạn 5 sao" class="type-img" loading="lazy">
+          <div class="type-content">
+            <h4 class="type-title">Khách Sạn 5 Sao Sang Trọng</h4>
+            <p class="type-desc">Lotte Hotel, InterCon, Melia chuẩn quốc tế</p>
+          </div>
+        </div>
+
+        <div class="type-card" onclick="document.querySelector('.filter-tab[data-filter=\'boutique\']').click(); triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=400&q=80" alt="Boutique phố cổ" class="type-img" loading="lazy">
+          <div class="type-content">
+            <h4 class="type-title">Khách Sạn Boutique Phố Cổ</h4>
+            <p class="type-desc">Đậm nét văn hóa di sản Hà Nội 36 phố phường</p>
+          </div>
+        </div>
+
+        <div class="type-card" onclick="document.querySelector('.filter-tab[data-filter=\'apartment\']').click(); triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=400&q=80" alt="Căn hộ dịch vụ" class="type-img" loading="lazy">
+          <div class="type-content">
+            <h4 class="type-title">Căn Hộ Dịch Vụ Tiện Nghi</h4>
+            <p class="type-desc">Có bếp riêng, máy giặt, lý tưởng cho công tác dài ngày</p>
+          </div>
+        </div>
+
+        <div class="type-card" onclick="document.querySelector('.filter-tab[data-filter=\'resort\']').click(); triggerSearch();">
+          <img src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=400&q=80" alt="Resort ven đô" class="type-img" loading="lazy">
+          <div class="type-content">
+            <h4 class="type-title">Resort & Biệt Thự Ven Đô</h4>
+            <p class="type-desc">Hồ bơi riêng, không gian xanh mát tại Ba Vì, Sóc Sơn</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STT 7 (THÀNH VIÊN 1): 4 CAM KẾT DỊCH VỤ -->
+  <section class="section" style="background: #ffffff; margin-top: 30px;">
+    <div class="container">
+      <div class="section-top" style="text-align: center; justify-content: center; margin-bottom: 35px;">
+        <div>
+          <span class="section-tag">Cam kết dịch vụ</span>
+          <h2 class="section-title">Tại sao nên đặt phòng tại Lotte Hotel Hanoi & Traveloka?</h2>
+          <p class="section-desc">Chúng tôi đồng hành mang đến trải nghiệm lưu trú trọn vẹn và an tâm tuyệt đối</p>
+        </div>
+      </div>
+
+      <div class="reasons-grid">
+        <div class="reason-card">
+          <div class="reason-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+          <h3 class="reason-title">Giá Rõ Ràng & Minh Bạch</h3>
+          <p class="reason-desc">Giá hiển thị là giá thanh toán cuối cùng đã bao gồm toàn bộ thuế VAT và phí dịch vụ. Không phát sinh phụ phí ẩn.</p>
+        </div>
+
+        <div class="reason-card">
+          <div class="reason-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          </div>
+          <h3 class="reason-title">Thanh Toán Đa Dạng</h3>
+          <p class="reason-desc">Hỗ trợ chuyển khoản VietQR, Thẻ quốc tế, Ví MoMo, hoặc lựa chọn linh hoạt thanh toán trực tiếp khi nhận phòng.</p>
+        </div>
+
+        <div class="reason-card">
+          <div class="reason-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <h3 class="reason-title">Xác Nhận Tức Thì</h3>
+          <p class="reason-desc">Mã đặt phòng được phát hành và lưu ngay vào tài khoản cùng tin nhắn xác nhận trong vòng 60 giây.</p>
+        </div>
+
+        <div class="reason-card">
+          <div class="reason-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          </div>
+          <h3 class="reason-title">Hỗ Trợ Khách Hàng 24/7</h3>
+          <p class="reason-desc">Đội ngũ tư vấn viên am hiểu địa phương tại Hà Nội luôn sẵn sàng hỗ trợ bạn qua tổng đài và trực tuyến suốt 24/7.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       PHẦN 4: LIÊN HỆ, KIỂM THỬ & TÍCH HỢP (THÀNH VIÊN 4 - STT 31 ĐẾN 40)
+       File đảm nhận: css/part4-contact.css | js/part4-contact.js
+       Nhiệm vụ: Trang / Khu vực Liên hệ, Form liên hệ & Validation kiểm tra dữ liệu,
+                 Thông tin hỗ trợ 24/7, Bản đồ vị trí, Test Suite 40 tiêu chí.
+       ====================================================================== -->
+
+  <!-- STT 31, 32, 33, 34, 35: KHU VỰC LIÊN HỆ & THÔNG TIN HỖ TRỢ KHÁCH HÀNG -->
+  <section class="contact-section-wrapper" id="contact-section">
+    <div class="container">
+      <div class="section-top">
+        <div>
+          <span class="section-tag" style="color: #059669;">Hỗ trợ & Tiếp nhận ý kiến</span>
+          <h2 class="section-title">Liên hệ Lotte Hotel Hanoi & Chăm sóc khách hàng</h2>
+          <p class="section-desc">Đội ngũ hỗ trợ chuyên nghiệp sẵn sàng giải đáp mọi thắc mắc về đặt phòng suốt 24/7</p>
+        </div>
+      </div>
+
+      <div class="contact-layout-grid">
+        <!-- Cột trái: Thông tin địa chỉ & Bản đồ vị trí (STT 34, 35) -->
+        <div>
+          <div class="contact-info-cards">
+            <div class="c-info-card">
+              <div class="c-info-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
+              <div class="c-info-text">
+                <h4>Địa chỉ Khách sạn</h4>
+                <p>54 Liễu Giai, Phường Cống Vị, Quận Ba Đình, Hà Nội (Tòa tháp Lotte Center)</p>
+              </div>
+            </div>
+
+            <div class="c-info-card">
+              <div class="c-info-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+              </div>
+              <div class="c-info-text">
+                <h4>Tổng đài hỗ trợ 24/7</h4>
+                <p>Hotline: <a href="tel:19006868">1900 6868</a> &bull; (024) 3333 1000</p>
+              </div>
+            </div>
+
+            <div class="c-info-card">
+              <div class="c-info-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <div class="c-info-text">
+                <h4>Email Chăm sóc</h4>
+                <p><a href="mailto:support@lottehotel.vn">support@lottehotel.vn</a></p>
+              </div>
+            </div>
+
+            <div class="c-info-card">
+              <div class="c-info-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <div class="c-info-text">
+                <h4>Thời gian làm việc</h4>
+                <p>Bộ phận tiếp đón: 24/7 suốt 365 ngày</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bản đồ chỉ dẫn vị trí Lotte Hotel Hanoi -->
+          <div class="contact-map-box">
+            <iframe 
+              title="Bản đồ vị trí Lotte Hotel Hanoi"
+              src="https://maps.google.com/maps?q=Lotte%20Hotel%20Hanoi,%2054%20Li%E1%BB%85u%20Giai,%20Ba%20%C4%90%C3%ACnh,%20H%C3%A0%20N%E1%BB%99i&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+              loading="lazy" 
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+
+        <!-- Cột phải: Form liên hệ có kiểm tra tính hợp lệ (STT 32, 33) -->
+        <div class="contact-form-box">
+          <div class="contact-form-header">
+            <h3 class="contact-form-title">Gửi Tin Nhắn / Yêu Cầu Hỗ Trợ</h3>
+            <p class="contact-form-subtitle">Điền thông tin của bạn để nhận phản hồi từ bộ phận quản lý trong vòng 15 phút</p>
+          </div>
+
+          <form id="contact-support-form" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="c-name">Họ và tên của bạn *</label>
+              <input type="text" id="c-name" class="form-input" placeholder="Ví dụ: Trần Văn Nam" required>
+              <div class="validation-feedback" id="c-name-error"></div>
+            </div>
+
+            <div class="contact-input-grid">
+              <div class="form-group">
+                <label class="form-label" for="c-email">Địa chỉ Email *</label>
+                <input type="email" id="c-email" class="form-input" placeholder="nam.tran@gmail.com" required>
+                <div class="validation-feedback" id="c-email-error"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="c-phone">Số điện thoại liên hệ *</label>
+                <input type="tel" id="c-phone" class="form-input" placeholder="0987654321" required>
+                <div class="validation-feedback" id="c-phone-error"></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="c-message">Nội dung tin nhắn / Yêu cầu đặc biệt *</label>
+              <textarea id="c-message" class="form-input" rows="4" placeholder="Nhập câu hỏi, thắc mắc về phòng hoặc yêu cầu hỗ trợ của bạn..." required></textarea>
+              <div class="validation-feedback" id="c-message-error"></div>
+            </div>
+
+            <button type="submit" class="btn-submit-contact">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              Gửi Thông Tin Hỗ Trợ
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STT 4 (THÀNH VIÊN 1): FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-columns">
+        <div class="footer-about">
+          <h4 class="footer-col-title">Lotte Hotel Hanoi & Chỗ Ở</h4>
+          <p>Hệ thống đặt phòng khách sạn cao cấp hàng đầu quanh khu vực Hà Nội. Trải nghiệm dịch vụ 5 sao chuẩn quốc tế tại Lotte Hotel Hanoi cùng hàng trăm đối tác khách sạn uy tín.</p>
+          <div class="footer-hotline">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            1900 6868 (Hỗ trợ 24/7)
+          </div>
+          <p style="margin-top: 10px; font-size: 0.8rem; color: #64748b;">Địa chỉ: 54 Liễu Giai, Phường Cống Vị, Quận Ba Đình, Hà Nội</p>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Về Chúng Tôi</h4>
+          <ul class="footer-links">
+            <li><a href="#">Giới thiệu Lotte Hotel</a></li>
+            <li><a href="#">Cách đặt phòng trực tuyến</a></li>
+            <li><a href="#">Chương trình thành viên Lotte Club</a></li>
+            <li><a href="#">Tuyển dụng nhân sự</a></li>
+            <li><a href="#">Quy chế hoạt động</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Chính Sách & Hỗ Trợ</h4>
+          <ul class="footer-links">
+            <li><a href="#">Chính sách bảo mật</a></li>
+            <li><a href="#">Chính sách hoàn tiền & Hủy phòng</a></li>
+            <li><a href="#">Điều khoản sử dụng dịch vụ</a></li>
+            <li><a href="#contact-section">Trung tâm trợ giúp khách hàng</a></li>
+            <li><a href="#">Hợp tác khách sạn cùng chúng tôi</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Phương Thức Thanh Toán</h4>
+          <p style="font-size: 0.82rem; color: #94a3b8;">Giao dịch được mã hóa và bảo mật chuẩn quốc tế PCI-DSS</p>
+          <div class="payment-badges-grid">
+            <span class="pay-badge">VietQR</span>
+            <span class="pay-badge">VISA</span>
+            <span class="pay-badge">MasterCard</span>
+            <span class="pay-badge">MoMo</span>
+            <span class="pay-badge">ZaloPay</span>
+            <span class="pay-badge">JCB</span>
+            <span class="pay-badge">Napas</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-line">
+        <div>&copy; 2026 Lotte Hotel Hanoi & Traveloka Hotel. Tất cả các quyền được bảo lưu.</div>
+        <div>Chứng nhận bảo mật an toàn giao dịch SSL 256-bit</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================================
+       HỆ THỐNG MODALS DÙNG TRONG WEBSITE
+       ====================================================================== -->
+
+  <!-- MODAL 1: AUTHENTICATION MODAL (THÀNH VIÊN 1 - STT 10) -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Tài Khoản Lotte Hotel</h3>
+        <button type="button" class="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Thông báo nhắc nhở khi bắt nguồn từ việc bấm Đặt phòng -->
+        <div id="auth-booking-alert" style="display: none; background: #fffbeb; border: 1.5px solid #f59e0b; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+          <div style="font-weight: 800; font-size: 0.9rem; color: #b45309; display: flex; align-items: center; gap: 6px;">
+            ⚠️ Yêu cầu đăng nhập để đặt phòng!
+          </div>
+          <p style="font-size: 0.82rem; color: #78350f; margin-top: 4px;">
+            Quý khách vui lòng đăng nhập để lưu trữ thông tin phòng đã đặt, tích lũy điểm thưởng Lotte Club và nhận mã xác nhận tức thì.
+          </p>
+        </div>
+
+        <!-- Callout tài khoản mẫu -->
+        <div class="demo-account-callout">
+          <div class="demo-account-title">
+            ⚡ Tài Khoản Mẫu Trải Nghiệm Nhanh
+          </div>
+          <div class="demo-account-info">
+            Email: <strong>demo@lottehotel.vn</strong> &bull; Mật khẩu: <strong>123456</strong>
+          </div>
+          <button type="button" class="btn-fill-demo" id="btn-fill-demo-modal">Điền tài khoản mẫu tự động</button>
+        </div>
+
+        <!-- Tab chuyển đổi Đăng nhập / Đăng ký -->
+        <div style="display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px;">
+          <button type="button" id="auth-tab-login" class="cat-tab-btn active" style="flex: 1; justify-content: center; border-radius: 0; padding: 10px;">Đăng Nhập</button>
+          <button type="button" id="auth-tab-register" class="cat-tab-btn" style="flex: 1; justify-content: center; border-radius: 0; padding: 10px;">Đăng Ký Mới</button>
+        </div>
+
+        <!-- FORM ĐĂNG NHẬP -->
+        <form id="modal-login-form">
+          <div class="form-group">
+            <label class="form-label" for="modal-login-id">Email hoặc Số điện thoại</label>
+            <input type="text" id="modal-login-id" class="form-input" placeholder="demo@lottehotel.vn" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modal-login-pass">Mật khẩu</label>
+            <input type="password" id="modal-login-pass" class="form-input" placeholder="••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">Đăng Nhập Ngay</button>
+        </form>
+
+        <!-- FORM ĐĂNG KÝ (LƯU VÀO MẢNG) -->
+        <form id="modal-reg-form" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="modal-reg-name">Họ và tên</label>
+            <input type="text" id="modal-reg-name" class="form-input" placeholder="Ví dụ: Nguyễn Văn An" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modal-reg-email">Địa chỉ Email</label>
+            <input type="email" id="modal-reg-email" class="form-input" placeholder="an.nguyen@gmail.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modal-reg-phone">Số điện thoại</label>
+            <input type="tel" id="modal-reg-phone" class="form-input" placeholder="0912345678" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modal-reg-pass">Mật khẩu</label>
+            <input type="password" id="modal-reg-pass" class="form-input" placeholder="Tối thiểu 6 ký tự" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modal-reg-pass-confirm">Xác nhận mật khẩu</label>
+            <input type="password" id="modal-reg-pass-confirm" class="form-input" placeholder="Nhập lại mật khẩu" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">Tạo Tài Khoản & Lưu Vào Mảng</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: BOOKING MODAL (THÀNH VIÊN 3 - STT 29, 30) -->
+  <div class="modal-overlay" id="booking-modal">
+    <div class="modal-dialog large">
+      <div class="modal-header">
+        <h3 class="modal-title">Xác Nhận Đặt Phòng Khách Sạn</h3>
+        <button type="button" class="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Khách sạn đã chọn -->
+        <div class="booking-hotel-summary">
+          <img src="" alt="" id="bm-hotel-thumb" class="b-hotel-thumb">
+          <div>
+            <h4 id="bm-hotel-name" class="b-hotel-name">Lotte Hotel Hanoi</h4>
+            <div id="bm-hotel-address" class="b-hotel-geo">54 Liễu Giai, Ba Đình, Hà Nội</div>
+            <div style="font-size: 0.8rem; color: var(--success); font-weight: 700; margin-top: 4px;">
+              ✓ Xác nhận tức thì &bull; Miễn phí hủy phòng trước 24h
+            </div>
+          </div>
+        </div>
+
+        <form onsubmit="submitBookingForm(event)">
+          <!-- Lựa chọn loại phòng -->
+          <div class="form-group">
+            <label class="form-label">Chọn Hạng Phòng</label>
+            <div class="room-type-options" id="bm-room-types">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Thời gian & Số khách -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+            <div>
+              <div style="font-size: 0.72rem; color: #718096; font-weight: 700;">NHẬN PHÒNG</div>
+              <div id="bm-checkin-display" style="font-weight: 800; color: #1c2430;">28/09/2026</div>
+            </div>
+            <div>
+              <div style="font-size: 0.72rem; color: #718096; font-weight: 700;">TRẢ PHÒNG (<span id="bm-nights-display">2 đêm</span>)</div>
+              <div id="bm-checkout-display" style="font-weight: 800; color: #1c2430;">30/09/2026</div>
+            </div>
+            <div style="grid-column: span 2; font-size: 0.82rem; color: #4a5568;">
+              👥 Số khách: <strong id="bm-guests-display">2 người lớn, 1 phòng</strong>
+            </div>
+          </div>
+
+          <!-- Thông tin khách đặt -->
+          <div class="form-group">
+            <label class="form-label">Họ và tên khách đại diện</label>
+            <input type="text" id="bm-guest-name" class="form-input" required>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label">Email nhận mã phòng</label>
+              <input type="email" id="bm-guest-email" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Số điện thoại liên hệ</label>
+              <input type="tel" id="bm-guest-phone" class="form-input" required>
+            </div>
+          </div>
+
+          <!-- Mã giảm giá -->
+          <div class="form-group">
+            <label class="form-label">Mã Giảm Giá / Voucher (Ví dụ: LOTTE500, HANOI30)</label>
+            <div class="coupon-input-group">
+              <input type="text" id="bm-coupon-input" class="form-input" placeholder="Nhập mã khuyến mãi...">
+              <button type="button" class="btn-apply-coupon" onclick="applyCouponCode()">Áp Dụng</button>
+            </div>
+          </div>
+
+          <!-- Bảng tính giá -->
+          <div class="pricing-receipt-box">
+            <div class="receipt-row">
+              <span id="bm-calc-room-price">2.750.000₫ × 2 đêm × 1 phòng</span>
+              <span id="bm-calc-subtotal">5.500.000₫</span>
+            </div>
+            <div class="receipt-row discount">
+              <span>Mã giảm giá đã áp dụng</span>
+              <span id="bm-calc-discount">0₫</span>
+            </div>
+            <div class="receipt-row">
+              <span>Thuế GTGT (VAT) & Phí dịch vụ 5 sao</span>
+              <span>Đã bao gồm (0₫)</span>
+            </div>
+            <div class="receipt-row total">
+              <span>Tổng thanh toán</span>
+              <span id="bm-calc-total">5.500.000₫</span>
+            </div>
+          </div>
+
+          <!-- Phương thức thanh toán -->
+          <div class="form-group">
+            <label class="form-label">Phương Thức Thanh Toán</label>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="paymentMethod" value="Thanh toán tại khách sạn" checked>
+                <span><strong>Thanh toán tại khách sạn (Pay at Hotel)</strong> - Nhận phòng rồi thanh toán</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="paymentMethod" value="Chuyển khoản VietQR / MoMo">
+                <span><strong>Quét mã VietQR / Ví MoMo</strong> - Miễn phí giao dịch</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="paymentMethod" value="Thẻ tín dụng / Ghi nợ quốc tế">
+                <span><strong>Thẻ Visa / MasterCard / JCB</strong></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Yêu cầu đặc biệt -->
+          <div class="form-group">
+            <label class="form-label" for="bm-special-requests">Yêu cầu đặc biệt (Không bắt buộc)</label>
+            <textarea id="bm-special-requests" class="form-input" rows="2" placeholder="Ví dụ: Phòng tầng cao, 1 giường đôi lớn, nhận phòng sớm..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-accent" style="width: 100%; padding: 14px; font-size: 1.05rem;">
+            Hoàn Tất Đặt Phòng & Nhận Xác Nhận
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: BOOKING SUCCESS (THÀNH VIÊN 3 - STT 30) -->
+  <div class="modal-overlay" id="booking-success-modal">
+    <div class="modal-dialog">
+      <div class="modal-header" style="background: #ecfdf5; border-bottom: 1px solid #a7f3d0;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <h3 class="modal-title" style="color: #065f46;">Đặt Phòng Thành Công!</h3>
+        </div>
+        <button type="button" class="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <div style="font-size: 0.85rem; color: #4b5563; margin-bottom: 6px;">MÃ ĐẶT PHÒNG CỦA BẠN</div>
+        <div style="font-family: monospace; font-size: 1.6rem; font-weight: 900; color: #0194f3; letter-spacing: 2px;" id="succ-booking-code">LT-HN-89234</div>
+        <p style="font-size: 0.85rem; color: #6b7280; margin-top: 4px;">Thông tin đặt phòng đã được lưu vào danh sách <strong>Đặt chỗ của tôi</strong></p>
+
+        <!-- Chi tiết tóm tắt -->
+        <div style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; padding: 14px; margin: 18px 0; text-align: left; font-size: 0.88rem;">
+          <div style="margin-bottom: 6px;">🏨 Khách sạn: <strong id="succ-hotel-name">Lotte Hotel Hanoi</strong></div>
+          <div style="margin-bottom: 6px;">🛏️ Loại phòng: <strong id="succ-room-type">Deluxe City View</strong></div>
+          <div style="margin-bottom: 6px;">📅 Thời gian: <strong id="succ-dates">28/09/2026 - 30/09/2026</strong></div>
+          <div style="margin-bottom: 6px;">💳 Thanh toán: <strong id="succ-payment">Thanh toán tại khách sạn</strong></div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1; font-weight: 800; color: #ff5e1f; font-size: 1rem;">
+            Tổng tiền: <span id="succ-total">5.500.000₫</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" style="width: 100%; margin-bottom: 8px;" onclick="closeModal('booking-success-modal'); openMyBookingsModal();">
+          Xem Trong "Đặt Chỗ Của Tôi"
+        </button>
+        <button type="button" class="btn btn-outline" style="width: 100%; border-color: #cbd5e1; color: #4a5568;" onclick="closeModal('booking-success-modal');">
+          Tiếp tục xem phòng khác
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: MY BOOKINGS (THÀNH VIÊN 3 - STT 30) -->
+  <div class="modal-overlay" id="my-bookings-modal">
+    <div class="modal-dialog large">
+      <div class="modal-header">
+        <h3 class="modal-title">Đặt Chỗ Của Tôi</h3>
+        <button type="button" class="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="my-bookings-list">
+          <!-- Rendered via js/part3-booking.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: WISHLIST (THÀNH VIÊN 2 - STT 20) -->
+  <div class="modal-overlay" id="wishlist-modal">
+    <div class="modal-dialog large">
+      <div class="modal-header">
+        <h3 class="modal-title">Khách Sạn Đã Lưu</h3>
+        <button type="button" class="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="wishlist-hotels-list">
+          <!-- Rendered via js/part2-rooms.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Admin Switcher Button -->
+  <a href="admin.html" id="floating-admin-btn" style="display: none; position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1e293b, #0f172a); color: #c5a059; padding: 12px 18px; border-radius: 9999px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.35); border: 1.5px solid rgba(197, 160, 89, 0.5); font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 28px rgba(15, 23, 42, 0.45)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(15, 23, 42, 0.35)'">
+    <span style="font-size: 1.1rem;">👑</span>
+    <span>Trang Quản Trị Hệ Thống</span>
+    <span style="background: #c5a059; color: #0f172a; padding: 2px 7px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">ADMIN</span>
+  </a>
+
+  <!-- Floating Test Suite Runner Button (THÀNH VIÊN 4: STT 37 - 40) -->
+  <button type="button" class="test-suite-floating-btn" onclick="showTestReportModal()" title="Bấm để xem báo cáo kiểm thử tự động 40 tiêu chí của 4 thành viên">
+    <span style="font-size: 1.1rem;">🧪</span>
+    <span>Kiểm Thử Hệ Thống (40 STT)</span>
+    <span class="test-badge-pass">PASS</span>
+  </button>
+
+  <!-- ======================================================================
+       CÁC FILE JAVASCRIPT ĐƯỢC CHIA TÁCH RIÊNG BIỆT THEO 4 THÀNH VIÊN
+       ====================================================================== -->
+  <!-- Hệ thống xác thực & Mảng dữ liệu người dùng dùng chung -->
+  <script src="js/auth.js"></script>
+
+  <!-- THÀNH VIÊN 1: Trang chủ & Giao diện chung (STT 1 - 10) -->
+  <script src="js/part1-home.js"></script>
+
+  <!-- THÀNH VIÊN 2: Phòng & Thông tin khách sạn (STT 11 - 20) -->
+  <script src="js/part2-rooms.js"></script>
+
+  <!-- THÀNH VIÊN 3: Tìm kiếm & Đặt phòng (STT 21 - 30) -->
+  <script src="js/part3-booking.js"></script>
+
+  <!-- THÀNH VIÊN 4: Liên hệ, Kiểm thử & Tích hợp (STT 31 - 40) -->
+  <script src="js/part4-contact.js"></script>
+
+  <!-- MASTER SCRIPT: Điều phối và khởi chạy toàn bộ 4 thành viên -->
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+/* ==========================================================================
+   DỰ ÁN: LOTTE HOTEL HANOI & HỆ THỐNG KHÁCH SẠN QUANH KHU VỰC HÀ NỘI
+   PHONG CÁCH THIẾT KẾ: TRAVELOKA HOTEL CHUYÊN BIỆT
+   TỔNG HỢP STYLE CHÍNH (MASTER STYLESHEET) TÍCH HỢP 4 THÀNH VIÊN
+   ==========================================================================
+   CƠ CẤU 4 PHẦN CHUYÊN BIỆT ĐƯỢC CHIA THÀNH CÁC FILE RIÊNG ĐỂ DỄ QUẢN LÝ:
+   - THÀNH VIÊN 1: css/part1-home.css    (STT 1-10: Trang chủ & Giao diện chung)
+   - THÀNH VIÊN 2: css/part2-rooms.css   (STT 11-20: Phòng & Thông tin khách sạn)
+   - THÀNH VIÊN 3: css/part3-booking.css (STT 21-30: Tìm kiếm & Đặt phòng)
+   - THÀNH VIÊN 4: css/part4-contact.css (STT 31-40: Liên hệ, Kiểm thử & Tích hợp)
+   ========================================================================== */
+
+/* Nạp các file CSS của 4 thành viên theo thứ tự chuẩn kiến trúc module */
+@import url("part1-home.css");
+@import url("part2-rooms.css");
+@import url("part3-booking.css");
+@import url("part4-contact.css");
