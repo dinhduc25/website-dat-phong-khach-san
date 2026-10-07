@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hệ Thống Quản Trị Khách Sạn - Lotte Hotel Hanoi & Traveloka Portal</title>
+  <title>Hệ Thống Quản Trị Lotte Hotel Hanoi - Lotte Hotel Hanoi & Traveloka Portal</title>
   <meta name="description" content="Trang quản trị toàn diện: Quản lý phòng, sơ đồ tầng thời gian thực, danh sách đặt phòng, báo cáo doanh thu tài chính, khách hàng và ưu đãi.">
   <link rel="stylesheet" href="css/admin.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
@@ -21,7 +21,7 @@
         </div>
         <div class="sidebar-brand-text">
           <h2>LOTTE <span>HOTEL</span></h2>
-          <p>Hệ Thống Quản Trị Khách Sạn</p>
+          <p>Hệ Thống Quản Trị Lotte Hotel Hanoi</p>
         </div>
       </div>
     </div>
@@ -344,7 +344,7 @@
                     <tr>
                       <th>Mã Đơn</th>
                       <th>Khách Hàng</th>
-                      <th>Khách Sạn & Hạng Phòng</th>
+                      <th>Lotte Hotel Hanoi & Hạng Phòng</th>
                       <th>Ngày Lưu Trú</th>
                       <th>Tổng Tiền</th>
                       <th>Trạng Thái</th>
@@ -385,7 +385,7 @@
       <section id="section-rooms" class="admin-section">
         <div class="section-page-header">
           <div class="section-title-wrap">
-            <h1>🏨 Quản Lý Danh Sách Phòng & Khách Sạn</h1>
+            <h1>🏨 Quản Lý Danh Sách Hạng Phòng</h1>
             <p>Thêm mới, chỉnh sửa thông tin phòng, cập nhật đơn giá và cấu hình sức chứa</p>
           </div>
           <div class="section-actions">
@@ -407,13 +407,11 @@
             </div>
 
             <select class="filter-select" id="filter-room-hotel" onchange="filterRooms()">
-              <option value="all">Tất cả Khách Sạn</option>
-              <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi (5 sao)</option>
-              <option value="pan-pacific-hanoi">Pan Pacific Hanoi</option>
-              <option value="intercon-westlake">InterContinental Westlake</option>
-              <option value="apricot-hotel-hanoi">Apricot Hotel Hanoi</option>
-              <option value="melia-hanoi">Melia Hanoi Hotel</option>
-              <option value="novotel-suites-hanoi">Novotel Suites Hanoi</option>
+              <option value="all">Tất cả hạng phòng</option>
+              <option value="deluxe">Deluxe</option>
+              <option value="premier">Premier</option>
+              <option value="junior-suite">Junior Suite</option>
+              <option value="presidential-suite">Presidential Suite</option>
             </select>
 
             <select class="filter-select" id="filter-room-status" onchange="filterRooms()">
@@ -487,12 +485,7 @@
           </div>
           <div class="section-actions">
             <select class="filter-select" id="select-floor-hotel" onchange="renderFloorMap()" style="font-weight: 700;">
-              <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi (Tòa tháp 65 tầng)</option>
-              <option value="pan-pacific-hanoi">Pan Pacific Hanoi</option>
-              <option value="intercon-westlake">InterContinental Westlake</option>
-              <option value="apricot-hotel-hanoi">Apricot Hotel Hanoi</option>
-              <option value="melia-hanoi">Melia Hanoi Hotel</option>
-              <option value="novotel-suites-hanoi">Novotel Suites Hanoi</option>
+              <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi • 65 tầng</option>
             </select>
           </div>
         </div>
@@ -561,12 +554,11 @@
             </div>
 
             <select class="filter-select" id="filter-booking-hotel" onchange="filterBookings()">
-              <option value="all">Tất cả Khách Sạn</option>
-              <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi</option>
-              <option value="pan-pacific-hanoi">Pan Pacific Hanoi</option>
-              <option value="intercon-westlake">InterContinental Westlake</option>
-              <option value="apricot-hotel-hanoi">Apricot Hotel Hanoi</option>
-              <option value="melia-hanoi">Melia Hanoi Hotel</option>
+              <option value="all">Tất cả hạng phòng</option>
+              <option value="deluxe">Deluxe</option>
+              <option value="premier">Premier</option>
+              <option value="junior-suite">Junior Suite</option>
+              <option value="presidential-suite">Presidential Suite</option>
             </select>
 
             <select class="filter-select" id="filter-booking-status" onchange="filterBookings()">
@@ -591,7 +583,7 @@
                 <tr>
                   <th>Mã Đặt</th>
                   <th>Khách Hàng & Liên Hệ</th>
-                  <th>Khách Sạn & Hạng Phòng</th>
+                  <th>Lotte Hotel Hanoi & Hạng Phòng</th>
                   <th>Số Phòng</th>
                   <th>Ngày Nhận / Trả</th>
                   <th>Thời Lượng</th>
@@ -695,7 +687,7 @@
             <div class="card-header">
               <h3 class="card-title">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                Doanh Thu Theo Khách Sạn & Chi Nhánh
+                Doanh Thu Theo Hạng Phòng
               </h3>
             </div>
             <div class="card-body">
@@ -721,7 +713,7 @@
                   <th>Mã Đơn</th>
                   <th>Ngày Đặt</th>
                   <th>Khách Hàng</th>
-                  <th>Khách Sạn & Phòng</th>
+                  <th>Lotte Hotel Hanoi & Hạng Phòng</th>
                   <th>Số Đêm</th>
                   <th>Phương Thức</th>
                   <th>Số Tiền</th>
@@ -913,7 +905,7 @@
         <div class="section-page-header">
           <div class="section-title-wrap">
             <h1>⚙️ Cấu Hình Hệ Thống & Sao Lưu Dữ Liệu</h1>
-            <p>Quản lý dữ liệu mẫu chuẩn 5 sao, xuất nhập bản sao lưu JSON và thiết lập khách sạn</p>
+            <p>Quản lý dữ liệu mẫu chuẩn 5 sao, xuất nhập bản sao lưu JSON và thiết lập hạng phòng</p>
           </div>
         </div>
 
@@ -958,13 +950,13 @@
             <div class="card-header">
               <h3 class="card-title">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                Thông Tin Trụ Sở Lotte Hotel Hanoi
+                Thông Tin Lotte Hotel Hanoi
               </h3>
             </div>
             <div class="card-body">
               <div class="form-group">
-                <label class="form-label">Tên khách sạn chính</label>
-                <input type="text" class="form-control" value="Lotte Hotel Hanoi (Khách sạn 5 sao cao cấp)" readonly>
+                <label class="form-label">Tên cơ sở lưu trú</label>
+                <input type="text" class="form-control" value="Lotte Hotel Hanoi (5 sao duy nhất)" readonly>
               </div>
               <div class="form-group">
                 <label class="form-label">Địa chỉ</label>
@@ -1017,15 +1009,9 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="room-hotel">Thuộc Khách Sạn *</label>
+              <label class="form-label" for="room-hotel">Hạng phòng *</label>
               <select id="room-hotel" class="form-control" required>
-                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi (5 sao)</option>
-                <option value="pan-pacific-hanoi">Pan Pacific Hanoi</option>
-                <option value="intercon-westlake">InterContinental Westlake</option>
-                <option value="apricot-hotel-hanoi">Apricot Hotel Hanoi</option>
-                <option value="melia-hanoi">Melia Hanoi Hotel</option>
-                <option value="novotel-suites-hanoi">Novotel Suites Hanoi</option>
-              </select>
+                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi (5 sao duy nhất)</option></select>
             </div>
           </div>
 
@@ -1122,14 +1108,10 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="wi-hotel-select">Chọn Khách Sạn *</label>
+              <label class="form-label" for="wi-hotel-select">Chọn hạng phòng *</label>
               <select id="wi-hotel-select" class="form-control" required onchange="updateWalkinRoomOptions()">
-                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi (5 sao)</option>
-                <option value="pan-pacific-hanoi">Pan Pacific Hanoi</option>
-                <option value="intercon-westlake">InterContinental Westlake</option>
-                <option value="apricot-hotel-hanoi">Apricot Hotel Hanoi</option>
-                <option value="melia-hanoi">Melia Hanoi Hotel</option>
-              </select>
+                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi • Hệ thống duy nhất</option>
+            </select>
             </div>
           </div>
 

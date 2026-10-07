@@ -186,20 +186,20 @@ function runSystemTestSuite() {
   recordTest(10, "Kiểm tra Hệ thống thông báo Toast", typeof showToast === 'function');
 
   // --- KIỂM THỬ PHẦN 2 (THÀNH VIÊN 2: STT 11-20) ---
-  recordTest(11, "Kiểm tra Cơ sở dữ liệu khách sạn HANOI_HOTELS_DATA", Array.isArray(HANOI_HOTELS_DATA) && HANOI_HOTELS_DATA.length >= 9);
-  recordTest(12, "Kiểm tra Dữ liệu khách sạn biểu tượng Lotte Hotel Hanoi", HANOI_HOTELS_DATA.some(h => h.id === "lotte-hotel-hanoi" && h.stars === 5));
-  recordTest(13, "Kiểm tra Hình ảnh từng khách sạn có link hợp lệ", HANOI_HOTELS_DATA.every(h => h.image && h.image.startsWith("http")));
-  recordTest(14, "Kiểm tra Tiện ích khách sạn (Amenities 5 sao)", HANOI_HOTELS_DATA.every(h => Array.isArray(h.amenities) && h.amenities.length > 0));
-  recordTest(15, "Kiểm tra Hàm render danh sách khách sạn renderHotelsGrid", typeof renderHotelsGrid === 'function');
-  recordTest(16, "Kiểm tra Thiết kế thẻ Card phòng Hotel Item Card", document.querySelectorAll(".hotel-item-card").length >= 9);
-  recordTest(17, "Kiểm tra Hiển thị giá tiền & điểm đánh giá trên Card", !!document.querySelector(".main-price") && !!document.querySelector(".score-badge"));
+  recordTest(11, "Kiểm tra 4 hạng phòng HANOI_HOTELS_DATA", Array.isArray(HANOI_HOTELS_DATA) && HANOI_HOTELS_DATA.length === 4);
+  recordTest(12, "Kiểm tra dữ liệu 4 hạng phòng đều thuộc Lotte Hotel Hanoi", HANOI_HOTELS_DATA.every(h => h.hotelName === "Lotte Hotel Hanoi" && h.stars === 5));
+  recordTest(13, "Kiểm tra Hình ảnh từng hạng phòng có link hợp lệ", HANOI_HOTELS_DATA.every(h => h.image && h.image.startsWith("http")));
+  recordTest(14, "Kiểm tra thông tin diện tích, sao và sức chứa của hạng phòng", HANOI_HOTELS_DATA.every(h => Array.isArray(h.amenities) && h.amenities.length > 0));
+  recordTest(15, "Kiểm tra Hàm render danh sách hạng phòng renderHotelsGrid", typeof renderHotelsGrid === 'function');
+  recordTest(16, "Kiểm tra Thiết kế thẻ Card phòng Hotel Item Card", document.querySelectorAll(".hotel-item-card").length === 4);
+  recordTest(17, "Kiểm tra Hiển thị giá tiền & điểm đánh giá trên Card", !!document.querySelector(".main-price") && !!document.querySelector(".hotel-stars"));
   recordTest(18, "Kiểm tra Hàm mở modal chi tiết phòng openHotelDetailModal", typeof openHotelDetailModal === 'function');
-  recordTest(19, "Kiểm tra Chi tiết các hạng phòng roomTypes có extraPrice", HANOI_HOTELS_DATA.every(h => Array.isArray(h.roomTypes) && h.roomTypes.length >= 3));
+  recordTest(19, "Kiểm tra mỗi hạng phòng có ít nhất 3 lựa chọn view", HANOI_HOTELS_DATA.every(h => Array.isArray(h.roomTypes) && h.roomTypes.length >= 3));
   recordTest(20, "Kiểm tra Tính năng lưu yêu thích Wishlist", typeof handleWishlistClick === 'function' && typeof toggleUserWishlist === 'function');
 
   // --- KIỂM THỬ PHẦN 3 (THÀNH VIÊN 3: STT 21-30) ---
   recordTest(21, "Kiểm tra Đối tượng trạng thái currentSearchState", typeof currentSearchState === 'object' && currentSearchState.nights >= 1);
-  recordTest(22, "Kiểm tra Form tìm kiếm phòng & Gợi ý điểm đến", !!document.getElementById("destination-box") && !!document.getElementById("dest-suggestions-popup"));
+  recordTest(22, "Kiểm tra Form tìm kiếm phòng & Gợi ý hạng phòng", !!document.getElementById("destination-box") && !!document.getElementById("dest-suggestions-popup"));
   recordTest(23, "Kiểm tra Xử lý ngày nhận phòng checkin-date", !!document.getElementById("checkin-date"));
   recordTest(24, "Kiểm tra Xử lý ngày trả phòng & tính số đêm", !!document.getElementById("checkout-date") && !!document.getElementById("nights-count"));
   recordTest(25, "Kiểm tra Bộ đếm số lượng khách người lớn/trẻ em", !!document.getElementById("btn-plus-adults") && !!document.getElementById("btn-minus-adults"));

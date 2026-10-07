@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Danh Sách Phòng & Khách Sạn Hà Nội - Lotte Hotel Hanoi</title>
-  <meta name="description" content="Danh sách đầy đủ các phòng và khách sạn quanh khu vực Hà Nội. Lotte Hotel Hanoi 5 sao, boutique phố cổ, căn hộ dịch vụ và resort ven đô.">
+  <title>Danh Sách Hạng Phòng - Lotte Hotel Hanoi - Lotte Hotel Hanoi</title>
+  <meta name="description" content="Danh sách các hạng phòng tại Lotte Hotel Hanoi: Deluxe, Premier, Junior Suite và Presidential Suite.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏨</text></svg>">
 
   <!-- CÁC FILE CSS PHÂN CHIA THEO 4 THÀNH VIÊN -->
@@ -32,7 +32,7 @@
           </div>
           <div class="brand-title">
             <span class="brand-main">LOTTE HOTEL <span class="brand-highlight">HANOI</span></span>
-            <span class="brand-sub">Hệ thống khách sạn Hà Nội</span>
+            <span class="brand-sub">Hệ thống đặt phòng Lotte Hotel Hanoi</span>
           </div>
         </a>
 
@@ -77,7 +77,7 @@
               </div>
               <a href="admin.html" class="user-dropdown-item">Cổng Quản Trị (Admin)</a>
               <div class="user-dropdown-item" onclick="openMyBookingsModal()">Đặt chỗ của tôi</div>
-              <div class="user-dropdown-item" onclick="openWishlistModal()">Khách sạn đã lưu</div>
+              <div class="user-dropdown-item" onclick="openWishlistModal()">Hạng phòng đã lưu</div>
               <div class="user-dropdown-item logout" id="btn-header-logout">Đăng xuất</div>
             </div>
           </div>
@@ -90,9 +90,9 @@
   <section class="hero-wrapper" style="padding: 36px 0 40px;">
     <div class="container">
       <div class="hero-header">
-        <div class="hero-chip">🏨 Danh mục khách sạn & Chỗ nghỉ Hà Nội</div>
+        <div class="hero-chip">🏨 Danh mục hạng phòng Lotte Hotel Hanoi</div>
         <h1 class="hero-title">Khám Phá Phòng & <span>Khách Sạn Sang Trọng</span></h1>
-        <p class="hero-subtitle">Từ các hạng phòng Deluxe, Premier, Suite tại Lotte Hotel Hanoi đến các boutique ấm cúng quanh phố cổ và biệt thự sinh thái.</p>
+        <p class="hero-subtitle">Từ Deluxe, Premier đến Junior Suite và Presidential Suite — mỗi hạng phòng được thiết kế cho trải nghiệm 5 sao.</p>
       </div>
     </div>
   </section>
@@ -102,15 +102,12 @@
     <!-- Bộ lọc & Sắp xếp -->
     <div class="filter-tabs-bar">
       <div class="filter-tabs-group">
-        <button type="button" class="filter-tab active" data-filter="all">Tất cả (9)</button>
-        <button type="button" class="filter-tab" data-filter="5star">Khách sạn 5 sao</button>
-        <button type="button" class="filter-tab" data-filter="badinh">Quận Ba Đình</button>
-        <button type="button" class="filter-tab" data-filter="hoankiem">Quận Hoàn Kiếm</button>
-        <button type="button" class="filter-tab" data-filter="tayho">Quận Tây Hồ</button>
-        <button type="button" class="filter-tab" data-filter="caugiay">Quận Cầu Giấy</button>
-        <button type="button" class="filter-tab" data-filter="resort">Nghỉ dưỡng ven đô</button>
-        <button type="button" class="filter-tab" data-filter="under1500">Dưới 1.5 triệu</button>
-      </div>
+          <button type="button" class="filter-tab active" data-filter="all">Tất cả hạng phòng</button>
+          <button type="button" class="filter-tab" data-filter="deluxe">Deluxe</button>
+          <button type="button" class="filter-tab" data-filter="premier">Premier</button>
+          <button type="button" class="filter-tab" data-filter="junior-suite">Junior Suite</button>
+          <button type="button" class="filter-tab" data-filter="presidential-suite">Presidential Suite</button>
+        </div>
 
       <div class="sort-group">
         <span class="sort-label">Sắp xếp:</span>
@@ -123,7 +120,7 @@
       </div>
     </div>
 
-    <!-- Lưới khách sạn render tự động -->
+    <!-- Lưới hạng phòng render tự động -->
     <div class="hotel-grid" id="hotel-grid-container">
       <!-- Rendered via js/part2-rooms.js -->
     </div>
@@ -170,7 +167,7 @@
   <div class="modal-overlay" id="wishlist-modal">
     <div class="modal-dialog large">
       <div class="modal-header">
-        <h3 class="modal-title">Khách Sạn Đã Lưu</h3>
+        <h3 class="modal-title">Hạng Phòng Đã Lưu</h3>
         <button type="button" class="btn-close-modal">&times;</button>
       </div>
       <div class="modal-body">
