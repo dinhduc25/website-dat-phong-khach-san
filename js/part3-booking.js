@@ -19,7 +19,7 @@
 
 // STT 21: BIẾN TRẠNG THÁI TÌM KIẾM & ĐẶT PHÒNG TOÀN CỤC
 let currentSearchState = {
-  destination: "Toàn bộ Hà Nội",
+  destination: "Tất cả hạng phòng",
   district: "",
   checkin: "",
   checkout: "",
@@ -32,7 +32,7 @@ let currentSearchState = {
 };
 
 let currentFilterCategory = "all";
-let pendingHotelForBooking = null; // Lưu tạm khách sạn cần đặt nếu cần đăng nhập trước
+let pendingHotelForBooking = null; // Lưu tạm hạng phòng cần đặt nếu cần đăng nhập trước
 
 // STT 23 & 24: XỬ LÝ NGÀY NHẬN PHÒNG, NGÀY TRẢ PHÒNG & TÍNH SỐ ĐÊM
 function initDateSelectors() {
@@ -205,7 +205,7 @@ function initGuestCounter() {
   updateGuestUI();
 }
 
-// STT 22: GỢI Ý ĐIỂM ĐẾN & VỊ TRÍ KHÁCH SẠN QUANH HÀ NỘI
+// STT 22: GỢI Ý HẠNG PHÒNG TẠI LOTTE HOTEL HANOI
 function initDestinationSelector() {
   const destInput = document.getElementById("destination-input");
   const destBox = document.getElementById("destination-box");
@@ -297,23 +297,23 @@ function applyFiltersAndSort() {
 
   // 1. Lọc theo tab danh mục được chọn
   if (currentFilterCategory !== "all") {
-    if (currentFilterCategory === "5star") {
-      filtered = filtered.filter(h => h.stars === 5);
-    } else if (currentFilterCategory === "under1500") {
+    if (currentFilterCategory === "under1500") {
       filtered = filtered.filter(h => h.price <= 1500000);
     } else {
-      filtered = filtered.filter(h => h.category && h.category.includes(currentFilterCategory));
+      filtered = filtered.filter(h =>
+        (h.category && h.category.includes(currentFilterCategory)) ||
+        (h.roomClass && h.roomClass.toLowerCase().replace(/\s+/g, "-") === currentFilterCategory)
+      );
     }
   }
 
-  // 2. Lọc theo vị trí / từ khóa tìm kiếm
+  // 2. Lọc theo hạng phòng được chọn
   const destInput = document.getElementById("destination-input");
   const destVal = destInput ? destInput.value.trim().toLowerCase() : "";
   if (destVal && !destVal.includes("toàn bộ") && !destVal.includes("tất cả")) {
-    filtered = filtered.filter(h => 
-      h.name.toLowerCase().includes(destVal) || 
-      (h.district && h.district.toLowerCase().includes(destVal)) || 
-      (h.address && h.address.toLowerCase().includes(destVal))
+    filtered = filtered.filter(h =>
+      (h.roomClass && h.roomClass.toLowerCase().includes(destVal)) ||
+      (h.name && h.name.toLowerCase().includes(destVal))
     );
   }
 
@@ -343,14 +343,14 @@ function applyFiltersAndSort() {
   const resultsText = document.getElementById("search-results-text");
   if (resultsBanner && resultsText) {
     const locText = destInput && destInput.value ? destInput.value : "khu vực Hà Nội";
-    resultsText.innerHTML = `Tìm thấy <strong>${filtered.length}</strong> khách sạn phù hợp tại <strong>${locText}</strong> cho <strong>${currentSearchState.adults} khách</strong> (${currentSearchState.nights} đêm)`;
+    resultsText.innerHTML = `Tìm thấy <strong>${filtered.length}</strong> hạng phòng phù hợp với lựa chọn <strong>${locText}</strong> cho <strong>${currentSearchState.adults} khách</strong> (${currentSearchState.nights} đêm)`;
     resultsBanner.style.display = "flex";
   }
 }
 
 function resetHotelFilters() {
   const destInput = document.getElementById("destination-input");
-  if (destInput) destInput.value = "Toàn bộ Hà Nội";
+  if (destInput) destInput.value = "Tất cả hạng phòng";
   
   const tabs = document.querySelectorAll(".filter-tab");
   tabs.forEach(t => t.classList.remove("active"));
@@ -383,7 +383,7 @@ function initSearchSubmit() {
 function triggerSearch() {
   applyFiltersAndSort();
   if (typeof showToast === 'function') {
-    showToast(`Đang tìm kiếm khách sạn tốt nhất quanh Hà Nội...`);
+    showToast(`Đang tìm hạng phòng phù hợp tại Lotte Hotel Hanoi...`);
   }
   
   const targetSection = document.getElementById("featured-hotels-section");
@@ -421,7 +421,7 @@ function openBookingModal(hotel) {
 
   const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : {};
 
-  // Điền dữ liệu khách sạn
+  // Điền dữ liệu hạng phòng
   const thumbEl = document.getElementById("bm-hotel-thumb");
   const nameEl = document.getElementById("bm-hotel-name");
   const addressEl = document.getElementById("bm-hotel-address");
@@ -549,7 +549,7 @@ function applyCouponCode() {
     return;
   }
 
-  // Lấy dữ liệu khách sạn & giá tạm tính để kiểm tra điều kiện
+  // Lấy dữ liệu hạng phòng & giá tạm tính để kiểm tra điều kiện
   const hotel = typeof HANOI_HOTELS_DATA !== 'undefined' ? HANOI_HOTELS_DATA.find(h => h.id === hotelId) : null;
   if (!hotel) return;
 
@@ -705,7 +705,7 @@ function openMyBookingsModal() {
       <div style="text-align: center; padding: 40px 20px;">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="1.8" style="margin: 0 auto 12px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
         <h4 style="font-size: 1.1rem; font-weight: 800; color: #1c2430; margin-bottom: 6px;">Vui lòng đăng nhập</h4>
-        <p style="font-size: 0.88rem; color: #718096; margin-bottom: 16px;">Đăng nhập để xem danh sách các phòng và khách sạn quý khách đã đặt.</p>
+        <p style="font-size: 0.88rem; color: #718096; margin-bottom: 16px;">Đăng nhập để xem danh sách các phòng quý khách đã đặt.</p>
         <button type="button" class="btn btn-primary" onclick="closeModal('my-bookings-modal'); openAuthModal('login');">Đăng Nhập Ngay</button>
       </div>
     `;

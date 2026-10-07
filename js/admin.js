@@ -276,12 +276,11 @@ const DEFAULT_HOTEL_ROOMS = [
     amenities: ["Tầng cao nhất 65", "Quản gia riêng 24/7", "Phòng ăn 8 người", "Bàn bi-a & Piano"]
   },
 
-  // PAN PACIFIC HANOI
   {
     id: "rm-pan-1201",
     roomNumber: "P.1201",
-    hotelId: "pan-pacific-hanoi",
-    hotelName: "Pan Pacific Hanoi",
+    hotelId: "lotte-hotel-hanoi",
+    hotelName: "Lotte Hotel Hanoi",
     roomType: "Deluxe Westlake View",
     floor: 12,
     price: 2190000,
@@ -299,8 +298,8 @@ const DEFAULT_HOTEL_ROOMS = [
   {
     id: "rm-pan-1202",
     roomNumber: "P.1202",
-    hotelId: "pan-pacific-hanoi",
-    hotelName: "Pan Pacific Hanoi",
+    hotelId: "lotte-hotel-hanoi",
+    hotelName: "Lotte Hotel Hanoi",
     roomType: "Pacific Club Suite",
     floor: 12,
     price: 3090000,
@@ -316,13 +315,12 @@ const DEFAULT_HOTEL_ROOMS = [
     amenities: ["The Summit Bar", "Club Lounge"]
   },
 
-  // INTERCONTINENTAL HANOI WESTLAKE
   {
     id: "rm-inter-0301",
     roomNumber: "P.301",
-    hotelId: "intercon-westlake",
-    hotelName: "InterContinental Westlake",
-    roomType: "Overwater Pavilion Suite",
+    hotelId: "lotte-hotel-hanoi",
+    hotelName: "Lotte Hotel Hanoi",
+    roomType: "Junior Suite Lake View",
     floor: 3,
     price: 3850000,
     status: "available",
@@ -339,9 +337,9 @@ const DEFAULT_HOTEL_ROOMS = [
   {
     id: "rm-inter-0302",
     roomNumber: "P.302",
-    hotelId: "intercon-westlake",
-    hotelName: "InterContinental Westlake",
-    roomType: "Classic Westlake View",
+    hotelId: "lotte-hotel-hanoi",
+    hotelName: "Lotte Hotel Hanoi",
+    roomType: "Premier Lake View",
     floor: 3,
     price: 3200000,
     status: "occupied",
@@ -356,13 +354,12 @@ const DEFAULT_HOTEL_ROOMS = [
     amenities: ["Ban công mặt hồ", "Bồn tắm sâu"]
   },
 
-  // APRICOT HOTEL HANOI
   {
     id: "rm-apricot-0501",
     roomNumber: "P.501",
-    hotelId: "apricot-hotel-hanoi",
-    hotelName: "Apricot Hotel Hanoi",
-    roomType: "Canvas Lake View Hồ Gươm",
+    hotelId: "lotte-hotel-hanoi",
+    hotelName: "Lotte Hotel Hanoi",
+    roomType: "Premier Panorama View",
     floor: 5,
     price: 3150000,
     status: "available",
@@ -377,13 +374,13 @@ const DEFAULT_HOTEL_ROOMS = [
     amenities: ["Trực diện Tháp Rùa Hồ Gươm", "Hồ bơi vô cực tầng thượng"]
   },
 
-  // MELIA HANOI
+  // LOTTE HOTEL HANOI — các phòng mẫu khác
   {
     id: "rm-melia-0801",
     roomNumber: "P.801",
-    hotelId: "melia-hanoi",
-    hotelName: "Melia Hanoi Hotel",
-    roomType: "The Level Grand City View",
+    hotelId: "lotte-hotel-hanoi",
+    hotelName: "Lotte Hotel Hanoi",
+    roomType: "Presidential Signature View",
     floor: 8,
     price: 3050000,
     status: "available",
@@ -406,7 +403,7 @@ const DEFAULT_ALL_BOOKINGS = [
     customerPhone: "0901234567",
     customerEmail: "demo@lottehotel.vn",
     hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi (5 Sao Đẳng Cấp)",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.5102",
     roomType: "Premier Lake View ngắm Hồ Tây",
     checkin: "2026-09-28",
@@ -427,7 +424,7 @@ const DEFAULT_ALL_BOOKINGS = [
     customerPhone: "0912445566",
     customerEmail: "minhtuan.do@gmail.com",
     hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi (5 Sao Đẳng Cấp)",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.3802",
     roomType: "Deluxe King City View",
     checkin: "2026-09-27",
@@ -448,7 +445,7 @@ const DEFAULT_ALL_BOOKINGS = [
     customerPhone: "0934889922",
     customerEmail: "haidang.pham@biz.vn",
     hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi (5 Sao Đẳng Cấp)",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.4502",
     roomType: "Premier Lake View",
     checkin: "2026-09-26",
@@ -469,7 +466,7 @@ const DEFAULT_ALL_BOOKINGS = [
     customerPhone: "0977889900",
     customerEmail: "trongvu@lottecenter.vn",
     hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi (5 Sao Đẳng Cấp)",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.6002",
     roomType: "Executive Grand Suite",
     checkin: "2026-09-27",
@@ -490,7 +487,7 @@ const DEFAULT_ALL_BOOKINGS = [
     customerPhone: "0988776655",
     customerEmail: "mailinh.hoang@gmail.com",
     hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi (5 Sao Đẳng Cấp)",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.3801",
     roomType: "Deluxe King City View",
     checkin: "2026-10-02",
@@ -510,8 +507,8 @@ const DEFAULT_ALL_BOOKINGS = [
     customerName: "Lê Quốc Bảo",
     customerPhone: "0966554433",
     customerEmail: "quocbao.le@fpt.vn",
-    hotelId: "pan-pacific-hanoi",
-    hotelName: "Pan Pacific Hanoi",
+    hotelId: "lotte-hotel-hanoi",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.1202",
     roomType: "Pacific Club Suite",
     checkin: "2026-09-28",
@@ -522,7 +519,7 @@ const DEFAULT_ALL_BOOKINGS = [
     totalPrice: "9.270.000₫",
     rawAmount: 9270000,
     status: "Đang lưu trú",
-    paymentMethod: "Thanh toán tại khách sạn",
+    paymentMethod: "Thanh toán tại hạng phòng",
     bookedAt: "2026-09-25T18:40:00Z",
     note: ""
   },
@@ -531,10 +528,10 @@ const DEFAULT_ALL_BOOKINGS = [
     customerName: "Đặng Thu Thảo",
     customerPhone: "0944112233",
     customerEmail: "thuthao.dang@vietcombank.vn",
-    hotelId: "intercon-westlake",
-    hotelName: "InterContinental Westlake",
+    hotelId: "lotte-hotel-hanoi",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.302",
-    roomType: "Classic Westlake View",
+    roomType: "Premier Lake View",
     checkin: "2026-09-27",
     checkout: "2026-09-29",
     nights: 2,
@@ -552,10 +549,10 @@ const DEFAULT_ALL_BOOKINGS = [
     customerName: "Trần Anh Quân",
     customerPhone: "0918223344",
     customerEmail: "anhquan.tran@gmail.com",
-    hotelId: "apricot-hotel-hanoi",
-    hotelName: "Apricot Hotel Hanoi",
+    hotelId: "lotte-hotel-hanoi",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.501",
-    roomType: "Canvas Lake View Hồ Gươm",
+    roomType: "Premier Panorama View",
     checkin: "2026-09-20",
     checkout: "2026-09-23",
     nights: 3,
@@ -574,7 +571,7 @@ const DEFAULT_ALL_BOOKINGS = [
     customerPhone: "0903445566",
     customerEmail: "tuannv@techcom.vn",
     hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi (5 Sao Đẳng Cấp)",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.3804",
     roomType: "Deluxe King City View",
     checkin: "2026-09-15",
@@ -595,7 +592,7 @@ const DEFAULT_ALL_BOOKINGS = [
     customerPhone: "0982334455",
     customerEmail: "bichhang@vina.vn",
     hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi (5 Sao Đẳng Cấp)",
+    hotelName: "Lotte Hotel Hanoi",
     roomNumber: "P.4501",
     roomType: "Premier Lake View",
     checkin: "2026-09-12",
@@ -1435,7 +1432,7 @@ function filterRooms() {
       r.roomNumber.toLowerCase().includes(search) || 
       r.roomType.toLowerCase().includes(search) ||
       (r.guestName && r.guestName.toLowerCase().includes(search));
-    const matchHotel = hotel === "all" || r.hotelId === hotel;
+    const matchHotel = hotel === "all" || (r.roomType && r.roomType.toLowerCase().replace(/\s+/g, "-").includes(hotel.replace("junior-suite", "junior").replace("presidential-suite", "presidential")));
     const matchStatus = status === "all" || r.status === status;
     return matchSearch && matchHotel && matchStatus;
   });
@@ -1584,7 +1581,7 @@ function renderRoomsTable(rooms) {
 function openAddRoomModal() {
   document.getElementById("room-modal-title").innerHTML = `
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-    Thêm Phòng Khách Sạn Mới
+    Thêm Phòng Hạng Phòng Mới
   `;
   document.getElementById("room-form-id").value = "";
   document.getElementById("form-room").reset();
@@ -1759,7 +1756,7 @@ function renderFloorMap() {
   }
 
   if (displayRooms.length === 0) {
-    container.innerHTML = `<div style="text-align: center; padding: 40px; color: #94a3b8; background: #fff; border-radius: 12px;">Không có phòng nào phù hợp với bộ lọc trong khách sạn này.</div>`;
+    container.innerHTML = `<div style="text-align: center; padding: 40px; color: #94a3b8; background: #fff; border-radius: 12px;">Không có phòng nào phù hợp với bộ lọc trong hạng phòng này.</div>`;
     return;
   }
 
@@ -1943,7 +1940,7 @@ function filterBookings() {
       b.bookingId.toLowerCase().includes(search) ||
       b.customerName.toLowerCase().includes(search) ||
       (b.customerPhone && b.customerPhone.includes(search));
-    const matchHotel = hotel === "all" || b.hotelId === hotel;
+    const matchHotel = hotel === "all" || (b.roomType && b.roomType.toLowerCase().replace(/\s+/g, "-").includes(hotel.replace("junior-suite", "junior").replace("presidential-suite", "presidential")));
     const matchStatus = status === "all" || b.status === status;
     return matchSearch && matchHotel && matchStatus;
   });
@@ -2101,11 +2098,11 @@ function updateWalkinRoomOptions(preselectedRoomId = null) {
   const hotelId = hotelSelect.value;
   const rooms = getAdminRooms();
 
-  // Tìm các phòng trống của khách sạn này
+  // Tìm các phòng trống của hạng phòng này
   let availRooms = rooms.filter(r => r.hotelId === hotelId && r.status === "available");
   
   if (availRooms.length === 0) {
-    roomSelect.innerHTML = `<option value="">-- Hết phòng trống cho khách sạn này --</option>`;
+    roomSelect.innerHTML = `<option value="">-- Hết phòng trống cho hạng phòng này --</option>`;
     calculateWalkinTotal();
     return;
   }
@@ -2249,7 +2246,7 @@ function exportBookingsToCSV() {
     return;
   }
 
-  let csv = "Mã Đặt Phòng,Khách Hàng,Số Điện Thoại,Email,Khách Sạn,Hạng Phòng,Số Phòng,Ngày Nhận,Ngày Trả,Số Đêm,Tổng Tiền,Thanh Toán,Trạng Thái,Ghi Chú\n";
+  let csv = "Mã Đặt Phòng,Khách Hàng,Số Điện Thoại,Email,Hạng Phòng,Hạng Phòng,Số Phòng,Ngày Nhận,Ngày Trả,Số Đêm,Tổng Tiền,Thanh Toán,Trạng Thái,Ghi Chú\n";
   bookings.forEach(b => {
     const row = [
       `"${b.bookingId}"`,
@@ -2327,7 +2324,7 @@ function renderRevenueSection() {
     }).join("");
   }
 
-  // 3. Cơ cấu theo khách sạn
+  // 3. Cơ cấu theo hạng phòng
   const hotelMap = {};
   collectedBookings.forEach(b => {
     const h = b.hotelName || "Khác";
@@ -2375,7 +2372,7 @@ function renderRevenueSection() {
 
 function exportRevenueReportCSV() {
   const bookings = getAdminBookings();
-  let csv = "Mã Giao Dịch,Ngày Đặt,Khách Hàng,Khách Sạn,Hạng Phòng,Số Đêm,Phương Thức Thanh Toán,Số Tiền,Trạng Thái Thu\n";
+  let csv = "Mã Giao Dịch,Ngày Đặt,Khách Hàng,Hạng Phòng,Hạng Phòng,Số Đêm,Phương Thức Thanh Toán,Số Tiền,Trạng Thái Thu\n";
   bookings.forEach(b => {
     csv += `"${b.bookingId}","${b.bookedAt || b.checkin}","${b.customerName}","${b.hotelName}","${b.roomType}",${b.nights},"${b.paymentMethod || ''}","${b.totalPrice}","${b.status}"\n`;
   });
@@ -3020,7 +3017,7 @@ function openInvoiceModal(bookingId) {
       </div>
 
       <div style="margin-top: 30px; text-align: center; border-top: 1px dashed var(--admin-border); padding-top: 18px; font-size: 0.78rem; color: #94a3b8;">
-        Cảm ơn Quý khách đã lựa chọn dịch vụ của Hệ Thống Khách Sạn Lotte Hotel Hanoi & Đối Tác Traveloka!
+        Cảm ơn Quý khách đã lựa chọn dịch vụ của Hệ Thống Hạng Phòng Lotte Hotel Hanoi & Đối Tác Traveloka!
       </div>
     </div>
   `;

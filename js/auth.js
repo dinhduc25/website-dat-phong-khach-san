@@ -50,7 +50,7 @@ const DEFAULT_HOTEL_USERS = [
         bookedAt: "2026-09-24T10:00:00Z"
       }
     ],
-    wishlist: ["lotte-hotel-hanoi", "intercon-westlake"]
+    wishlist: ["lotte-hotel-hanoi", "lotte-deluxe"]
   },
   {
     id: "usr_lotte_02",
@@ -61,7 +61,7 @@ const DEFAULT_HOTEL_USERS = [
     role: "Khách hàng Mới",
     createdAt: "2026-09-15T10:30:00Z",
     bookings: [],
-    wishlist: ["apricot-hotel-hanoi"]
+    wishlist: ["lotte-premier"]
   }
 ];
 
