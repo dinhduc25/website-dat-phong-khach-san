@@ -772,17 +772,24 @@ function saveAdminRooms(rooms) {
 }
 
 function getAdminBookings() {
-  const data = localStorage.getItem("traveloka_all_bookings");
-  if (!data) {
-    saveAdminBookings(DEFAULT_ALL_BOOKINGS);
-    return [...DEFAULT_ALL_BOOKINGS];
-  }
+  let bookings = [];
   try {
-    const parsed = JSON.parse(data);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : [...DEFAULT_ALL_BOOKINGS];
-  } catch (e) {
-    return [...DEFAULT_ALL_BOOKINGS];
-  }
+    const data = localStorage.getItem("traveloka_all_bookings");
+    const parsed = data ? JSON.parse(data) : null;
+    bookings = Array.isArray(parsed) && parsed.length ? parsed : [...DEFAULT_ALL_BOOKINGS];
+  } catch (e) { bookings = [...DEFAULT_ALL_BOOKINGS]; }
+  // Import customer-created requests so Admin can assign a room and confirm them.
+  try {
+    const incoming = JSON.parse(localStorage.getItem("traveloka_customer_pending_bookings") || "[]");
+    if (Array.isArray(incoming)) incoming.forEach(item => {
+      if (!item || !item.bookingId) return;
+      const idx = bookings.findIndex(b => b.bookingId === item.bookingId);
+      if (idx >= 0) bookings[idx] = { ...bookings[idx], ...item };
+      else bookings.push({ ...item });
+    });
+    localStorage.setItem("traveloka_all_bookings", JSON.stringify(bookings));
+  } catch (e) {}
+  return bookings;
 }
 
 function saveAdminBookings(bookings) {
@@ -1997,6 +2004,9 @@ function renderBookingsTable(bookings) {
           <button type="button" class="btn-table-action" title="Xem hóa đơn & In" onclick="openInvoiceModal('${b.bookingId}')">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
           </button>
+          ${["Chờ admin xác nhận phòng", "Tạm giữ phòng"].includes(b.status) ? `
+            <button type="button" class="btn-table-action" title="Chọn phòng và xác nhận đặt phòng" style="color:#0878c9;" onclick="assignRoomAndConfirmBooking('${b.bookingId}')">Chọn phòng</button>
+          ` : ""}
           ${b.status === "Đã xác nhận" ? `
             <button type="button" class="btn-table-action" title="Nhận phòng (Check-in)" style="color: #059669;" onclick="changeBookingStatus('${b.bookingId}', 'Đang lưu trú')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
@@ -2015,6 +2025,35 @@ function renderBookingsTable(bookings) {
       </td>
     </tr>
   `).join("");
+}
+
+function assignRoomAndConfirmBooking(bookingId) {
+  const bookings = getAdminBookings();
+  const idx = bookings.findIndex(b => b.bookingId === bookingId);
+  if (idx < 0) return;
+  const booking = bookings[idx];
+  const rooms = getAdminRooms();
+  const available = rooms.filter(r => r.hotelId === booking.hotelId && (r.status === "available" || r.status === "vacant" || r.status === "trống"));
+  const choices = available.map(r => r.roomNumber || r.number || r.id).filter(Boolean);
+  const suggested = choices[0] || "";
+  const roomNumber = prompt("Nhập/chọn số phòng còn trống cho đơn " + bookingId + (choices.length ? "\\nPhòng trống gợi ý: " + choices.slice(0, 15).join(", ") : ""), suggested);
+  if (!roomNumber) return;
+  const room = rooms.find(r => String(r.roomNumber || r.number || r.id).toLowerCase() === roomNumber.trim().toLowerCase() && r.hotelId === booking.hotelId);
+  if (!room) { alert("Không tìm thấy phòng này trong danh sách phòng của khách sạn."); return; }
+  if (!(room.status === "available" || room.status === "vacant" || room.status === "trống")) {
+    alert("Phòng này không ở trạng thái trống. Vui lòng chọn phòng khác."); return;
+  }
+  room.status = "occupied";
+  room.guestName = booking.customerName || "";
+  room.guestPhone = booking.customerPhone || "";
+  room.bookingId = booking.bookingId;
+  booking.roomNumber = room.roomNumber || room.number || room.id;
+  booking.status = "Đã xác nhận";
+  bookings[idx] = booking;
+  saveAdminRooms(rooms);
+  saveAdminBookings(bookings);
+  showAdminToast("Đã gán phòng " + booking.roomNumber + " và xác nhận đơn " + bookingId + ".");
+  if (typeof filterBookings === "function") filterBookings();
 }
 
 function changeBookingStatus(bookingId, newStatus) {

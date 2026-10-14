@@ -665,63 +665,60 @@ function applyCouponCode() {
 function submitBookingForm(e) {
   if (e) e.preventDefault();
   const modal = document.getElementById("booking-modal");
-  const hotelId = modal.getAttribute("data-hotel-id");
-  const hotel = typeof HANOI_HOTELS_DATA !== 'undefined' ? HANOI_HOTELS_DATA.find(h => h.id === hotelId) : null;
-  const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-
+  const hotelId = modal?.getAttribute("data-hotel-id");
+  const hotel = typeof HANOI_HOTELS_DATA !== "undefined" ? HANOI_HOTELS_DATA.find(h => h.id === hotelId) : null;
+  const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
   if (!hotel || !currentUser) {
-    if (typeof showToast === 'function') showToast("Vui lòng đăng nhập lại để hoàn tất đặt phòng!");
+    if (typeof showToast === "function") showToast("Vui lòng đăng nhập để tiếp tục đặt phòng.");
     return;
   }
-
   const roomName = modal.getAttribute("data-room-name") || "Deluxe City View";
-  const finalTotal = parseInt(modal.getAttribute("data-final-total") || hotel.price);
-  const paymentMethodInput = document.querySelector("input[name='paymentMethod']:checked");
-  const paymentMethod = paymentMethodInput ? paymentMethodInput.value : "Thanh toán tại khách sạn";
+  const finalTotal = parseInt(modal.getAttribute("data-final-total") || hotel.price, 10);
   const noteInput = document.getElementById("bm-special-requests");
-
-  const newBooking = {
+  const action = window.bookingSubmitAction || "confirm";
+  const booking = {
     bookingId: "LT-HN-" + Math.floor(10000 + Math.random() * 90000),
-    hotelId: hotel.id,
-    hotelName: hotel.name,
-    hotelImage: hotel.image,
-    roomType: roomName,
-    checkin: currentSearchState.checkin,
-    checkout: currentSearchState.checkout,
-    nights: currentSearchState.nights,
-    guests: `${currentSearchState.adults} người lớn, ${currentSearchState.children} trẻ em`,
-    rooms: currentSearchState.rooms,
-    totalPrice: typeof formatVND === 'function' ? formatVND(finalTotal) : finalTotal + '₫',
-    status: "Đã xác nhận",
-    paymentMethod: paymentMethod,
-    identityNumber: (document.getElementById("bm-guest-id") || {}).value || "",
+    hotelId: hotel.id, hotelName: hotel.name, hotelImage: hotel.image, roomType: roomName,
+    checkin: document.getElementById("bm-checkin-date")?.value || currentSearchState.checkin,
+    checkout: document.getElementById("bm-checkout-date")?.value || currentSearchState.checkout,
+    nights: currentSearchState.nights || 1,
+    guests: `${currentSearchState.adults || 2} người lớn, ${currentSearchState.children || 0} trẻ em`,
+    rooms: parseInt(document.getElementById("bm-rooms-count")?.value || currentSearchState.rooms || 1, 10),
+    totalPrice: typeof formatVND === "function" ? formatVND(finalTotal) : finalTotal + "₫",
+    rawAmount: finalTotal,
+    status: action === "hold" ? "Tạm giữ phòng" : "Chờ admin xác nhận phòng",
+    paymentMethod: "Chưa thanh toán",
+    customerName: document.getElementById("bm-guest-name")?.value || currentUser.name || "",
+    customerEmail: document.getElementById("bm-guest-email")?.value || currentUser.email || "",
+    customerPhone: document.getElementById("bm-guest-phone")?.value || "",
+    identityNumber: document.getElementById("bm-guest-id")?.value || "",
     note: noteInput ? noteInput.value.trim() : "",
-    bookedAt: new Date().toISOString()
+    bookedAt: new Date().toISOString(),
+    paymentStatus: "Chưa thanh toán",
+    roomNumber: ""
   };
-
-  const success = typeof addBookingToCurrentUser === 'function' ? addBookingToCurrentUser(newBooking) : false;
-
-  if (success) {
-    // Tăng lượt sử dụng voucher nếu có áp dụng
-    const usedCode = modal.getAttribute("data-applied-promo-code");
-    if (usedCode) {
-      try {
-        const promos = getClientPromosList();
-        const pIdx = promos.findIndex(p => p.code && p.code.toUpperCase() === usedCode.toUpperCase());
-        if (pIdx !== -1) {
-          promos[pIdx].usageCount = (promos[pIdx].usageCount || 0) + 1;
-          localStorage.setItem("traveloka_hotel_promos", JSON.stringify(promos));
-        }
-      } catch (err) {}
-    }
-
-    closeModal("booking-modal");
-    showBookingSuccessModal(newBooking);
-    if (typeof updateBadges === 'function') updateBadges();
-    console.log("=== ĐÃ LƯU ĐẶT PHÒNG THÀNH CÔNG VÀO MẢNG ===", newBooking);
-  } else {
-    if (typeof showToast === 'function') showToast("Có lỗi xảy ra khi lưu thông tin đặt phòng!");
+  // Persist to the customer's booking list.
+  const success = typeof addBookingToCurrentUser === "function" ? addBookingToCurrentUser(booking) : false;
+  if (!success) {
+    if (typeof showToast === "function") showToast("Không lưu được đơn đặt phòng. Vui lòng thử lại.");
+    return;
   }
+  // Shared browser storage lets the Admin page import this request on refresh.
+  try {
+    const pending = JSON.parse(localStorage.getItem("traveloka_customer_pending_bookings") || "[]");
+    pending.push(booking);
+    localStorage.setItem("traveloka_customer_pending_bookings", JSON.stringify(pending));
+    localStorage.setItem("lotte_selected_payment_booking", JSON.stringify(booking));
+  } catch (_) {}
+  closeModal("booking-modal");
+  if (typeof updateBadges === "function") updateBadges();
+  if (action === "hold") {
+    showBookingSuccessModal(booking);
+    if (typeof showToast === "function") showToast("Đã tạm giữ yêu cầu đặt phòng. Admin sẽ chọn phòng và xác nhận.");
+  } else {
+    window.location.href = "payment.html?bookingId=" + encodeURIComponent(booking.bookingId);
+  }
+  window.bookingSubmitAction = "confirm";
 }
 
 function showBookingSuccessModal(booking) {
@@ -740,7 +737,7 @@ function showBookingSuccessModal(booking) {
   if (roomEl) roomEl.textContent = booking.roomType;
   if (datesEl) datesEl.textContent = `${typeof formatDateDisplay === 'function' ? formatDateDisplay(booking.checkin) : booking.checkin} - ${typeof formatDateDisplay === 'function' ? formatDateDisplay(booking.checkout) : booking.checkout} (${booking.nights} đêm)`;
   if (totalEl) totalEl.textContent = booking.totalPrice;
-  if (paymentEl) paymentEl.textContent = booking.paymentMethod;
+  if (paymentEl) paymentEl.textContent = booking.status || "Chờ admin xác nhận phòng";
 
   modal.classList.add("active");
 }
