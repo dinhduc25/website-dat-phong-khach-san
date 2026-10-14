@@ -81,6 +81,25 @@ const HANOI_HOTELS_DATA = [
   }
 ];
 
+// Mỗi hạng phòng có 5 lựa chọn mức sao (1*–5*), giá tăng dần theo mức sao.
+// Đây là dữ liệu mô phỏng phục vụ demo; không phải phân hạng chính thức của Lotte Hotel Hanoi.
+HANOI_HOTELS_DATA.forEach((hotel, hotelIndex) => {
+  const original = hotel.roomTypes[0];
+  const starBase = [0.55, 0.72, 0.86, 1.0, 1.18];
+  hotel.roomTypes = [1, 2, 3, 4, 5].map((stars, idx) => ({
+    name: `${hotel.roomClass} • ${stars} sao`, stars,
+    extraPrice: Math.round(hotel.price * (starBase[idx] - 1) / 50000) * 50000,
+    desc: `${hotel.area} • ${stars} sao • Còn ${5 + idx + hotelIndex} phòng • ${original.desc.split('•').slice(-1)[0].trim()}`,
+    availableRooms: 5 + idx + hotelIndex
+  }));
+  hotel.functions = ['Nghỉ dưỡng và lưu trú', 'Bàn làm việc / công tác', 'Dịch vụ phòng 24/7', 'Phù hợp đặt phòng gia đình'];
+  hotel.recentReviews = [
+    {name:'Nguyễn Minh Anh', rating:5, text:'Phòng sạch sẽ, nhân viên thân thiện, vị trí thuận tiện.'},
+    {name:'Trần Hoàng Nam', rating:4, text:'Tiện nghi đầy đủ, thủ tục nhận phòng nhanh.'},
+    {name:'Lê Thu Hà', rating:5, text:'Không gian thoải mái, view đẹp và dịch vụ tốt.'}
+  ];
+});
+
 // Hàm tìm kiếm khách sạn theo ID
 function getHotelById(hotelId) {
   return HANOI_HOTELS_DATA.find(h => h.id === hotelId) || null;
@@ -106,6 +125,9 @@ function renderHotelsGrid(hotels) {
     const isSaved = wishlist.includes(hotel.id);
     const starIcons = Array(hotel.stars).fill(`<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`).join('');
     const viewOptions = hotel.roomTypes.map(rt => rt.name.replace(hotel.roomClass, '').replace('View','').trim()).filter(Boolean).slice(0,3).join(' • ');
+    const selectedStar = document.getElementById('search-room-stars')?.value || 'all';
+    const displayedRoom = selectedStar === 'all' ? null : hotel.roomTypes.find(rt => String(rt.stars) === selectedStar);
+    const displayedPrice = displayedRoom ? hotel.price + displayedRoom.extraPrice : hotel.price;
     return `
       <article class="hotel-item-card" data-id="${hotel.id}" data-category="${hotel.category}">
         <div class="hotel-thumb-box" onclick="openHotelDetailModal('${hotel.id}')" title="Xem các lựa chọn phòng và view">
@@ -118,16 +140,17 @@ function renderHotelsGrid(hotels) {
         <div class="hotel-body">
           <div class="hotel-stars">${starIcons}</div>
           <h3 class="hotel-name" title="${hotel.roomClass}" onclick="openHotelDetailModal('${hotel.id}')">${hotel.roomClass}</h3>
-          <div class="room-class-badge">Lotte Hotel Hanoi • Hạng ${hotel.roomClass}</div>
+          <div class="room-class-badge">Lotte Hotel Hanoi • Hạng ${hotel.roomClass}${displayedRoom ? ` • ${displayedRoom.stars} sao` : ' • Chọn mức sao khi đặt'}</div>
           <div class="hotel-highlights" style="margin-top:12px;">
             <div class="highlight-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path></svg>${hotel.area} • Tiêu chuẩn 5 sao</div>
             <div class="highlight-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 11c2.8.4 5 2.8 5 5.7V20"></path></svg>Tối đa ${hotel.maxGuests} khách</div>
             <div class="highlight-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20l6-6 4 4 8-9"></path></svg>${viewOptions}</div>
           </div>
+          <div class="room-star-options" aria-label="Các mức phòng từ 1 đến 5 sao">${hotel.roomTypes.map(rt => `<div class="room-star-option"><span>${'★'.repeat(rt.stars)}<span class="room-star-label"> ${rt.stars} sao</span></span><strong>${typeof formatVND === 'function' ? formatVND(hotel.price + rt.extraPrice) : (hotel.price + rt.extraPrice) + '₫'}</strong><small>Còn ${rt.availableRooms || 5} phòng</small></div>`).join('')}</div>
           <div class="hotel-pricing-box">
             <div class="pricing-left">
               <span class="old-price">${typeof formatVND === 'function' ? formatVND(hotel.oldPrice) : hotel.oldPrice + '₫'}</span>
-              <div class="main-price">${typeof formatVND === 'function' ? formatVND(hotel.price) : hotel.price + '₫'} <span>/đêm</span></div>
+              <div class="main-price">${typeof formatVND === 'function' ? formatVND(displayedPrice) : displayedPrice + '₫'} <span>/đêm</span></div>
               <span class="tax-included-note">Đã bao gồm thuế & phí</span>
             </div>
             <div class="card-actions-row">
@@ -194,6 +217,11 @@ function openHotelDetailModal(hotelId) {
             </div>
           `).join('')}
         </div>
+
+        <h4 style="font-size:1rem;font-weight:800;color:#1c2430;margin-top:20px;">Chức năng / dịch vụ</h4>
+        <div class="detail-amenities-grid">${(hotel.functions || []).map(x => `<div class="detail-amenity-item"><span>✓</span><span>${x}</span></div>`).join('')}</div>
+        <h4 style="font-size:1rem;font-weight:800;color:#1c2430;margin-top:20px;">Đánh giá người dùng</h4>
+        <div class="user-reviews-list">${(hotel.recentReviews || []).map(r => `<div class="user-review-card"><div><strong>${r.name}</strong> <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div><p>${r.text}</p></div>`).join('')}</div>
 
         <!-- Danh sách các hạng phòng lựa chọn -->
         <h4 style="font-size: 1rem; font-weight: 800; color: #1c2430; margin-top: 20px;">Các lựa chọn view trong hạng phòng ${hotel.roomClass}</h4>
@@ -279,7 +307,7 @@ function openWishlistModal() {
             <span class="booking-status-tag" style="background: #eff6ff; color: #0194f3;">⭐ ${hotel.score} / 10</span>
           </div>
           <div class="my-booking-dates">📍 ${hotel.address}</div>
-          <div class="my-booking-price">${typeof formatVND === 'function' ? formatVND(hotel.price) : hotel.price + '₫'} <span>/đêm</span></div>
+          <div class="my-booking-price">${typeof formatVND === 'function' ? formatVND(displayedPrice) : displayedPrice + '₫'} <span>/đêm</span></div>
           <div style="display: flex; gap: 8px; margin-top: 10px;">
             <button type="button" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.82rem;" onclick="closeModal('wishlist-modal'); handleBookHotelClick('${hotel.id}');">
               Đặt Ngay
