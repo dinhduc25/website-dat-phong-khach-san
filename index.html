@@ -262,7 +262,7 @@
             <div class="field-value-line">
               <input type="text" id="destination-input" class="field-input" placeholder="Chọn Deluxe, Premier hoặc Suite..." value="Tất cả hạng phòng" autocomplete="off">
             </div>
-            <div class="field-subtext">4 hạng phòng cao cấp có sẵn</div>
+            <div class="field-subtext">7 hạng phòng cao cấp có sẵn</div>
 
             <!-- Suggestions Dropdown -->
             <div class="dest-suggestions-popup" id="dest-suggestions-popup">
@@ -303,6 +303,9 @@
                   <p>140m² • Quản gia riêng • Signature Suite</p>
                 </div>
               </div>
+              <div class="suggestion-item" data-place="Executive Deluxe" data-district="Lotte Hotel Hanoi"><div class="sugg-icon">★</div><div class="sugg-text"><h5>Executive Deluxe</h5><p>45m² • Giường King • Tầng cao</p></div></div>
+              <div class="suggestion-item" data-place="Family Room" data-district="Lotte Hotel Hanoi"><div class="sugg-icon">★</div><div class="sugg-text"><h5>Family Room</h5><p>58m² • Phù hợp gia đình • 2 giường</p></div></div>
+              <div class="suggestion-item" data-place="Club Suite" data-district="Lotte Hotel Hanoi"><div class="sugg-icon">★</div><div class="sugg-text"><h5>Club Suite</h5><p>72m² • Club Lounge • View thành phố</p></div></div>
               <div class="suggestion-item" data-place="Tất cả hạng phòng" data-district="">
                 <div class="sugg-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -807,7 +810,7 @@
           <p style="font-size: 0.82rem; color: #94a3b8;">Giao dịch được mã hóa và bảo mật chuẩn quốc tế PCI-DSS</p>
           <div class="payment-badges-grid">
             <span class="pay-badge">VietQR</span>
-            <span class="pay-badge">VISA</span>
+            
             <span class="pay-badge">MasterCard</span>
             <span class="pay-badge">MoMo</span>
             <span class="pay-badge">ZaloPay</span>
@@ -948,6 +951,12 @@
             </div>
           </div>
 
+          <div class="booking-edit-grid">
+            <div class="form-group"><label class="form-label" for="bm-checkin-date">Ngày nhận phòng</label><input type="date" id="bm-checkin-date" class="form-input" required></div>
+            <div class="form-group"><label class="form-label" for="bm-checkout-date">Ngày trả phòng</label><input type="date" id="bm-checkout-date" class="form-input" required></div>
+            <div class="form-group"><label class="form-label" for="bm-rooms-count">Số phòng</label><input type="number" id="bm-rooms-count" class="form-input" min="1" max="10" value="1" required></div>
+          </div>
+
           <!-- Thông tin khách đặt -->
           <div class="form-group">
             <label class="form-label">Họ và tên khách đại diện</label>
@@ -963,6 +972,8 @@
               <input type="tel" id="bm-guest-phone" class="form-input" required>
             </div>
           </div>
+
+          <div class="form-group"><label class="form-label" for="bm-guest-id">Số CCCD / CMND</label><input type="text" id="bm-guest-id" class="form-input" inputmode="numeric" minlength="9" maxlength="12" placeholder="Nhập số CCCD/CMND" required></div>
 
           <!-- Mã giảm giá -->
           <div class="form-group">
@@ -999,17 +1010,19 @@
             <div style="display: flex; flex-direction: column; gap: 8px;">
               <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
                 <input type="radio" name="paymentMethod" value="Thanh toán tại khách sạn" checked>
-                <span><strong>Thanh toán tại khách sạn (Pay at Hotel)</strong> - Nhận phòng rồi thanh toán</span>
+                <span><strong>Thanh toán tiền mặt</strong> - Thanh toán trực tiếp tại khách sạn</span>
               </label>
               <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
-                <input type="radio" name="paymentMethod" value="Chuyển khoản VietQR / MoMo">
-                <span><strong>Quét mã VietQR / Ví MoMo</strong> - Miễn phí giao dịch</span>
+                <input type="radio" name="paymentMethod" value="QR Pay">
+                <span><strong>QR Pay</strong> - Quét mã QR để thanh toán</span>
               </label>
-              <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
-                <input type="radio" name="paymentMethod" value="Thẻ tín dụng / Ghi nợ quốc tế">
-                <span><strong>Thẻ Visa / MasterCard / JCB</strong></span>
-              </label>
+
             </div>
+          </div>
+
+          <div id="booking-qr-payment" class="booking-qr-payment" hidden>
+            <div class="qr-pay-details"><strong>Mã QR thanh toán</strong><p>Quét mã bằng ứng dụng ngân hàng.</p><div class="qr-reference" id="booking-qr-reference"></div><div class="qr-account-details"><div><span>Tên người nhận</span><strong>Đinh Tiến Đức</strong></div><div><span>Số tài khoản</span><strong>1234567899999</strong></div></div></div>
+            <img id="booking-qr-image" alt="Mã QR thanh toán" width="180" height="180">
           </div>
 
           <!-- Yêu cầu đặc biệt -->
@@ -1126,5 +1139,6 @@
 
   <!-- MASTER SCRIPT: Điều phối và khởi chạy toàn bộ 4 thành viên -->
   <script src="js/main.js"></script>
+  <script src="js/room-picker-addon.js"></script>
 </body>
 </html>

@@ -392,6 +392,12 @@ function triggerSearch() {
       targetSection.scrollIntoView({ behavior: "smooth" });
     }, 250);
   }
+  const starSelect = document.getElementById("search-room-stars");
+  const selectedStars = starSelect ? starSelect.value : "all";
+  if (selectedStars !== "all" && typeof HANOI_HOTELS_DATA !== "undefined") {
+    const filtered = HANOI_HOTELS_DATA.filter(h => h.roomTypes.some(r => String(r.stars) === selectedStars));
+    if (typeof renderHotelsGrid === "function") renderHotelsGrid(filtered);
+  }
 }
 
 // STT 29: XÂY DỰNG FORM THÔNG TIN KHÁCH HÀNG & MỞ MODAL ĐẶT PHÒNG
@@ -433,12 +439,12 @@ function openBookingModal(hotel) {
   const roomTypesContainer = document.getElementById("bm-room-types");
   if (roomTypesContainer) {
     roomTypesContainer.innerHTML = hotel.roomTypes.map((r, idx) => `
-      <label class="room-option-card ${idx === 0 ? 'selected' : ''}">
+      <label class="room-option-card ${idx === 4 ? 'selected' : ''}" data-room-stars="${r.stars || 5}">
         <div>
-          <input type="radio" name="selectedRoomType" value="${idx}" ${idx === 0 ? 'checked' : ''} onchange="updateBookingCalculation('${hotel.id}')" style="margin-right: 8px;">
+          <input type="radio" name="selectedRoomType" value="${idx}" ${idx === 4 ? 'checked' : ''} onchange="updateBookingCalculation('${hotel.id}')" style="margin-right: 8px;">
           <span class="room-option-title">${r.name}</span>
         </div>
-        <span class="room-option-price">${r.extraPrice === 0 ? 'Giá tiêu chuẩn' : '+' + (typeof formatVND === 'function' ? formatVND(r.extraPrice) : r.extraPrice + '₫')}</span>
+        <span class="room-option-price">${typeof formatVND === 'function' ? formatVND(hotel.price + r.extraPrice) : (hotel.price + r.extraPrice) + '₫'} / đêm</span>
       </label>
     `).join('');
   }
@@ -463,6 +469,24 @@ function openBookingModal(hotel) {
   if (checkoutDisp) checkoutDisp.textContent = typeof formatDateDisplay === 'function' ? formatDateDisplay(checkoutInput ? checkoutInput.value : currentSearchState.checkout) : currentSearchState.checkout;
   if (nightsDisp) nightsDisp.textContent = `${currentSearchState.nights} đêm`;
   if (guestsDisp) guestsDisp.textContent = `${currentSearchState.adults} người lớn, ${currentSearchState.rooms} phòng`;
+
+  const bmIn = document.getElementById("bm-checkin-date"), bmOut = document.getElementById("bm-checkout-date"), bmRooms = document.getElementById("bm-rooms-count");
+  if (bmIn) bmIn.value = (checkinInput && checkinInput.value) || currentSearchState.checkin;
+  if (bmOut) bmOut.value = (checkoutInput && checkoutInput.value) || currentSearchState.checkout;
+  if (bmRooms) bmRooms.value = currentSearchState.rooms || 1;
+  const syncBookingInputs = () => {
+    if (bmIn && bmOut && bmIn.value && bmOut.value) {
+      const d1 = new Date(bmIn.value + 'T00:00:00'), d2 = new Date(bmOut.value + 'T00:00:00');
+      const nights = Math.max(1, Math.round((d2-d1)/86400000));
+      if (d2 <= d1) { d2.setDate(d1.getDate()+1); bmOut.value = `${d2.getFullYear()}-${String(d2.getMonth()+1).padStart(2,'0')}-${String(d2.getDate()).padStart(2,'0')}`; }
+      currentSearchState.checkin = bmIn.value; currentSearchState.checkout = bmOut.value; currentSearchState.nights = nights;
+    }
+    currentSearchState.rooms = Math.max(1, Math.min(10, parseInt(bmRooms && bmRooms.value || '1',10)));
+    const n1=document.getElementById('bm-checkin-display'), n2=document.getElementById('bm-checkout-display'), nn=document.getElementById('bm-nights-display'), gg=document.getElementById('bm-guests-display');
+    if(n1) n1.textContent=formatDateDisplay(currentSearchState.checkin); if(n2) n2.textContent=formatDateDisplay(currentSearchState.checkout); if(nn) nn.textContent=`${currentSearchState.nights} đêm`; if(gg) gg.textContent=`${currentSearchState.adults} người lớn, ${currentSearchState.rooms} phòng`;
+    updateBookingCalculation(hotel.id);
+  };
+  [bmIn,bmOut,bmRooms].forEach(el => { if(el) el.onchange=syncBookingInputs; });
 
   // Reset coupon input
   const couponInput = document.getElementById("bm-coupon-input");
@@ -507,10 +531,37 @@ function updateBookingCalculation(hotelId) {
   if (calcDiscountEl) calcDiscountEl.textContent = appliedDiscount > 0 ? `-${typeof formatVND === 'function' ? formatVND(appliedDiscount) : appliedDiscount + '₫'}` : "0₫";
   if (calcTotalEl) calcTotalEl.textContent = typeof formatVND === 'function' ? formatVND(finalTotal) : finalTotal + '₫';
 
+  const qrPanel = document.getElementById('booking-qr-payment');
+  const paymentChoice = document.querySelector("input[name='paymentMethod']:checked");
+  if (qrPanel) qrPanel.hidden = !(paymentChoice && paymentChoice.value === 'QR Pay');
+  if (qrPanel && !qrPanel.hidden) {
+    const amount = document.getElementById('booking-modal')?.getAttribute('data-final-total') || finalTotal;
+    const refEl = document.getElementById('booking-qr-reference');
+    const existingRef = refEl && refEl.textContent.match(/LOTTE[A-Z0-9]+/);
+    const ref = existingRef ? existingRef[0] : 'LOTTE' + Math.random().toString(36).slice(2, 9).toUpperCase();
+    if (refEl) refEl.textContent = `Nội dung: ${ref} • Số tiền: ${Number(amount).toLocaleString('vi-VN')}₫`;
+    const qr = document.getElementById('booking-qr-image');
+    if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(`QR Pay|Nguoi nhan: Dinh Tien Duc|STK: 1234567899999|LOTTE HOTEL HANOI|${ref}|${amount}`);
+  }
   modal.setAttribute("data-hotel-id", hotel.id);
   modal.setAttribute("data-final-total", finalTotal);
   modal.setAttribute("data-room-name", room ? room.name : "Deluxe Room");
 }
+
+document.addEventListener('change', (event) => {
+  if (event.target && event.target.name === 'paymentMethod') {
+    const panel = document.getElementById('booking-qr-payment');
+    const show = event.target.value === 'QR Pay';
+    if (panel) panel.hidden = !show;
+    if (show) {
+      const ref = 'LOTTE' + Math.random().toString(36).slice(2, 9).toUpperCase();
+      const amount = document.getElementById('booking-modal')?.getAttribute('data-final-total') || '1000000';
+      const refEl = document.getElementById('booking-qr-reference'); if (refEl) refEl.textContent = `Nội dung: ${ref} • Số tiền: ${Number(amount).toLocaleString('vi-VN')}₫`;
+      const qr = document.getElementById('booking-qr-image');
+      if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(`QR Pay|Nguoi nhan: Dinh Tien Duc|STK: 1234567899999|LOTTE HOTEL HANOI|${ref}|${amount}`);
+    }
+  }
+});
 
 function getClientPromosList() {
   const DEFAULT_PROMOS_FALLBACK = [
@@ -643,6 +694,7 @@ function submitBookingForm(e) {
     totalPrice: typeof formatVND === 'function' ? formatVND(finalTotal) : finalTotal + '₫',
     status: "Đã xác nhận",
     paymentMethod: paymentMethod,
+    identityNumber: (document.getElementById("bm-guest-id") || {}).value || "",
     note: noteInput ? noteInput.value.trim() : "",
     bookedAt: new Date().toISOString()
   };
@@ -738,13 +790,20 @@ function openMyBookingsModal() {
           <div class="my-booking-dates">📅 ${typeof formatDateDisplay === 'function' ? formatDateDisplay(b.checkin) : b.checkin} - ${typeof formatDateDisplay === 'function' ? formatDateDisplay(b.checkout) : b.checkout} (${b.nights} đêm)</div>
           <div style="font-size: 0.78rem; color: #718096;">👥 ${b.guests} &bull; 💳 ${b.paymentMethod}</div>
           <div class="my-booking-price">${b.totalPrice}</div>
-          <button type="button" class="btn-cancel-booking" onclick="handleCancelBooking('${b.bookingId}')">Hủy đặt phòng này</button>
+          <button type="button" class="btn btn-outline" onclick="showBookingDetails('${b.bookingId}')">Xem chi tiết</button> <button type="button" class="btn-cancel-booking" onclick="handleCancelBooking('${b.bookingId}')">Hủy đặt phòng này</button>
         </div>
       </div>
     `).join('');
   }
 
   modal.classList.add("active");
+}
+
+function showBookingDetails(bookingId) {
+  const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  const booking = (user && user.bookings || []).find(b => b.bookingId === bookingId);
+  if (!booking) { alert('Không tìm thấy thông tin đặt phòng.'); return; }
+  alert(`CHI TIẾT ĐẶT PHÒNG\nMã đặt: ${booking.bookingId}\nKhách hàng: ${booking.guestName || user.fullName || user.name || '—'}\nHạng phòng: ${booking.roomType || '—'}\nSố sao: ${booking.stars || '—'}\nSố phòng: ${booking.roomNumber || booking.rooms || '—'}\nNgày nhận: ${booking.checkin || '—'}\nNgày trả: ${booking.checkout || '—'}\nPhương thức thanh toán: ${booking.paymentMethod || '—'}\nTrạng thái: ${booking.status || '—'}`);
 }
 
 function handleCancelBooking(bookingId) {

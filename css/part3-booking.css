@@ -781,3 +781,23 @@
     height: 140px;
   }
 }
+
+.search-star-field { min-width:130px; }
+.search-star-field select { width:100%; background:transparent; border:0; outline:0; }
+.booking-edit-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; padding:12px; margin-bottom:12px; background:#f8fafc; border-radius:10px; }
+.booking-qr-payment { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; padding:14px; margin:10px 0 16px; border:1px solid #bfdbfe; border-radius:12px; background:#eff6ff; }
+.booking-qr-payment[hidden] { display:none; }
+.booking-qr-payment p { margin:5px 0; font-size:.86rem; color:#475569; }
+.booking-qr-payment small { grid-column:1/-1; color:#92400e; }
+.qr-reference { font-size:.8rem; font-weight:700; overflow-wrap:anywhere; }
+@media(max-width:760px) { .booking-edit-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .search-form-grid { grid-template-columns:1fr; } }
+
+/* QR Pay: mã QR bên trái, thông tin người nhận bên phải */
+.booking-qr-payment { display: grid; grid-template-columns: minmax(0,1fr) 220px; gap: 18px; align-items: center; }
+.booking-qr-payment > img { grid-column: 2; grid-row: 1; width: 220px; height: 220px; object-fit: contain; background: #fff; border: 1px solid #dbeafe; border-radius: 10px; padding: 8px; }
+.qr-pay-details { grid-column: 1; grid-row: 1; min-width: 0; }
+.qr-account-details { margin-top: 14px; display: grid; gap: 10px; }
+.qr-account-details > div { padding: 10px 12px; background: #fff; border: 1px solid #dbeafe; border-radius: 8px; display: grid; gap: 4px; }
+.qr-account-details span { font-size: .78rem; color: #64748b; }
+.qr-account-details strong { color: #0f172a; overflow-wrap: anywhere; }
+@media (max-width: 560px) { .booking-qr-payment { grid-template-columns: 1fr; } .booking-qr-payment > img, .qr-pay-details { grid-column: 1; grid-row: auto; } .booking-qr-payment > img { justify-self: center; } }
