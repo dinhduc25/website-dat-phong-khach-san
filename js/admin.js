@@ -1189,15 +1189,23 @@ function initDashboardData(isManual = false) {
   }
 }
 
-// Vẽ biểu đồ doanh thu bằng Canvas thuần
-function renderRevenueChart(period = "7days") {
-  const canvas = document.getElementById("overview-revenue-chart");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
+// Biến lưu trữ khoảng thời gian biểu đồ doanh thu đang chọn
+let currentRevenuePeriod = "7days";
 
-  // Đổi trạng thái nút bấm
-  const btn7 = document.getElementById("btn-chart-7days");
-  const btnMo = document.getElementById("btn-chart-months");
+// Vẽ biểu đồ doanh thu bằng Canvas thuần (hỗ trợ cả Tổng quan và Báo cáo doanh thu)
+function renderRevenueChart(period = currentRevenuePeriod) {
+  if (period) currentRevenuePeriod = period;
+  drawRevenueBarChart("overview-revenue-chart", "btn-chart-7days", "btn-chart-months", currentRevenuePeriod);
+  drawRevenueBarChart("revenue-section-chart", "btn-chart-7days-rev", "btn-chart-months-rev", currentRevenuePeriod);
+}
+
+function drawRevenueBarChart(canvasId, btn7Id, btnMoId, period) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  // Đổi trạng thái nút bấm nếu có
+  const btn7 = document.getElementById(btn7Id);
+  const btnMo = document.getElementById(btnMoId);
   if (btn7 && btnMo) {
     if (period === "7days") {
       btn7.className = "btn btn-primary";
@@ -1208,11 +1216,14 @@ function renderRevenueChart(period = "7days") {
     }
   }
 
-  // Set canvas size dynamically
+  // Lấy container cha để tính toán kích thước động
   const container = canvas.parentElement;
+  if (!container || container.clientWidth === 0) return;
+
   canvas.width = container.clientWidth || 600;
   canvas.height = 270;
 
+  const ctx = canvas.getContext("2d");
   const w = canvas.width;
   const h = canvas.height;
   ctx.clearRect(0, 0, w, h);
@@ -1297,6 +1308,10 @@ function renderRevenueChart(period = "7days") {
     ctx.fillText(label, x + barWidth / 2, h - 14);
   });
 }
+
+window.addEventListener("resize", () => {
+  renderRevenueChart(currentRevenuePeriod);
+});
 
 // Vẽ Donut Chart trạng thái phòng
 function renderDonutChart(avail, occ, clean, maint) {
@@ -2277,93 +2292,49 @@ function exportBookingsToCSV() {
 
 function renderRevenueSection() {
   const bookings = getAdminBookings();
-  const rooms = getAdminRooms();
 
-  // 1. Phân loại doanh thu
-  const collectedBookings = bookings.filter(b => b.status === "Đang lưu trú" || b.status === "Hoàn thành");
-  const pendingBookings = bookings.filter(b => b.status === "Đã xác nhận");
+  // 1. Vẽ biểu đồ xu hướng doanh thu từ Tổng quan vào Báo cáo doanh thu
+  renderRevenueChart(currentRevenuePeriod);
 
-  const totalCollected = collectedBookings.reduce((sum, b) => sum + (b.rawAmount || parseInt((b.totalPrice || "0").replace(/\D/g, "")) || 0), 0);
-  const totalPending = pendingBookings.reduce((sum, b) => sum + (b.rawAmount || parseInt((b.totalPrice || "0").replace(/\D/g, "")) || 0), 0);
-
-  // ADR: Average Daily Rate = Doanh thu / Tổng số đêm bán được
-  const totalNightsSold = collectedBookings.reduce((sum, b) => sum + (b.nights || 1), 0);
-  const adr = totalNightsSold > 0 ? Math.round(totalCollected / totalNightsSold) : 2750000;
-
-  // RevPAR: Doanh thu / Tổng số phòng khả dụng
-  const revpar = rooms.length > 0 ? Math.round(totalCollected / rooms.length) : 0;
-
-  document.getElementById("rev-total-collected").textContent = formatCurrencyVND(totalCollected);
-  document.getElementById("rev-total-pending").textContent = formatCurrencyVND(totalPending);
-  document.getElementById("rev-adr").textContent = formatCurrencyVND(adr);
-  document.getElementById("rev-revpar").textContent = formatCurrencyVND(revpar);
-
-  // 2. Cơ cấu theo phương thức thanh toán
-  const paymentMap = {};
-  collectedBookings.forEach(b => {
-    const method = b.paymentMethod || "Tiền mặt tại quầy";
-    paymentMap[method] = (paymentMap[method] || 0) + (b.rawAmount || parseInt((b.totalPrice || "0").replace(/\D/g, "")) || 0);
-  });
-
-  const payListEl = document.getElementById("rev-payment-breakdown-list");
-  if (payListEl) {
-    payListEl.innerHTML = Object.keys(paymentMap).map(method => {
-      const amt = paymentMap[method];
-      const pct = totalCollected > 0 ? Math.round((amt / totalCollected) * 100) : 0;
-      return `
-        <div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px;">
-            <span>💳 ${method}</span>
-            <span style="color: var(--admin-primary);">${formatCurrencyVND(amt)} (${pct}%)</span>
-          </div>
-          <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 99px; overflow: hidden;">
-            <div style="width: ${pct}%; height: 100%; background: var(--admin-primary); border-radius: 99px;"></div>
-          </div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  // 3. Cơ cấu theo hạng phòng
-  const hotelMap = {};
-  collectedBookings.forEach(b => {
-    const h = b.hotelName || "Khác";
-    hotelMap[h] = (hotelMap[h] || 0) + (b.rawAmount || parseInt((b.totalPrice || "0").replace(/\D/g, "")) || 0);
-  });
-
-  const hotelListEl = document.getElementById("rev-hotel-breakdown-list");
-  if (hotelListEl) {
-    hotelListEl.innerHTML = Object.keys(hotelMap).map(hName => {
-      const amt = hotelMap[hName];
-      const pct = totalCollected > 0 ? Math.round((amt / totalCollected) * 100) : 0;
-      return `
-        <div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px;">
-            <span>🏨 ${hName}</span>
-            <span style="color: var(--admin-gold-dark);">${formatCurrencyVND(amt)} (${pct}%)</span>
-          </div>
-          <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 99px; overflow: hidden;">
-            <div style="width: ${pct}%; height: 100%; background: var(--admin-gold); border-radius: 99px;"></div>
-          </div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  // 4. Bảng kê chi tiết giao dịch
+  // 2. Bảng kê chi tiết giao dịch đặt phòng
   const transTbody = document.getElementById("revenue-transactions-tbody");
   if (transTbody) {
+    if (bookings.length === 0) {
+      transTbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 24px; color: #94a3b8;">Chưa có dữ liệu giao dịch đặt phòng nào.</td></tr>`;
+      return;
+    }
+
     transTbody.innerHTML = bookings.map(b => `
       <tr>
-        <td><strong>${b.bookingId}</strong></td>
+        <td><strong style="color: #0b1329;">${b.bookingId}</strong></td>
         <td>${formatDateDisplay(b.bookedAt || b.checkin)}</td>
-        <td><strong>${b.customerName}</strong></td>
-        <td>${b.hotelName} - ${b.roomType}</td>
+        <td>
+          <div style="font-weight: 700; color: #0f172a;">${b.customerName}</div>
+          <div style="font-size: 0.76rem; color: #0284c7;">${b.customerPhone}</div>
+          <div style="font-size: 0.72rem; color: #64748b;">${b.customerEmail || 'Chưa cung cấp email'}</div>
+        </td>
+        <td>
+          <div style="font-weight: 600; color: #1e293b;">${b.hotelName}</div>
+          <div style="font-size: 0.78rem; color: #64748b;">${b.roomType} ${b.roomNumber ? `(${b.roomNumber})` : ''}</div>
+        </td>
         <td>${b.nights} đêm</td>
-        <td><span style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.76rem;">${b.paymentMethod || "Tiền mặt"}</span></td>
-        <td><strong style="color: var(--admin-primary);">${b.totalPrice}</strong></td>
+        <td><span style="background: #f1f5f9; padding: 2px 7px; border-radius: 4px; font-size: 0.76rem; font-weight: 500;">${b.paymentMethod || "Tiền mặt"}</span></td>
+        <td><strong style="color: var(--admin-primary); font-size: 0.95rem;">${b.totalPrice}</strong></td>
         <td>
           ${b.status === 'Đã hủy' ? '<span class="status-badge cancelled">Không thu (Đã hủy)</span>' : b.status === 'Đã xác nhận' ? '<span class="status-badge confirmed">Chờ thu (Khi nhận phòng)</span>' : '<span class="status-badge completed">Đã thu tiền</span>'}
+          ${b.eInvoiceExported ? `<div style="margin-top: 4px;"><span style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 4px; padding: 1px 6px; font-size: 0.7rem; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;" title="Mã HĐĐT: ${b.eInvoiceCode || ''}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Đã xuất HĐĐT</span></div>` : ''}
+        </td>
+        <td>
+          <div style="display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.76rem; display: inline-flex; align-items: center; gap: 4px;" onclick="openTransactionDetailModal('${b.bookingId}')" title="Hiển thị thông tin khách hàng kèm hóa đơn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              Chi tiết
+            </button>
+            <button type="button" class="btn btn-primary" style="padding: 4px 8px; font-size: 0.76rem; display: inline-flex; align-items: center; gap: 4px; background: #059669; border-color: #059669;" onclick="exportElectronicInvoice('${b.bookingId}')" title="Xuất hóa đơn điện tử vào email khách hàng">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              Xuất HĐĐT
+            </button>
+          </div>
         </td>
       </tr>
     `).join("");
@@ -2372,9 +2343,10 @@ function renderRevenueSection() {
 
 function exportRevenueReportCSV() {
   const bookings = getAdminBookings();
-  let csv = "Mã Giao Dịch,Ngày Đặt,Khách Hàng,Hạng Phòng,Hạng Phòng,Số Đêm,Phương Thức Thanh Toán,Số Tiền,Trạng Thái Thu\n";
+  let csv = "Mã Giao Dịch,Ngày Đặt,Khách Hàng,Email,Số Điện Thoại,Hạng Phòng,Số Đêm,Phương Thức Thanh Toán,Số Tiền,Trạng Thái Thu,Hóa Đơn Điện Tử\n";
   bookings.forEach(b => {
-    csv += `"${b.bookingId}","${b.bookedAt || b.checkin}","${b.customerName}","${b.hotelName}","${b.roomType}",${b.nights},"${b.paymentMethod || ''}","${b.totalPrice}","${b.status}"\n`;
+    const einvoiceInfo = b.eInvoiceExported ? `Đã xuất (${b.eInvoiceCode || ''})` : 'Chưa xuất';
+    csv += `"${b.bookingId}","${b.bookedAt || b.checkin}","${b.customerName}","${b.customerEmail || ''}","${b.customerPhone || ''}","${b.hotelName} - ${b.roomType}",${b.nights},"${b.paymentMethod || ''}","${b.totalPrice}","${b.status}","${einvoiceInfo}"\n`;
   });
   downloadCSV(csv, `Bao_Cao_Doanh_Thu_${new Date().toISOString().slice(0, 10)}.csv`);
   showAdminToast("Đã xuất báo cáo doanh thu CSV thành công!");
@@ -2923,10 +2895,18 @@ function importFullSystemJSON(event) {
 // 13. MODAL HÓA ĐƠN & PHIẾU ĐẶT PHÒNG (INVOICE)
 // ========================================================
 
+let currentInvoiceBookingId = null;
+
+function openTransactionDetailModal(bookingId) {
+  openInvoiceModal(bookingId);
+}
+
 function openInvoiceModal(bookingId) {
   const bookings = getAdminBookings();
   const b = bookings.find(item => item.bookingId === bookingId);
   if (!b) return;
+
+  currentInvoiceBookingId = bookingId;
 
   const contentEl = document.getElementById("invoice-printable-content");
   if (!contentEl) return;
@@ -2935,16 +2915,69 @@ function openInvoiceModal(bookingId) {
   const netAmount = Math.round(raw / 1.08);
   const vatAmount = raw - netAmount;
 
+  // Cập nhật tiêu đề modal
+  const modalTitle = document.getElementById("invoice-modal-title");
+  if (modalTitle) {
+    modalTitle.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      Thông Tin Khách Hàng Kèm Hóa Đơn Chi Tiết - ${b.bookingId}
+    `;
+  }
+
+  // Cập nhật trạng thái nút xuất HĐĐT ở footer
+  const btnExport = document.getElementById("btn-modal-export-einvoice");
+  if (btnExport) {
+    btnExport.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+      ${b.eInvoiceExported ? 'Gửi Lại Hóa Đơn Điện Tử' : 'Xuất Hóa Đơn Điện Tử Vào Email'}
+    `;
+  }
+
   contentEl.innerHTML = `
+    <!-- KHỐI THÔNG TIN KHÁCH HÀNG -->
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px 20px; margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
+        <div style="font-weight: 800; font-size: 0.95rem; color: #0b1329; display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--admin-primary)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          THÔNG TIN KHÁCH HÀNG
+        </div>
+        <span style="background: #e0f2fe; color: #0369a1; padding: 2px 10px; border-radius: 99px; font-size: 0.76rem; font-weight: 700;">
+          Hội viên Lotte Club
+        </span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; font-size: 0.88rem;">
+        <div>
+          <div style="font-size: 0.74rem; color: #64748b; text-transform: uppercase; font-weight: 600;">Họ và tên khách:</div>
+          <div style="font-weight: 800; color: #0f172a; font-size: 1.05rem; margin-top: 2px;">${b.customerName}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.74rem; color: #64748b; text-transform: uppercase; font-weight: 600;">Số điện thoại:</div>
+          <div style="font-weight: 700; color: #0284c7; margin-top: 2px;">📞 ${b.customerPhone}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.74rem; color: #64748b; text-transform: uppercase; font-weight: 600;">Email nhận hóa đơn điện tử:</div>
+          <div style="font-weight: 700; color: #059669; margin-top: 2px; word-break: break-all;">✉️ ${b.customerEmail || 'Chưa cung cấp email'}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.74rem; color: #64748b; text-transform: uppercase; font-weight: 600;">Ghi chú lưu trú:</div>
+          <div style="color: #475569; font-style: italic; margin-top: 2px;">${b.note || 'Không có yêu cầu đặc biệt'}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KHỐI HÓA ĐƠN CHI TIẾT -->
     <div class="invoice-card">
       <div class="invoice-header">
         <div class="invoice-brand">
           <h2>LOTTE HOTEL <span>HANOI</span></h2>
+          <p><strong>CÔNG TY TNHH LOTTE HOTEL HANOI</strong></p>
+          <p>Mã số thuế: <strong>0106678899</strong> - Chi cục Thuế Ba Đình</p>
           <p>54 Liễu Giai, Phường Cống Vị, Quận Ba Đình, Hà Nội</p>
           <p>Hotline: 1900 6006 | Email: reservation@lottehotel.vn</p>
         </div>
         <div class="invoice-meta">
-          <div class="invoice-meta-code">MÃ ĐƠN: ${b.bookingId}</div>
+          <div class="invoice-meta-code">HÓA ĐƠN: HD-${b.bookingId}</div>
+          <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">Mẫu số: <strong>1C26TLL</strong> &bull; Ký hiệu: <strong>C26MAA</strong></div>
           <div class="invoice-meta-date">Ngày lập: ${formatDateDisplay(b.bookedAt || new Date().toISOString())}</div>
           <div style="margin-top: 6px;">${renderStatusBadge(b.status)}</div>
         </div>
@@ -2952,14 +2985,14 @@ function openInvoiceModal(bookingId) {
 
       <div class="invoice-info-grid">
         <div class="invoice-info-block">
-          <h4>Thông Tin Khách Hàng</h4>
+          <h4>Khách Hàng Thanh Toán</h4>
           <p><strong>${b.customerName}</strong></p>
           <p>Điện thoại: ${b.customerPhone}</p>
           <p>Email: ${b.customerEmail || 'N/A'}</p>
         </div>
 
         <div class="invoice-info-block">
-          <h4>Chi Tiết Lưu Trú</h4>
+          <h4>Chi Tiết Phòng & Lưu Trú</h4>
           <p>Khách sạn: <strong>${b.hotelName}</strong></p>
           <p>Hạng phòng: <strong>${b.roomType} ${b.roomNumber ? `(Số phòng: ${b.roomNumber})` : ''}</strong></p>
           <p>Nhận phòng: ${formatDateDisplay(b.checkin)} (Từ 14:00)</p>
@@ -2982,7 +3015,7 @@ function openInvoiceModal(bookingId) {
             <tr>
               <td>
                 <strong>Dịch vụ lưu trú phòng ${b.roomType}</strong>
-                <div style="font-size: 0.75rem; color: #64748b;">Đã bao gồm buffet sáng 5 sao, hồ bơi bốn mùa và wifi tốc độ cao</div>
+                <div style="font-size: 0.75rem; color: #64748b;">Đã bao gồm buffet sáng 5 sao, hồ bơi bốn mùa, phòng Gym và wifi tốc độ cao</div>
               </td>
               <td>${formatCurrencyVND(Math.round(netAmount / (b.nights || 1)))}</td>
               <td>${b.nights} đêm</td>
@@ -2992,15 +3025,15 @@ function openInvoiceModal(bookingId) {
         </table>
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
         <div>
-          <div style="font-size: 0.8rem; color: #64748b;">Hình thức thanh toán: <strong>${b.paymentMethod || "Tiền mặt tại quầy"}</strong></div>
-          <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Ghi chú: ${b.note || "Không có yêu cầu đặc biệt"}</div>
+          <div style="font-size: 0.82rem; color: #64748b;">Hình thức thanh toán: <strong style="color: #0f172a;">${b.paymentMethod || "Tiền mặt tại quầy"}</strong></div>
+          <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Trạng thái thanh toán: <strong>${b.status === 'Đã hủy' ? 'Không thu (Đơn hủy)' : b.status === 'Đã xác nhận' ? 'Chờ thu khi nhận phòng' : 'Đã thanh toán đủ'}</strong></div>
         </div>
 
         <div style="min-width: 260px;">
           <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
-            <span>Tiền phòng:</span>
+            <span>Tiền phòng (chưa thuế):</span>
             <span>${formatCurrencyVND(netAmount)}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; color: #64748b;">
@@ -3016,13 +3049,101 @@ function openInvoiceModal(bookingId) {
         </div>
       </div>
 
-      <div style="margin-top: 30px; text-align: center; border-top: 1px dashed var(--admin-border); padding-top: 18px; font-size: 0.78rem; color: #94a3b8;">
-        Cảm ơn Quý khách đã lựa chọn dịch vụ của Hệ Thống Hạng Phòng Lotte Hotel Hanoi & Đối Tác Traveloka!
+      <!-- KHỐI TRẠNG THÁI HÓA ĐƠN ĐIỆN TỬ -->
+      <div class="no-print" style="margin-top: 24px; padding: 14px 18px; border-radius: 8px; ${b.eInvoiceExported ? 'background: #ecfdf5; border: 1px solid #10b981;' : 'background: #eff6ff; border: 1px solid #bfdbfe;'}">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; ${b.eInvoiceExported ? 'background: #10b981; color: white;' : 'background: #3b82f6; color: white;'}">
+              ${b.eInvoiceExported ? '✓' : '📧'}
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 0.92rem; ${b.eInvoiceExported ? 'color: #065f46;' : 'color: #1e40af;'}">
+                ${b.eInvoiceExported ? 'HÓA ĐƠN ĐIỆN TỬ ĐÃ ĐƯỢC XUẤT THÀNH CÔNG' : 'HÓA ĐƠN ĐIỆN TỬ CHƯA ĐƯỢC XUẤT'}
+              </div>
+              <div style="font-size: 0.82rem; margin-top: 2px; ${b.eInvoiceExported ? 'color: #047857;' : 'color: #1d4ed8;'}">
+                ${b.eInvoiceExported 
+                  ? `Đã ký số và gửi tệp HĐĐT (PDF, XML) tới email: <strong>${b.customerEmail}</strong> | Mã tra cứu: <strong>${b.eInvoiceCode || ('HDDT-' + b.bookingId)}</strong>`
+                  : `Email nhận hóa đơn: <strong>${b.customerEmail || 'Chưa thiết lập email'}</strong> (Hệ thống sẽ gửi file PDF hóa đơn kèm chữ ký số điện tử)`
+                }
+              </div>
+              ${b.eInvoiceDate ? `<div style="font-size: 0.74rem; color: #64748b; margin-top: 2px;">Thời gian xuất: ${new Date(b.eInvoiceDate).toLocaleString('vi-VN')}</div>` : ''}
+            </div>
+          </div>
+          <div>
+            <button type="button" class="btn btn-sm btn-primary" style="background: #059669; border-color: #059669; font-size: 0.8rem; padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px;" onclick="exportElectronicInvoice('${b.bookingId}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              ${b.eInvoiceExported ? 'Gửi Lại HĐĐT' : 'Xuất HĐĐT Ngay'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; text-align: center; border-top: 1px dashed var(--admin-border); padding-top: 16px; font-size: 0.78rem; color: #94a3b8;">
+        Hóa đơn điện tử khởi tạo theo Nghị định 123/2020/NĐ-CP & Thông tư 78/2021/TT-BTC &bull; CÔNG TY TNHH LOTTE HOTEL HANOI
       </div>
     </div>
   `;
 
   openAdminModal("modal-invoice");
+}
+
+function exportElectronicInvoiceCurrentModal() {
+  if (currentInvoiceBookingId) {
+    exportElectronicInvoice(currentInvoiceBookingId);
+  }
+}
+
+function exportElectronicInvoice(bookingId) {
+  let bookings = getAdminBookings();
+  const idx = bookings.findIndex(item => item.bookingId === bookingId);
+  if (idx === -1) {
+    showAdminToast("Không tìm thấy đơn đặt phòng!", "error");
+    return;
+  }
+
+  const b = bookings[idx];
+  let targetEmail = (b.customerEmail || "").trim();
+
+  // Kiểm tra email khách hàng, nếu chưa có thì hỏi người dùng nhập
+  if (!targetEmail || !targetEmail.includes("@")) {
+    const inputEmail = prompt(
+      `Khách hàng "${b.customerName}" chưa có địa chỉ email hợp lệ.\nVui lòng nhập email của khách hàng để xuất hóa đơn điện tử:`,
+      targetEmail || ""
+    );
+    if (!inputEmail || !inputEmail.trim()) {
+      showAdminToast("Đã hủy xuất hóa đơn điện tử (Chưa có email)!", "error");
+      return;
+    }
+    targetEmail = inputEmail.trim();
+    b.customerEmail = targetEmail;
+  }
+
+  // Khởi tạo mã hóa đơn điện tử nếu chưa có
+  const cleanId = b.bookingId.replace(/[^A-Za-z0-9]/g, "");
+  const randNum = Math.floor(1000 + Math.random() * 9000);
+  const einvoiceCode = b.eInvoiceCode || `HDDT-${cleanId}-${randNum}`;
+
+  b.eInvoiceExported = true;
+  b.eInvoiceDate = new Date().toISOString();
+  b.eInvoiceCode = einvoiceCode;
+
+  // Lưu vào LocalStorage
+  saveAdminBookings(bookings);
+
+  // Hiển thị thông báo Toast thành công
+  showAdminToast(`Đã xuất hóa đơn điện tử (${einvoiceCode}) thành công vào email: ${targetEmail}!`, "success");
+
+  // Nếu đang mở modal thì vẽ lại modal
+  const modalEl = document.getElementById("modal-invoice");
+  if (modalEl && modalEl.classList.contains("active")) {
+    openInvoiceModal(bookingId);
+  }
+
+  // Cập nhật lại giao diện Báo cáo doanh thu & Đặt phòng
+  renderRevenueSection();
+  if (typeof filterBookings === "function") {
+    filterBookings();
+  }
 }
 
 // ========================================================
