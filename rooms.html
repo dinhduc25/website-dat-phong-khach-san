@@ -188,6 +188,171 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="booking-modal">
+    <div class="modal-dialog large">
+      <div class="modal-header">
+        <h3 class="modal-title">Xác Nhận Đặt Phòng</h3>
+        <button type="button" class="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Hạng phòng đã chọn -->
+        <div class="booking-hotel-summary">
+          <img src="" alt="" id="bm-hotel-thumb" class="b-hotel-thumb">
+          <div>
+            <h4 id="bm-hotel-name" class="b-hotel-name">Lotte Hotel Hanoi</h4>
+            <div id="bm-hotel-address" class="b-hotel-geo">54 Liễu Giai, Ba Đình, Hà Nội</div>
+            <div style="font-size: 0.8rem; color: var(--success); font-weight: 700; margin-top: 4px;">
+              ✓ Xác nhận tức thì &bull; Miễn phí hủy phòng trước 24h
+            </div>
+          </div>
+        </div>
+
+        <form onsubmit="submitBookingForm(event)">
+          <!-- Lựa chọn loại phòng -->
+          <div class="form-group">
+            <label class="form-label">Chọn Hạng Phòng</label>
+            <div class="room-type-options" id="bm-room-types">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Thời gian & Số khách -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+            <div>
+              <div style="font-size: 0.72rem; color: #718096; font-weight: 700;">NHẬN PHÒNG</div>
+              <div id="bm-checkin-display" style="font-weight: 800; color: #1c2430;">28/09/2026</div>
+            </div>
+            <div>
+              <div style="font-size: 0.72rem; color: #718096; font-weight: 700;">TRẢ PHÒNG (<span id="bm-nights-display">2 đêm</span>)</div>
+              <div id="bm-checkout-display" style="font-weight: 800; color: #1c2430;">30/09/2026</div>
+            </div>
+            <div style="grid-column: span 2; font-size: 0.82rem; color: #4a5568;">
+              👥 Số khách: <strong id="bm-guests-display">2 người lớn, 1 phòng</strong>
+            </div>
+          </div>
+
+          <div class="booking-edit-grid">
+            <div class="form-group"><label class="form-label" for="bm-checkin-date">Ngày nhận phòng</label><input type="date" id="bm-checkin-date" class="form-input" required></div>
+            <div class="form-group"><label class="form-label" for="bm-checkout-date">Ngày trả phòng</label><input type="date" id="bm-checkout-date" class="form-input" required></div>
+            <div class="form-group"><label class="form-label" for="bm-rooms-count">Số phòng</label><input type="number" id="bm-rooms-count" class="form-input" min="1" max="10" value="1" required></div>
+          </div>
+
+          <!-- Thông tin khách đặt -->
+          <div class="form-group">
+            <label class="form-label">Họ và tên khách đại diện</label>
+            <input type="text" id="bm-guest-name" class="form-input" required>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label">Email nhận mã phòng</label>
+              <input type="email" id="bm-guest-email" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Số điện thoại liên hệ</label>
+              <input type="tel" id="bm-guest-phone" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-group"><label class="form-label" for="bm-guest-id">Số CCCD / CMND</label><input type="text" id="bm-guest-id" class="form-input" inputmode="numeric" minlength="9" maxlength="12" placeholder="Nhập số CCCD/CMND" required></div>
+
+          <!-- Mã giảm giá -->
+          <div class="form-group">
+            <label class="form-label">Mã Giảm Giá / Voucher (Ví dụ: LOTTE500, HANOI30)</label>
+            <div class="coupon-input-group">
+              <input type="text" id="bm-coupon-input" class="form-input" placeholder="Nhập mã khuyến mãi...">
+              <button type="button" class="btn-apply-coupon" onclick="applyCouponCode()">Áp Dụng</button>
+            </div>
+          </div>
+
+          <!-- Bảng tính giá -->
+          <div class="pricing-receipt-box">
+            <div class="receipt-row">
+              <span id="bm-calc-room-price">2.750.000₫ × 2 đêm × 1 phòng</span>
+              <span id="bm-calc-subtotal">5.500.000₫</span>
+            </div>
+            <div class="receipt-row discount">
+              <span>Mã giảm giá đã áp dụng</span>
+              <span id="bm-calc-discount">0₫</span>
+            </div>
+            <div class="receipt-row">
+              <span>Thuế GTGT (VAT) & Phí dịch vụ 5 sao</span>
+              <span>Đã bao gồm (0₫)</span>
+            </div>
+            <div class="receipt-row total">
+              <span>Tổng thanh toán</span>
+              <span id="bm-calc-total">5.500.000₫</span>
+            </div>
+          </div>
+
+          <!-- Phương thức thanh toán -->
+          <div class="form-group">
+            <label class="form-label">Phương Thức Thanh Toán</label>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="paymentMethod" value="Thanh toán tại khách sạn" checked>
+                <span><strong>Thanh toán tiền mặt</strong> - Thanh toán trực tiếp tại khách sạn</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="paymentMethod" value="QR Pay">
+                <span><strong>QR Pay</strong> - Quét mã QR để thanh toán</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="booking-qr-payment" class="booking-qr-payment" hidden>
+            <div class="qr-pay-details"><strong>Mã QR thanh toán</strong><p>Quét mã bằng ứng dụng ngân hàng.</p><div class="qr-reference" id="booking-qr-reference"></div><div class="qr-account-details"><div><span>Tên người nhận</span><strong>Đinh Tiến Đức</strong></div><div><span>Số tài khoản</span><strong>1234567899999</strong></div></div></div>
+            <img id="booking-qr-image" alt="Mã QR thanh toán" width="180" height="180">
+          </div>
+
+          <!-- Yêu cầu đặc biệt -->
+          <div class="form-group">
+            <label class="form-label" for="bm-special-requests">Yêu cầu đặc biệt (Không bắt buộc)</label>
+            <textarea id="bm-special-requests" class="form-input" rows="2" placeholder="Ví dụ: Phòng tầng cao, 1 giường đôi lớn, nhận phòng sớm..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-accent" style="width: 100%; padding: 14px; font-size: 1.05rem;">
+            Hoàn Tất Đặt Phòng & Nhận Xác Nhận
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="booking-success-modal">
+    <div class="modal-dialog">
+      <div class="modal-header" style="background: #ecfdf5; border-bottom: 1px solid #a7f3d0;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <h3 class="modal-title" style="color: #065f46;">Đặt Phòng Thành Công!</h3>
+        </div>
+        <button type="button" class="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <div style="font-size: 0.85rem; color: #4b5563; margin-bottom: 6px;">MÃ ĐẶT PHÒNG CỦA BẠN</div>
+        <div style="font-family: monospace; font-size: 1.6rem; font-weight: 900; color: #0194f3; letter-spacing: 2px;" id="succ-booking-code">LT-HN-89234</div>
+        <p style="font-size: 0.85rem; color: #6b7280; margin-top: 4px;">Thông tin đặt phòng đã được lưu vào danh sách <strong>Đặt chỗ của tôi</strong></p>
+
+        <!-- Chi tiết tóm tắt -->
+        <div style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; padding: 14px; margin: 18px 0; text-align: left; font-size: 0.88rem;">
+          <div style="margin-bottom: 6px;">🏨 Cơ sở: <strong id="succ-hotel-name">Lotte Hotel Hanoi</strong></div>
+          <div style="margin-bottom: 6px;">🛏️ Loại phòng: <strong id="succ-room-type">Deluxe City View</strong></div>
+          <div style="margin-bottom: 6px;">📅 Thời gian: <strong id="succ-dates">28/09/2026 - 30/09/2026</strong></div>
+          <div style="margin-bottom: 6px;">💳 Thanh toán: <strong id="succ-payment">Thanh toán tại khách sạn</strong></div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1; font-weight: 800; color: #ff5e1f; font-size: 1rem;">
+            Tổng tiền: <span id="succ-total">5.500.000₫</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" style="width: 100%; margin-bottom: 8px;" onclick="closeModal('booking-success-modal'); openMyBookingsModal();">
+          Xem Trong "Đặt Chỗ Của Tôi"
+        </button>
+        <button type="button" class="btn btn-outline" style="width: 100%; border-color: #cbd5e1; color: #4a5568;" onclick="closeModal('booking-success-modal');">
+          Tiếp tục xem phòng khác
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- SCRIPTS -->
   <script src="js/auth.js"></script>
   <script src="js/part1-home.js"></script>
@@ -195,5 +360,6 @@
   <script src="js/part3-booking.js"></script>
   <script src="js/part4-contact.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/room-picker-addon.js"></script>
 </body>
 </html>

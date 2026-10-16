@@ -81,16 +81,42 @@ const HANOI_HOTELS_DATA = [
   }
 ];
 
+// Hàm tính số phòng trống thực tế theo hạng phòng đồng bộ từ traveloka_hotel_rooms
+function getLiveAvailableRoomCount(category) {
+  try {
+    const raw = localStorage.getItem("traveloka_hotel_rooms");
+    if (raw) {
+      const rooms = JSON.parse(raw);
+      if (Array.isArray(rooms) && rooms.length > 0) {
+        return rooms.filter(r => {
+          const cat = (r.category || r.roomType || "").toLowerCase();
+          const match = (category === "deluxe" && (cat.includes("deluxe") || r.floor === 38)) ||
+                        (category === "premier" && (cat.includes("premier") || r.floor === 45)) ||
+                        (category === "junior-suite" && (cat.includes("junior") || r.floor === 51)) ||
+                        (category === "presidential-suite" && (cat.includes("president") || cat.includes("grand") || r.floor === 60 || r.floor === 65));
+          return match && r.status === "available";
+        }).length;
+      }
+    }
+  } catch (e) {}
+  if (category === "deluxe") return 2;
+  if (category === "premier") return 1;
+  if (category === "junior-suite") return 1;
+  if (category === "presidential-suite") return 1;
+  return 1;
+}
+
 // Mỗi hạng phòng có 5 lựa chọn mức sao (1*–5*), giá tăng dần theo mức sao.
-// Đây là dữ liệu mô phỏng phục vụ demo; không phải phân hạng chính thức của Lotte Hotel Hanoi.
 HANOI_HOTELS_DATA.forEach((hotel, hotelIndex) => {
   const original = hotel.roomTypes[0];
   const starBase = [0.55, 0.72, 0.86, 1.0, 1.18];
   hotel.roomTypes = [1, 2, 3, 4, 5].map((stars, idx) => ({
     name: `${hotel.roomClass} • ${stars} sao`, stars,
     extraPrice: Math.round(hotel.price * (starBase[idx] - 1) / 50000) * 50000,
-    desc: `${hotel.area} • ${stars} sao • Còn ${5 + idx + hotelIndex} phòng • ${original.desc.split('•').slice(-1)[0].trim()}`,
-    availableRooms: 5 + idx + hotelIndex
+    desc: `${hotel.area} • ${stars} sao • ${original.desc.split('•').slice(-1)[0].trim()}`,
+    get availableRooms() {
+      return getLiveAvailableRoomCount(hotel.category);
+    }
   }));
   hotel.functions = ['Nghỉ dưỡng và lưu trú', 'Bàn làm việc / công tác', 'Dịch vụ phòng 24/7', 'Phù hợp đặt phòng gia đình'];
   hotel.recentReviews = [
@@ -146,7 +172,7 @@ function renderHotelsGrid(hotels) {
             <div class="highlight-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 11c2.8.4 5 2.8 5 5.7V20"></path></svg>Tối đa ${hotel.maxGuests} khách</div>
             <div class="highlight-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20l6-6 4 4 8-9"></path></svg>${viewOptions}</div>
           </div>
-          <div class="room-star-options" aria-label="Các mức phòng từ 1 đến 5 sao">${hotel.roomTypes.map(rt => `<div class="room-star-option"><span>${'★'.repeat(rt.stars)}<span class="room-star-label"> ${rt.stars} sao</span></span><strong>${typeof formatVND === 'function' ? formatVND(hotel.price + rt.extraPrice) : (hotel.price + rt.extraPrice) + '₫'}</strong><small>Còn ${rt.availableRooms || 5} phòng</small></div>`).join('')}</div>
+          <div class="room-star-options" aria-label="Các mức phòng từ 1 đến 5 sao">${hotel.roomTypes.map(rt => `<div class="room-star-option"><span>${'★'.repeat(rt.stars)}<span class="room-star-label"> ${rt.stars} sao</span></span><strong>${typeof formatVND === 'function' ? formatVND(hotel.price + rt.extraPrice) : (hotel.price + rt.extraPrice) + '₫'}</strong><small style="${rt.availableRooms === 0 ? 'color:#ef4444; font-weight:700;' : ''}">${rt.availableRooms === 0 ? 'Hết phòng' : `Còn ${rt.availableRooms} phòng`}</small></div>`).join('')}</div>
           <div class="hotel-pricing-box">
             <div class="pricing-left">
               <span class="old-price">${typeof formatVND === 'function' ? formatVND(hotel.oldPrice) : hotel.oldPrice + '₫'}</span>
