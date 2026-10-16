@@ -27,12 +27,14 @@
 // ========================================================
 
 const DEFAULT_HOTEL_ROOMS = [
-  // LOTTE HOTEL HANOI
+  // 1. HẠNG DELUXE - TẦNG 38 (4 phòng)
   {
     id: "rm-lotte-3801",
     roomNumber: "P.3801",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "deluxe",
+    roomClass: "Deluxe",
     roomType: "Deluxe King City View",
     floor: 38,
     price: 2750000,
@@ -52,6 +54,8 @@ const DEFAULT_HOTEL_ROOMS = [
     roomNumber: "P.3802",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "deluxe",
+    roomClass: "Deluxe",
     roomType: "Deluxe King City View",
     floor: 38,
     price: 2750000,
@@ -71,6 +75,8 @@ const DEFAULT_HOTEL_ROOMS = [
     roomNumber: "P.3803",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "deluxe",
+    roomClass: "Deluxe",
     roomType: "Deluxe Twin City View",
     floor: 38,
     price: 2750000,
@@ -90,6 +96,8 @@ const DEFAULT_HOTEL_ROOMS = [
     roomNumber: "P.3804",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "deluxe",
+    roomClass: "Deluxe",
     roomType: "Deluxe King City View",
     floor: 38,
     price: 2750000,
@@ -104,11 +112,15 @@ const DEFAULT_HOTEL_ROOMS = [
     image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=650&q=80",
     amenities: ["View phố Liễu Giai", "Bồn tắm nằm", "Smart TV 65 inch"]
   },
+
+  // 2. HẠNG PREMIER - TẦNG 45 (3 phòng)
   {
     id: "rm-lotte-4501",
     roomNumber: "P.4501",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "premier",
+    roomClass: "Premier",
     roomType: "Premier Lake View",
     floor: 45,
     price: 3200000,
@@ -128,6 +140,8 @@ const DEFAULT_HOTEL_ROOMS = [
     roomNumber: "P.4502",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "premier",
+    roomClass: "Premier",
     roomType: "Premier Lake View",
     floor: 45,
     price: 3200000,
@@ -147,6 +161,8 @@ const DEFAULT_HOTEL_ROOMS = [
     roomNumber: "P.4503",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "premier",
+    roomClass: "Premier",
     roomType: "Premier Lake View",
     floor: 45,
     price: 3200000,
@@ -161,11 +177,15 @@ const DEFAULT_HOTEL_ROOMS = [
     image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=650&q=80",
     amenities: ["View Hồ Tây", "Bồn tắm kính"]
   },
+
+  // 3. HẠNG JUNIOR SUITE - TẦNG 51 (3 phòng)
   {
     id: "rm-lotte-5101",
     roomNumber: "P.5101",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "junior-suite",
+    roomClass: "Junior Suite",
     roomType: "Club Junior Suite",
     floor: 51,
     price: 3850000,
@@ -185,6 +205,8 @@ const DEFAULT_HOTEL_ROOMS = [
     roomNumber: "P.5102",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "junior-suite",
+    roomClass: "Junior Suite",
     roomType: "Club Junior Suite",
     floor: 51,
     price: 3850000,
@@ -204,6 +226,8 @@ const DEFAULT_HOTEL_ROOMS = [
     roomNumber: "P.5103",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "junior-suite",
+    roomClass: "Junior Suite",
     roomType: "Club Junior Suite",
     floor: 51,
     price: 3850000,
@@ -218,11 +242,15 @@ const DEFAULT_HOTEL_ROOMS = [
     image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=650&q=80",
     amenities: ["Bảo trì định kỳ hệ thống điều hòa và vòi sen"]
   },
+
+  // 4. HẠNG PRESIDENTIAL SUITE - TẦNG 60 & 65 (3 phòng)
   {
     id: "rm-lotte-6001",
     roomNumber: "P.6001",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "presidential-suite",
+    roomClass: "Presidential Suite",
     roomType: "Executive Grand Suite",
     floor: 60,
     price: 4950000,
@@ -242,6 +270,8 @@ const DEFAULT_HOTEL_ROOMS = [
     roomNumber: "P.6002",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "presidential-suite",
+    roomClass: "Presidential Suite",
     roomType: "Executive Grand Suite",
     floor: 60,
     price: 4950000,
@@ -261,10 +291,12 @@ const DEFAULT_HOTEL_ROOMS = [
     roomNumber: "P.6501",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
+    category: "presidential-suite",
+    roomClass: "Presidential Suite",
     roomType: "Presidential Luxury Suite",
     floor: 65,
     price: 8900000,
-    status: "available",
+    status: "cleaning",
     capacity: 4,
     bed: "2 Giường King Hoàng Gia",
     guestName: "",
@@ -274,125 +306,6 @@ const DEFAULT_HOTEL_ROOMS = [
     checkout: "",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=650&q=80",
     amenities: ["Tầng cao nhất 65", "Quản gia riêng 24/7", "Phòng ăn 8 người", "Bàn bi-a & Piano"]
-  },
-
-  {
-    id: "rm-pan-1201",
-    roomNumber: "P.1201",
-    hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi",
-    roomType: "Deluxe Westlake View",
-    floor: 12,
-    price: 2190000,
-    status: "available",
-    capacity: 2,
-    bed: "1 Giường King",
-    guestName: "",
-    guestPhone: "",
-    bookingId: "",
-    checkin: "",
-    checkout: "",
-    image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=650&q=80",
-    amenities: ["View ngắm Hồ Trúc Bạch", "Bể bơi mái vòm", "Buffet sáng"]
-  },
-  {
-    id: "rm-pan-1202",
-    roomNumber: "P.1202",
-    hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi",
-    roomType: "Pacific Club Suite",
-    floor: 12,
-    price: 3090000,
-    status: "occupied",
-    capacity: 3,
-    bed: "1 Giường King",
-    guestName: "Lê Quốc Bảo",
-    guestPhone: "0966554433",
-    bookingId: "PP-HN-12490",
-    checkin: "2026-09-28",
-    checkout: "2026-10-01",
-    image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=650&q=80",
-    amenities: ["The Summit Bar", "Club Lounge"]
-  },
-
-  {
-    id: "rm-inter-0301",
-    roomNumber: "P.301",
-    hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi",
-    roomType: "Junior Suite Lake View",
-    floor: 3,
-    price: 3850000,
-    status: "available",
-    capacity: 3,
-    bed: "1 Giường King Pavilion",
-    guestName: "",
-    guestPhone: "",
-    bookingId: "",
-    checkin: "",
-    checkout: "",
-    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=650&q=80",
-    amenities: ["Xây trên mặt nước Hồ Tây", "Sunset Bar", "Ban công ngắm hoàng hôn"]
-  },
-  {
-    id: "rm-inter-0302",
-    roomNumber: "P.302",
-    hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi",
-    roomType: "Premier Lake View",
-    floor: 3,
-    price: 3200000,
-    status: "occupied",
-    capacity: 2,
-    bed: "1 Giường King",
-    guestName: "Đặng Thu Thảo",
-    guestPhone: "0944112233",
-    bookingId: "IC-HN-33012",
-    checkin: "2026-09-27",
-    checkout: "2026-09-29",
-    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=650&q=80",
-    amenities: ["Ban công mặt hồ", "Bồn tắm sâu"]
-  },
-
-  {
-    id: "rm-apricot-0501",
-    roomNumber: "P.501",
-    hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi",
-    roomType: "Premier Panorama View",
-    floor: 5,
-    price: 3150000,
-    status: "available",
-    capacity: 2,
-    bed: "1 Giường King Nghệ Thuật",
-    guestName: "",
-    guestPhone: "",
-    bookingId: "",
-    checkin: "",
-    checkout: "",
-    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=650&q=80",
-    amenities: ["Trực diện Tháp Rùa Hồ Gươm", "Hồ bơi vô cực tầng thượng"]
-  },
-
-  // LOTTE HOTEL HANOI — các phòng mẫu khác
-  {
-    id: "rm-melia-0801",
-    roomNumber: "P.801",
-    hotelId: "lotte-hotel-hanoi",
-    hotelName: "Lotte Hotel Hanoi",
-    roomType: "Presidential Signature View",
-    floor: 8,
-    price: 3050000,
-    status: "available",
-    capacity: 3,
-    bed: "1 Giường King",
-    guestName: "",
-    guestPhone: "",
-    bookingId: "",
-    checkin: "",
-    checkout: "",
-    image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=650&q=80",
-    amenities: ["Tiêu chuẩn nguyên thủ quốc gia", "Trung tâm Lý Thường Kiệt"]
   }
 ];
 
@@ -509,17 +422,17 @@ const DEFAULT_ALL_BOOKINGS = [
     customerEmail: "quocbao.le@fpt.vn",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
-    roomNumber: "P.1202",
-    roomType: "Pacific Club Suite",
+    roomNumber: "P.3803",
+    roomType: "Deluxe Twin City View",
     checkin: "2026-09-28",
     checkout: "2026-10-01",
     nights: 3,
     guests: "2 người lớn",
     rooms: 1,
-    totalPrice: "9.270.000₫",
-    rawAmount: 9270000,
-    status: "Đang lưu trú",
-    paymentMethod: "Thanh toán tại hạng phòng",
+    totalPrice: "8.250.000₫",
+    rawAmount: 8250000,
+    status: "Hoàn thành",
+    paymentMethod: "Thanh toán tại quầy",
     bookedAt: "2026-09-25T18:40:00Z",
     note: ""
   },
@@ -530,7 +443,7 @@ const DEFAULT_ALL_BOOKINGS = [
     customerEmail: "thuthao.dang@vietcombank.vn",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
-    roomNumber: "P.302",
+    roomNumber: "P.4503",
     roomType: "Premier Lake View",
     checkin: "2026-09-27",
     checkout: "2026-09-29",
@@ -539,7 +452,7 @@ const DEFAULT_ALL_BOOKINGS = [
     rooms: 1,
     totalPrice: "6.400.000₫",
     rawAmount: 6400000,
-    status: "Đang lưu trú",
+    status: "Hoàn thành",
     paymentMethod: "Chuyển khoản QR",
     bookedAt: "2026-09-23T09:20:00Z",
     note: ""
@@ -551,15 +464,15 @@ const DEFAULT_ALL_BOOKINGS = [
     customerEmail: "anhquan.tran@gmail.com",
     hotelId: "lotte-hotel-hanoi",
     hotelName: "Lotte Hotel Hanoi",
-    roomNumber: "P.501",
-    roomType: "Premier Panorama View",
+    roomNumber: "P.6501",
+    roomType: "Presidential Luxury Suite",
     checkin: "2026-09-20",
     checkout: "2026-09-23",
     nights: 3,
     guests: "2 người lớn",
     rooms: 1,
-    totalPrice: "9.450.000₫",
-    rawAmount: 9450000,
+    totalPrice: "26.700.000₫",
+    rawAmount: 26700000,
     status: "Hoàn thành",
     paymentMethod: "Thẻ tín dụng qua POS",
     bookedAt: "2026-09-18T15:00:00Z",
@@ -753,6 +666,19 @@ const DEFAULT_NOTIFICATIONS = [
 // 2. GETTERS & SETTERS (LOCALSTORAGE)
 // ========================================================
 
+function getRoomCategory(room) {
+  if (!room) return "deluxe";
+  if (room.category) return room.category;
+  const type = (room.roomType || room.roomClass || "").toLowerCase();
+  const num = (room.roomNumber || "").toLowerCase();
+  const floor = Number(room.floor);
+  if (floor === 38 || type.includes("deluxe") || num.includes("38")) return "deluxe";
+  if (floor === 45 || type.includes("premier") || num.includes("45")) return "premier";
+  if (floor === 51 || type.includes("junior") || type.includes("club") || num.includes("51")) return "junior-suite";
+  if (floor === 60 || floor === 65 || type.includes("presidential") || type.includes("grand") || type.includes("luxury") || num.includes("60") || num.includes("65")) return "presidential-suite";
+  return "deluxe";
+}
+
 function getAdminRooms() {
   const data = localStorage.getItem("traveloka_hotel_rooms");
   if (!data) {
@@ -761,7 +687,17 @@ function getAdminRooms() {
   }
   try {
     const parsed = JSON.parse(data);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : [...DEFAULT_HOTEL_ROOMS];
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      // Tự động làm sạch dữ liệu cũ nếu phát hiện phòng demo ngoài Lotte hoặc thiếu category
+      const hasLegacyRooms = parsed.some(r => r.id && (r.id.startsWith("rm-pan") || r.id.startsWith("rm-inter") || r.id.startsWith("rm-apricot") || r.id.startsWith("rm-melia")));
+      const missingCategory = parsed.some(r => !r.category);
+      if (hasLegacyRooms || missingCategory || parsed.length !== 13) {
+        saveAdminRooms(DEFAULT_HOTEL_ROOMS);
+        return [...DEFAULT_HOTEL_ROOMS];
+      }
+      return parsed;
+    }
+    return [...DEFAULT_HOTEL_ROOMS];
   } catch (e) {
     return [...DEFAULT_HOTEL_ROOMS];
   }
@@ -1447,7 +1383,7 @@ function filterRooms() {
       r.roomNumber.toLowerCase().includes(search) || 
       r.roomType.toLowerCase().includes(search) ||
       (r.guestName && r.guestName.toLowerCase().includes(search));
-    const matchHotel = hotel === "all" || (r.roomType && r.roomType.toLowerCase().replace(/\s+/g, "-").includes(hotel.replace("junior-suite", "junior").replace("presidential-suite", "presidential")));
+    const matchHotel = hotel === "all" || getRoomCategory(r) === hotel;
     const matchStatus = status === "all" || r.status === status;
     return matchSearch && matchHotel && matchStatus;
   });
@@ -1747,31 +1683,48 @@ function renderFloorMap() {
   const container = document.getElementById("floor-map-container");
   if (!container) return;
 
-  const selectedHotel = document.getElementById("select-floor-hotel")?.value || "lotte-hotel-hanoi";
+  const categorySelect = document.getElementById("select-floor-category") || document.getElementById("select-floor-hotel");
+  const selectedCategory = categorySelect ? categorySelect.value : "all";
   const allRooms = getAdminRooms();
-  const hotelRooms = allRooms.filter(r => r.hotelId === selectedHotel);
 
-  // Thống kê số lượng cho legend
-  const countAll = hotelRooms.length;
-  const countAvail = hotelRooms.filter(r => r.status === "available").length;
-  const countOcc = hotelRooms.filter(r => r.status === "occupied").length;
-  const countClean = hotelRooms.filter(r => r.status === "cleaning").length;
-  const countMaint = hotelRooms.filter(r => r.status === "maintenance").length;
+  // Lọc theo hạng phòng được chọn
+  let categoryRooms = allRooms;
+  if (selectedCategory && selectedCategory !== "all" && selectedCategory !== "lotte-hotel-hanoi") {
+    categoryRooms = allRooms.filter(r => getRoomCategory(r) === selectedCategory);
+  }
 
-  document.getElementById("fl-count-all").textContent = countAll;
-  document.getElementById("fl-count-available").textContent = countAvail;
-  document.getElementById("fl-count-occupied").textContent = countOcc;
-  document.getElementById("fl-count-cleaning").textContent = countClean;
-  document.getElementById("fl-count-maintenance").textContent = countMaint;
+  // Thống kê số lượng cho legend của hạng phòng đang xem
+  const countAll = categoryRooms.length;
+  const countAvail = categoryRooms.filter(r => r.status === "available").length;
+  const countOcc = categoryRooms.filter(r => r.status === "occupied").length;
+  const countClean = categoryRooms.filter(r => r.status === "cleaning").length;
+  const countMaint = categoryRooms.filter(r => r.status === "maintenance").length;
+
+  const elAll = document.getElementById("fl-count-all");
+  const elAvail = document.getElementById("fl-count-available");
+  const elOcc = document.getElementById("fl-count-occupied");
+  const elClean = document.getElementById("fl-count-cleaning");
+  const elMaint = document.getElementById("fl-count-maintenance");
+
+  if (elAll) elAll.textContent = countAll;
+  if (elAvail) elAvail.textContent = countAvail;
+  if (elOcc) elOcc.textContent = countOcc;
+  if (elClean) elClean.textContent = countClean;
+  if (elMaint) elMaint.textContent = countMaint;
 
   // Lọc theo status filter
-  let displayRooms = hotelRooms;
+  let displayRooms = categoryRooms;
   if (currentFloorFilterStatus !== "all") {
-    displayRooms = hotelRooms.filter(r => r.status === currentFloorFilterStatus);
+    displayRooms = categoryRooms.filter(r => r.status === currentFloorFilterStatus);
   }
 
   if (displayRooms.length === 0) {
-    container.innerHTML = `<div style="text-align: center; padding: 40px; color: #94a3b8; background: #fff; border-radius: 12px;">Không có phòng nào phù hợp với bộ lọc trong hạng phòng này.</div>`;
+    container.innerHTML = `
+      <div style="text-align: center; padding: 48px 20px; color: #64748b; background: #fff; border-radius: 12px; border: 1px dashed #cbd5e1; margin-top: 10px;">
+        <div style="font-size: 2rem; margin-bottom: 8px;">🔍</div>
+        <div style="font-weight: 700; font-size: 1rem; color: #1e293b; margin-bottom: 4px;">Không tìm thấy phòng nào phù hợp</div>
+        <div style="font-size: 0.85rem;">Không có phòng nào thuộc trạng thái này trong hạng phòng đã chọn. Vui lòng bấm vào "Tất Cả" ở thanh trạng thái bên trên.</div>
+      </div>`;
     return;
   }
 
@@ -1786,45 +1739,71 @@ function renderFloorMap() {
   // Sắp xếp tầng từ cao xuống thấp
   const sortedFloors = Object.keys(floorMap).sort((a, b) => b - a);
 
-  container.innerHTML = sortedFloors.map(floor => `
-    <div class="floor-group">
-      <div class="floor-header">
-        <div class="floor-title">
-          <span>🏢</span> Tầng ${floor} 
-          <span style="font-size: 0.75rem;">${floorMap[floor].length} phòng</span>
-        </div>
-        <div style="font-size: 0.78rem; color: #64748b;">
-          ${floorMap[floor].filter(r => r.status === "available").length} Trống &bull; 
-          ${floorMap[floor].filter(r => r.status === "occupied").length} Đang ở
-        </div>
-      </div>
-      <div class="floor-rooms-row">
-        ${floorMap[floor].map(r => `
-          <div class="floor-room-box ${r.status}" onclick="openRoomDetailModal('${r.id}')" title="Bấm để xem chi tiết & điều phối">
-            <div class="fr-header">
-              <span class="fr-number">${r.roomNumber}</span>
-              <span style="font-size: 1rem;">
-                ${r.status === 'available' ? '🟢' : r.status === 'occupied' ? '🔵' : r.status === 'cleaning' ? '🟡' : '⚪'}
-              </span>
-            </div>
-            <div class="fr-type">${r.roomType}</div>
-            <div style="font-size: 0.75rem; color: var(--admin-primary); font-weight: 700;">
-              ${formatCurrencyVND(r.price)}/đêm
-            </div>
-            ${r.status === 'occupied' ? `
-              <div class="fr-guest-tag">
-                👤 ${r.guestName}
-              </div>
-            ` : `
-              <div style="font-size: 0.72rem; color: #64748b; margin-top: auto;">
-                ${getStatusText(r.status)}
-              </div>
-            `}
+  // Helper để hiển thị tên hạng phòng theo tầng
+  const getFloorCategoryLabel = (floor) => {
+    const f = Number(floor);
+    if (f === 65) return "Hạng Presidential Suite • Penthouse Tầng 65";
+    if (f === 60) return "Hạng Presidential Suite • Executive Tầng 60";
+    if (f === 51) return "Hạng Junior Suite • Tầng 51";
+    if (f === 45) return "Hạng Premier Lake View • Tầng 45";
+    if (f === 38) return "Hạng Deluxe City View • Tầng 38";
+    return `Tầng ${f}`;
+  };
+
+  container.innerHTML = sortedFloors.map(floor => {
+    const roomsInFloor = floorMap[floor];
+    const floorLabel = getFloorCategoryLabel(floor);
+    const availCount = roomsInFloor.filter(r => r.status === "available").length;
+    const occCount = roomsInFloor.filter(r => r.status === "occupied").length;
+    const cleanCount = roomsInFloor.filter(r => r.status === "cleaning").length;
+    const maintCount = roomsInFloor.filter(r => r.status === "maintenance").length;
+
+    return `
+      <div class="floor-group">
+        <div class="floor-header">
+          <div class="floor-title">
+            <span style="font-size: 1.15rem;">🏢</span> 
+            <strong>Tầng ${floor}</strong> 
+            <span class="floor-badge-tag" style="display: inline-block; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; margin-left: 8px;">
+              ${floorLabel}
+            </span>
+            <span style="font-size: 0.78rem; color: #64748b; font-weight: 600; margin-left: 6px;">(${roomsInFloor.length} phòng)</span>
           </div>
-        `).join("")}
+          <div style="font-size: 0.8rem; color: #64748b; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <span style="color: #059669; font-weight: 600;">🟢 ${availCount} Trống</span>
+            <span style="color: #2563eb; font-weight: 600;">🔵 ${occCount} Đang ở</span>
+            ${cleanCount > 0 ? `<span style="color: #d97706; font-weight: 600;">🟡 ${cleanCount} Dọn dẹp</span>` : ""}
+            ${maintCount > 0 ? `<span style="color: #475569; font-weight: 600;">⚪ ${maintCount} Bảo trì</span>` : ""}
+          </div>
+        </div>
+        <div class="floor-rooms-row">
+          ${roomsInFloor.map(r => `
+            <div class="floor-room-box ${r.status}" onclick="openRoomDetailModal('${r.id}')" title="Bấm để xem chi tiết & điều phối">
+              <div class="fr-header">
+                <span class="fr-number">${r.roomNumber}</span>
+                <span style="font-size: 1rem;">
+                  ${r.status === 'available' ? '🟢' : r.status === 'occupied' ? '🔵' : r.status === 'cleaning' ? '🟡' : '⚪'}
+                </span>
+              </div>
+              <div class="fr-type">${r.roomType}</div>
+              <div style="font-size: 0.75rem; color: var(--admin-primary); font-weight: 700;">
+                ${formatCurrencyVND(r.price)}/đêm
+              </div>
+              ${r.status === 'occupied' ? `
+                <div class="fr-guest-tag">
+                  👤 ${r.guestName || "Khách lưu trú"}
+                </div>
+              ` : `
+                <div style="font-size: 0.72rem; color: #64748b; margin-top: auto;">
+                  ${getStatusText(r.status)}
+                </div>
+              `}
+            </div>
+          `).join("")}
+        </div>
       </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 function filterFloorMapStatus(status, el) {

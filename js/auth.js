@@ -228,11 +228,32 @@ function addBookingToCurrentUser(bookingData) {
     if (roomsStr) {
       let rooms = JSON.parse(roomsStr);
       if (Array.isArray(rooms)) {
-        // Tìm phòng trống phù hợp với khách sạn
-        let targetRoom = rooms.find(r => r.hotelId === bookingData.hotelId && r.status === "available");
-        if (!targetRoom) {
-          targetRoom = rooms.find(r => r.hotelId === bookingData.hotelId);
+        let targetRoom = null;
+        // 1. Ưu tiên tìm đúng mã phòng hoặc ID phòng khách hàng đã tự chọn từ sơ đồ tầng
+        if (bookingData.roomId) {
+          targetRoom = rooms.find(r => r.id === bookingData.roomId);
+        } else if (bookingData.roomNumber) {
+          targetRoom = rooms.find(r => r.roomNumber === bookingData.roomNumber);
         }
+
+        // 2. Nếu chưa chọn phòng cụ thể hoặc phòng không khả dụng, tự động gán phòng trống thuộc đúng hạng phòng
+        if (!targetRoom || targetRoom.status !== "available") {
+          const cat = (bookingData.category || bookingData.roomType || "").toLowerCase();
+          targetRoom = rooms.find(r => {
+            const rCat = (r.category || r.roomType || "").toLowerCase();
+            const matchCat = (cat.includes("deluxe") && (rCat.includes("deluxe") || r.floor === 38)) ||
+                             (cat.includes("premier") && (rCat.includes("premier") || r.floor === 45)) ||
+                             (cat.includes("junior") && (rCat.includes("junior") || r.floor === 51)) ||
+                             (cat.includes("presidential") && (rCat.includes("president") || rCat.includes("grand") || r.floor === 60 || r.floor === 65));
+            return matchCat && r.status === "available";
+          });
+        }
+
+        // 3. Dự phòng bất kỳ phòng trống nào trong khách sạn
+        if (!targetRoom) {
+          targetRoom = rooms.find(r => r.status === "available");
+        }
+
         if (targetRoom) {
           targetRoom.status = "occupied";
           targetRoom.guestName = bookingData.customerName;
@@ -241,6 +262,7 @@ function addBookingToCurrentUser(bookingData) {
           targetRoom.checkin = bookingData.checkin;
           targetRoom.checkout = bookingData.checkout;
           bookingData.roomNumber = targetRoom.roomNumber;
+          bookingData.floor = targetRoom.floor;
           localStorage.setItem("traveloka_hotel_rooms", JSON.stringify(rooms));
         }
       }

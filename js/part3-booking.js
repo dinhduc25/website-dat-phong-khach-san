@@ -680,12 +680,20 @@ function submitBookingForm(e) {
   const paymentMethod = paymentMethodInput ? paymentMethodInput.value : "Thanh toán tại khách sạn";
   const noteInput = document.getElementById("bm-special-requests");
 
+  const selectedRoomNumber = modal.getAttribute("data-selected-room-number") || "";
+  const selectedRoomId = modal.getAttribute("data-selected-room-id") || "";
+  const selectedRoomFloor = modal.getAttribute("data-selected-room-floor") || "";
+
   const newBooking = {
     bookingId: "LT-HN-" + Math.floor(10000 + Math.random() * 90000),
     hotelId: hotel.id,
     hotelName: hotel.name,
     hotelImage: hotel.image,
+    category: hotel.category,
     roomType: roomName,
+    roomNumber: selectedRoomNumber,
+    roomId: selectedRoomId,
+    floor: selectedRoomFloor ? parseInt(selectedRoomFloor) : undefined,
     checkin: currentSearchState.checkin,
     checkout: currentSearchState.checkout,
     nights: currentSearchState.nights,
