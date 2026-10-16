@@ -11,6 +11,8 @@ const DEFAULT_HOTEL_USERS = [
   {
     id: "usr_admin_01",
     fullName: "Quản Trị Viên Lotte (General Manager)",
+    idCard: "001090001234",
+    identityNumber: "001090001234",
     email: "admin@lottehotel.vn",
     phone: "0999888999",
     password: "admin",
@@ -23,6 +25,8 @@ const DEFAULT_HOTEL_USERS = [
   {
     id: "usr_lotte_01",
     fullName: "Nguyễn Hoàng Lotte",
+    idCard: "001202008899",
+    identityNumber: "001202008899",
     email: "demo@lottehotel.vn",
     phone: "0901234567",
     password: "123456",
@@ -34,6 +38,7 @@ const DEFAULT_HOTEL_USERS = [
         customerName: "Nguyễn Hoàng Lotte",
         customerPhone: "0901234567",
         customerEmail: "demo@lottehotel.vn",
+        identityNumber: "001202008899",
         hotelId: "lotte-hotel-hanoi",
         hotelName: "Lotte Hotel Hanoi (5 Sao Đẳng Cấp)",
         hotelImage: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
@@ -54,7 +59,61 @@ const DEFAULT_HOTEL_USERS = [
   },
   {
     id: "usr_lotte_02",
+    fullName: "Đỗ Minh Tuấn",
+    idCard: "001088012345",
+    identityNumber: "001088012345",
+    email: "minhtuan.do@gmail.com",
+    phone: "0912445566",
+    password: "123456",
+    role: "Khách hàng Thân thiết (Lotte Club Gold)",
+    createdAt: "2026-09-05T09:15:00Z",
+    bookings: [],
+    wishlist: ["lotte-deluxe"]
+  },
+  {
+    id: "usr_lotte_03",
+    fullName: "Phạm Hải Đăng",
+    idCard: "001092005678",
+    identityNumber: "001092005678",
+    email: "haidang.pham@vpb.com.vn",
+    phone: "0934889922",
+    password: "123456",
+    role: "VIP Diamond Club",
+    createdAt: "2026-09-10T14:20:00Z",
+    bookings: [],
+    wishlist: ["lotte-premier"]
+  },
+  {
+    id: "usr_lotte_04",
+    fullName: "Vũ Đình Trọng",
+    idCard: "001085009988",
+    identityNumber: "001085009988",
+    email: "trongvu@lottecenter.vn",
+    phone: "0977889900",
+    password: "123456",
+    role: "VIP Diamond Club",
+    createdAt: "2026-09-12T11:00:00Z",
+    bookings: [],
+    wishlist: ["lotte-presidential-suite"]
+  },
+  {
+    id: "usr_lotte_05",
+    fullName: "Hoàng Mai Linh",
+    idCard: "001195004321",
+    identityNumber: "001195004321",
+    email: "mailinh.hoang@gmail.com",
+    phone: "0988776655",
+    password: "123456",
+    role: "Hội viên Bạc (Silver Club)",
+    createdAt: "2026-09-14T16:30:00Z",
+    bookings: [],
+    wishlist: []
+  },
+  {
+    id: "usr_lotte_06",
     fullName: "Trần Thị Bích",
+    idCard: "034195007766",
+    identityNumber: "034195007766",
     email: "khachhang@gmail.com",
     phone: "0987654321",
     password: "123456",
@@ -75,13 +134,37 @@ function getHotelUsersArray() {
   try {
     const parsed = JSON.parse(stored);
     let users = Array.isArray(parsed) && parsed.length > 0 ? parsed : [...DEFAULT_HOTEL_USERS];
+
+    // Tự động gán idCard / CCCD nếu bản ghi cũ chưa có
+    let hasChanges = false;
+    users = users.map((u, i) => {
+      if (!u.idCard && !u.identityNumber) {
+        const phoneDigits = (u.phone || "").replace(/\D/g, "");
+        const mockCCCD = phoneDigits ? ("001" + phoneDigits).slice(0, 12).padEnd(12, "8") : ("0012020088" + (10 + i));
+        u.idCard = mockCCCD;
+        u.identityNumber = mockCCCD;
+        hasChanges = true;
+      } else if (!u.idCard && u.identityNumber) {
+        u.idCard = u.identityNumber;
+        hasChanges = true;
+      } else if (u.idCard && !u.identityNumber) {
+        u.identityNumber = u.idCard;
+        hasChanges = true;
+      }
+      return u;
+    });
+
     // Đảm bảo luôn có tài khoản Admin và có cờ isAdmin
     const adminIdx = users.findIndex(u => u.email === "admin@lottehotel.vn");
     if (adminIdx === -1) {
       users.unshift(DEFAULT_HOTEL_USERS[0]);
-      saveHotelUsersArray(users);
+      hasChanges = true;
     } else if (!users[adminIdx].isAdmin) {
       users[adminIdx].isAdmin = true;
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
       saveHotelUsersArray(users);
     }
     return users;

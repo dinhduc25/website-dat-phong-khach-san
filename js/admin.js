@@ -2343,7 +2343,7 @@ function renderCustomersTable() {
   const bookings = getAdminBookings();
 
   if (users.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: #94a3b8;">Chưa có tài khoản khách hàng nào</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 24px; color: #94a3b8;">Chưa có tài khoản khách hàng nào</td></tr>`;
     return;
   }
 
@@ -2351,16 +2351,26 @@ function renderCustomersTable() {
     // Tính tổng số lượt đặt và tổng chi tiêu của user này
     const userBookings = bookings.filter(b => b.customerPhone === u.phone || b.customerEmail === u.email);
     const totalSpent = userBookings.reduce((sum, b) => sum + (b.rawAmount || parseInt((b.totalPrice || "0").replace(/\D/g, "")) || 0), 0);
+    const cccd = u.idCard || u.identityNumber || "Chưa cập nhật";
+    const isSpecialAdmin = u.isAdmin || u.email === "admin@lottehotel.vn";
 
     return `
       <tr>
         <td>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="width: 32px; height: 32px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: ${isSpecialAdmin ? '#fef3c7' : '#e0f2fe'}; color: ${isSpecialAdmin ? '#b45309' : '#0284c7'}; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem;">
               ${(u.fullName || "K").charAt(0).toUpperCase()}
             </div>
-            <strong>${u.fullName}</strong>
+            <div>
+              <strong>${u.fullName}</strong>
+              ${isSpecialAdmin ? '<span style="background: #f59e0b; color: #fff; font-size: 0.65rem; padding: 1px 5px; border-radius: 3px; margin-left: 4px; font-weight: 800;">ADMIN</span>' : ''}
+            </div>
           </div>
+        </td>
+        <td>
+          <span style="font-family: monospace; font-weight: 700; color: #0f172a; background: #f8fafc; padding: 3px 8px; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.82rem; letter-spacing: 0.5px;">
+            ${cccd}
+          </span>
         </td>
         <td>${u.email}</td>
         <td><strong>${u.phone}</strong></td>
@@ -2373,9 +2383,21 @@ function renderCustomersTable() {
         <td><strong style="color: #059669;">${formatCurrencyVND(totalSpent)}</strong></td>
         <td>${formatDateDisplay(u.createdAt || "2026-09-01")}</td>
         <td>
-          <button type="button" class="btn btn-outline" style="font-size: 0.74rem; padding: 3px 8px;" onclick="viewCustomerBookings('${u.phone}')">
-            Xem lịch sử đặt
-          </button>
+          <div style="display: flex; gap: 5px; align-items: center; justify-content: center; flex-wrap: wrap;">
+            <button type="button" class="btn" style="font-size: 0.74rem; padding: 4px 8px; background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;" onclick="openEditCustomerModal('${u.id}')" title="Sửa thông tin khách hàng & CCCD">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              Sửa
+            </button>
+            ${!isSpecialAdmin ? `
+              <button type="button" class="btn" style="font-size: 0.74rem; padding: 4px 8px; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;" onclick="deleteCustomer('${u.id}')" title="Xóa khách hàng">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                Xóa
+              </button>
+            ` : ''}
+            <button type="button" class="btn btn-outline" style="font-size: 0.74rem; padding: 4px 8px; display: inline-flex; align-items: center; gap: 3px;" onclick="viewCustomerBookings('${u.phone}')" title="Xem lịch sử đặt phòng">
+              Lịch sử
+            </button>
+          </div>
         </td>
       </tr>
     `;
@@ -2393,40 +2415,135 @@ function viewCustomerBookings(phone) {
 
 function openAddCustomerModal() {
   document.getElementById("form-customer").reset();
+  const idInput = document.getElementById("cust-id");
+  if (idInput) idInput.value = "";
+  const titleEl = document.getElementById("cust-modal-title");
+  if (titleEl) titleEl.textContent = "Thêm Khách Hàng / Hội Viên Mới";
+  const btnEl = document.getElementById("btn-save-customer");
+  if (btnEl) btnEl.textContent = "Lưu Khách Hàng";
+  openAdminModal("modal-customer");
+}
+
+function openEditCustomerModal(userId) {
+  const users = typeof getHotelUsersArray === "function" ? getHotelUsersArray() : [];
+  const u = users.find(x => x.id === userId);
+  if (!u) {
+    showAdminToast("Không tìm thấy thông tin khách hàng!");
+    return;
+  }
+
+  const idInput = document.getElementById("cust-id");
+  const nameInput = document.getElementById("cust-name");
+  const idCardInput = document.getElementById("cust-idcard");
+  const emailInput = document.getElementById("cust-email");
+  const phoneInput = document.getElementById("cust-phone");
+  const tierSelect = document.getElementById("cust-tier");
+  const titleEl = document.getElementById("cust-modal-title");
+  const btnEl = document.getElementById("btn-save-customer");
+
+  if (idInput) idInput.value = u.id;
+  if (nameInput) nameInput.value = u.fullName || "";
+  if (idCardInput) idCardInput.value = u.idCard || u.identityNumber || "";
+  if (emailInput) emailInput.value = u.email || "";
+  if (phoneInput) phoneInput.value = u.phone || "";
+  if (tierSelect) tierSelect.value = u.role || "Khách hàng Mới";
+  if (titleEl) titleEl.textContent = `Chỉnh Sửa Khách Hàng: ${u.fullName}`;
+  if (btnEl) btnEl.textContent = "Cập Nhật Khách Hàng";
+
   openAdminModal("modal-customer");
 }
 
 function handleSaveCustomerSubmit(e) {
   e.preventDefault();
+  const custId = document.getElementById("cust-id") ? document.getElementById("cust-id").value.trim() : "";
   const name = document.getElementById("cust-name").value.trim();
+  const idCard = document.getElementById("cust-idcard") ? document.getElementById("cust-idcard").value.trim() : "";
   const email = document.getElementById("cust-email").value.trim();
   const phone = document.getElementById("cust-phone").value.trim();
   const tier = document.getElementById("cust-tier").value;
 
-  const users = typeof getHotelUsersArray === "function" ? getHotelUsersArray() : [];
-  if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-    alert("Email này đã tồn tại trong hệ thống!");
+  if (!idCard) {
+    alert("Vui lòng nhập Số Căn Cước Công Dân (CCCD / CMND)!");
     return;
   }
 
-  const newUser = {
-    id: "usr_" + Date.now(),
-    fullName: name,
-    email,
-    phone,
-    password: "123",
-    role: tier,
-    createdAt: new Date().toISOString(),
-    bookings: [],
-    wishlist: []
-  };
+  if (idCard.length < 9 || idCard.length > 12 || !/^\d+$/.test(idCard)) {
+    alert("Số CCCD / CMND phải gồm từ 9 đến 12 chữ số!");
+    return;
+  }
 
-  users.push(newUser);
-  if (typeof saveHotelUsersArray === "function") saveHotelUsersArray(users);
+  let users = typeof getHotelUsersArray === "function" ? getHotelUsersArray() : [];
+
+  if (custId) {
+    // Chỉnh sửa khách hàng hiện có
+    const idx = users.findIndex(u => u.id === custId);
+    if (idx === -1) {
+      alert("Khách hàng không tồn tại trong hệ thống!");
+      return;
+    }
+
+    // Kiểm tra trùng email với tài khoản khác
+    if (users.some((u, i) => i !== idx && u.email.toLowerCase() === email.toLowerCase())) {
+      alert("Email này đã được sử dụng bởi khách hàng khác!");
+      return;
+    }
+
+    users[idx].fullName = name;
+    users[idx].idCard = idCard;
+    users[idx].identityNumber = idCard;
+    users[idx].email = email;
+    users[idx].phone = phone;
+    users[idx].role = tier;
+
+    if (typeof saveHotelUsersArray === "function") saveHotelUsersArray(users);
+    showAdminToast(`Đã cập nhật thông tin khách hàng ${name}`);
+  } else {
+    // Thêm khách hàng mới
+    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+      alert("Email này đã tồn tại trong hệ thống!");
+      return;
+    }
+
+    const newUser = {
+      id: "usr_" + Date.now(),
+      fullName: name,
+      idCard: idCard,
+      identityNumber: idCard,
+      email,
+      phone,
+      password: "123",
+      role: tier,
+      createdAt: new Date().toISOString(),
+      bookings: [],
+      wishlist: []
+    };
+
+    users.push(newUser);
+    if (typeof saveHotelUsersArray === "function") saveHotelUsersArray(users);
+    showAdminToast(`Đã thêm khách hàng ${name} vào hệ thống`);
+  }
 
   closeAdminModal("modal-customer");
-  showAdminToast(`Đã thêm khách hàng ${name}`);
   renderCustomersTable();
+}
+
+function deleteCustomer(userId) {
+  let users = typeof getHotelUsersArray === "function" ? getHotelUsersArray() : [];
+  const u = users.find(x => x.id === userId);
+  if (!u) return;
+
+  if (u.isAdmin || u.email === "admin@lottehotel.vn") {
+    alert("Không thể xóa tài khoản Quản Trị Viên hệ thống!");
+    return;
+  }
+
+  const cccdInfo = u.idCard || u.identityNumber ? ` (CCCD: ${u.idCard || u.identityNumber})` : "";
+  if (confirm(`Bạn có chắc chắn muốn xóa khách hàng "${u.fullName}"${cccdInfo} khỏi hệ thống?`)) {
+    users = users.filter(x => x.id !== userId);
+    if (typeof saveHotelUsersArray === "function") saveHotelUsersArray(users);
+    showAdminToast(`Đã xóa khách hàng ${u.fullName}`);
+    renderCustomersTable();
+  }
 }
 
 // ========================================================

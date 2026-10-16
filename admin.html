@@ -698,13 +698,14 @@
               <thead>
                 <tr>
                   <th>Họ Và Tên</th>
+                  <th>Số CCCD / CMND</th>
                   <th>Email</th>
                   <th>Số Điện Thoại</th>
                   <th>Hạng Thành Viên</th>
                   <th>Số Lần Đặt</th>
                   <th>Tổng Chi Tiêu</th>
                   <th>Ngày Gia Nhập</th>
-                  <th>Thao Tác</th>
+                  <th style="text-align: center; min-width: 175px;">Thao Tác</th>
                 </tr>
               </thead>
               <tbody id="customers-table-tbody">
@@ -1179,19 +1180,24 @@
   </div>
 
   <!-- ========================================================
-       MODAL 5: THÊM KHÁCH HÀNG (ADD CUSTOMER)
+       MODAL 5: THÊM & SỬA KHÁCH HÀNG (ADD & EDIT CUSTOMER)
        ======================================================== -->
   <div class="modal-overlay" id="modal-customer">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title">Thêm Khách Hàng / Hội Viên Mới</h3>
+        <h3 class="modal-title" id="cust-modal-title">Thêm Khách Hàng / Hội Viên Mới</h3>
         <button type="button" class="btn-close-modal" onclick="closeAdminModal('modal-customer')">&times;</button>
       </div>
       <form id="form-customer" onsubmit="handleSaveCustomerSubmit(event)">
+        <input type="hidden" id="cust-id" value="">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label" for="cust-name">Họ và tên khách hàng *</label>
             <input type="text" id="cust-name" class="form-control" required placeholder="Nguyễn Văn A">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cust-idcard">Số Căn Cước Công Dân (CCCD / CMND) *</label>
+            <input type="text" id="cust-idcard" class="form-control" required placeholder="Ví dụ: 001202008899" maxlength="12" pattern="[0-9]{9,12}" title="Vui lòng nhập từ 9 đến 12 chữ số CCCD/CMND">
           </div>
           <div class="form-grid-2">
             <div class="form-group">
@@ -1215,7 +1221,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline" onclick="closeAdminModal('modal-customer')">Hủy bỏ</button>
-          <button type="submit" class="btn btn-primary">Lưu Khách Hàng</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-customer">Lưu Khách Hàng</button>
         </div>
       </form>
     </div>
