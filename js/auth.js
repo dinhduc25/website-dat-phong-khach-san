@@ -306,11 +306,28 @@ function addBookingToCurrentUser(bookingData) {
     allBookings.unshift(bookingData);
     localStorage.setItem("traveloka_all_bookings", JSON.stringify(allBookings));
 
-    // Cập nhật trạng thái phòng thực tế sang "occupied" (Đang có khách) nếu có trong danh sách phòng
+    // Cập nhật trạng thái phòng — CHỈ chuyển "occupied" nếu check-in hôm nay hoặc trước đó
     const roomsStr = localStorage.getItem("traveloka_hotel_rooms");
     if (roomsStr) {
       let rooms = JSON.parse(roomsStr);
       if (Array.isArray(rooms)) {
+        // Hàm kiểm tra trùng lịch nội tuyến
+        function hasDateConflict(roomNumber, reqIn, reqOut) {
+          return allBookings.some(b => {
+            if (b.status === "Đã hủy" || b.status === "Hoàn thành") return false;
+            if (b.roomNumber !== roomNumber) return false;
+            // Bỏ qua chính đơn hiện tại (vừa thêm ở trên)
+            if (b.bookingId === bookingData.bookingId) return false;
+            const bIn = new Date(b.checkin);
+            const bOut = new Date(b.checkout);
+            if (isNaN(bIn) || isNaN(bOut)) return false;
+            return reqIn < bOut && bIn < reqOut;
+          });
+        }
+
+        const reqIn = new Date(bookingData.checkin);
+        const reqOut = new Date(bookingData.checkout);
+
         let targetRoom = null;
         // 1. Ưu tiên tìm đúng mã phòng hoặc ID phòng khách hàng đã tự chọn từ sơ đồ tầng
         if (bookingData.roomId) {
@@ -319,8 +336,8 @@ function addBookingToCurrentUser(bookingData) {
           targetRoom = rooms.find(r => r.roomNumber === bookingData.roomNumber);
         }
 
-        // 2. Nếu chưa chọn phòng cụ thể hoặc phòng không khả dụng, tự động gán phòng trống thuộc đúng hạng phòng
-        if (!targetRoom || targetRoom.status !== "available") {
+        // 2. Nếu chưa chọn phòng cụ thể hoặc phòng không khả dụng hoặc trùng lịch, tự động gán phòng trống thuộc đúng hạng phòng
+        if (!targetRoom || targetRoom.status !== "available" || hasDateConflict(targetRoom.roomNumber, reqIn, reqOut)) {
           const cat = (bookingData.category || bookingData.roomType || "").toLowerCase();
           targetRoom = rooms.find(r => {
             const rCat = (r.category || r.roomType || "").toLowerCase();
@@ -328,23 +345,37 @@ function addBookingToCurrentUser(bookingData) {
                              (cat.includes("premier") && (rCat.includes("premier") || r.floor === 45)) ||
                              (cat.includes("junior") && (rCat.includes("junior") || r.floor === 51)) ||
                              (cat.includes("presidential") && (rCat.includes("president") || rCat.includes("grand") || r.floor === 60 || r.floor === 65));
-            return matchCat && r.status === "available";
+            return matchCat && r.status === "available" && !hasDateConflict(r.roomNumber, reqIn, reqOut);
           });
         }
 
-        // 3. Dự phòng bất kỳ phòng trống nào trong khách sạn
+        // 3. Dự phòng bất kỳ phòng trống nào không trùng lịch
         if (!targetRoom) {
-          targetRoom = rooms.find(r => r.status === "available");
+          targetRoom = rooms.find(r => r.status === "available" && !hasDateConflict(r.roomNumber, reqIn, reqOut));
         }
 
         if (targetRoom) {
-          targetRoom.status = "occupied";
-          targetRoom.guestName = bookingData.customerName;
-          targetRoom.guestPhone = bookingData.customerPhone;
-          targetRoom.bookingId = bookingData.bookingId;
-          targetRoom.checkin = bookingData.checkin;
-          targetRoom.checkout = bookingData.checkout;
+          // Xác định check-in hôm nay hay tương lai
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const checkinDate = new Date(bookingData.checkin);
+          checkinDate.setHours(0, 0, 0, 0);
+          const isCheckinToday = checkinDate.getTime() <= today.getTime();
+
+          if (isCheckinToday) {
+            // Check-in hôm nay → chuyển phòng thành occupied
+            targetRoom.status = "occupied";
+            targetRoom.guestName = bookingData.customerName;
+            targetRoom.guestPhone = bookingData.customerPhone;
+            targetRoom.bookingId = bookingData.bookingId;
+            targetRoom.checkin = bookingData.checkin;
+            targetRoom.checkout = bookingData.checkout;
+          }
+          // Đặt phòng tương lai → phòng GIỮ NGUYÊN "available"
+          // Lịch đặt đã lưu trong allBookings, hàm hasDateConflict sẽ ngăn đặt chồng
+
           bookingData.roomNumber = targetRoom.roomNumber;
+          bookingData.roomId = targetRoom.id;
           bookingData.floor = targetRoom.floor;
           localStorage.setItem("traveloka_hotel_rooms", JSON.stringify(rooms));
         }
