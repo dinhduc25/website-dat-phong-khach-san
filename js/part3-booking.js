@@ -684,6 +684,10 @@ function submitBookingForm(e) {
   const selectedRoomId = modal.getAttribute("data-selected-room-id") || "";
   const selectedRoomFloor = modal.getAttribute("data-selected-room-floor") || "";
 
+  // Thanh toán online → tự động xác nhận | Thanh toán tại khách sạn → chờ admin xác nhận
+  const isOnlinePayment = paymentMethod !== "Thanh toán tại khách sạn";
+  const bookingStatus = isOnlinePayment ? "Đã xác nhận" : "Chờ xác nhận";
+
   const newBooking = {
     bookingId: "LT-HN-" + Math.floor(10000 + Math.random() * 90000),
     hotelId: hotel.id,
@@ -700,7 +704,7 @@ function submitBookingForm(e) {
     guests: `${currentSearchState.adults} người lớn, ${currentSearchState.children} trẻ em`,
     rooms: currentSearchState.rooms,
     totalPrice: typeof formatVND === 'function' ? formatVND(finalTotal) : finalTotal + '₫',
-    status: "Đã xác nhận",
+    status: bookingStatus,
     paymentMethod: paymentMethod,
     identityNumber: (document.getElementById("bm-guest-id") || {}).value || "",
     note: noteInput ? noteInput.value.trim() : "",

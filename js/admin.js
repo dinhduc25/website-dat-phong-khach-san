@@ -1998,7 +1998,11 @@ function renderBookingsTable(bookings) {
           <button type="button" class="btn-table-action" title="Xem hóa đơn & In" onclick="openInvoiceModal('${b.bookingId}')">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
           </button>
-          ${b.status === "Đã xác nhận" ? `
+          ${b.status === "Chờ xác nhận" ? `
+            <button type="button" class="btn-table-action" title="Xác nhận đơn (sau khi khách thanh toán tại quầy)" style="color: #0ea5e9; font-weight: 700;" onclick="changeBookingStatus('${b.bookingId}', 'Đã xác nhận')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+          ` : b.status === "Đã xác nhận" ? `
             <button type="button" class="btn-table-action" title="Nhận phòng (Check-in)" style="color: #059669;" onclick="changeBookingStatus('${b.bookingId}', 'Đang lưu trú')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
             </button>
@@ -3280,7 +3284,9 @@ function closeAdminModal(modalId) {
 }
 
 function renderStatusBadge(status) {
-  if (status === "Đang lưu trú") {
+  if (status === "Chờ xác nhận") {
+    return `<span class="status-badge" style="background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;">⏳ Chờ xác nhận</span>`;
+  } else if (status === "Đang lưu trú") {
     return `<span class="status-badge occupied">🔵 Đang lưu trú</span>`;
   } else if (status === "Đã xác nhận") {
     return `<span class="status-badge confirmed">🟢 Đã xác nhận</span>`;
