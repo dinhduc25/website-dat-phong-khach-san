@@ -957,9 +957,14 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="room-hotel">Hạng phòng *</label>
-              <select id="room-hotel" class="form-control" required>
-                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi (5 sao duy nhất)</option></select>
+              <label class="form-label" for="room-category">Hạng phòng *</label>
+              <select id="room-category" class="form-control" required>
+                <option value="">-- Chọn hạng phòng --</option>
+                <option value="deluxe">Deluxe</option>
+                <option value="premier">Premier</option>
+                <option value="junior-suite">Junior Suite</option>
+                <option value="presidential-suite">Presidential Suite</option>
+              </select>
             </div>
           </div>
 
@@ -1058,7 +1063,11 @@
             <div class="form-group">
               <label class="form-label" for="wi-hotel-select">Chọn hạng phòng *</label>
               <select id="wi-hotel-select" class="form-control" required onchange="updateWalkinRoomOptions()">
-                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi • Hệ thống duy nhất</option>
+                <option value="">-- Chọn hạng phòng --</option>
+                <option value="deluxe">Deluxe (Tầng 38)</option>
+                <option value="premier">Premier (Tầng 45)</option>
+                <option value="junior-suite">Junior Suite (Tầng 51)</option>
+                <option value="presidential-suite">Presidential Suite (Tầng 60-65)</option>
             </select>
             </div>
           </div>

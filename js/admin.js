@@ -1554,7 +1554,7 @@ function openEditRoomModal(roomId) {
   `;
   document.getElementById("room-form-id").value = room.id;
   document.getElementById("room-number").value = room.roomNumber;
-  document.getElementById("room-hotel").value = room.hotelId;
+  document.getElementById("room-category").value = room.category || getRoomCategory(room);
   document.getElementById("room-type").value = room.roomType;
   document.getElementById("room-floor").value = room.floor;
   document.getElementById("room-price").value = room.price;
@@ -1571,9 +1571,12 @@ function handleSaveRoomSubmit(e) {
   e.preventDefault();
   const id = document.getElementById("room-form-id").value;
   const roomNumber = document.getElementById("room-number").value.trim();
-  const hotelId = document.getElementById("room-hotel").value;
-  const hotelSelect = document.getElementById("room-hotel");
-  const hotelName = hotelSelect.options[hotelSelect.selectedIndex].text.split("(")[0].trim();
+  const categorySelect = document.getElementById("room-category");
+  const category = categorySelect.value;
+  const categoryLabels = { "deluxe": "Deluxe", "premier": "Premier", "junior-suite": "Junior Suite", "presidential-suite": "Presidential Suite" };
+  const roomClass = categoryLabels[category] || "Deluxe";
+  const hotelId = "lotte-hotel-hanoi";
+  const hotelName = "Lotte Hotel Hanoi";
   const roomType = document.getElementById("room-type").value.trim();
   const floor = parseInt(document.getElementById("room-floor").value) || 1;
   const price = parseInt(document.getElementById("room-price").value) || 2000000;
@@ -1595,6 +1598,8 @@ function handleSaveRoomSubmit(e) {
         roomNumber,
         hotelId,
         hotelName,
+        category,
+        roomClass,
         roomType,
         floor,
         price,
@@ -1613,6 +1618,8 @@ function handleSaveRoomSubmit(e) {
       roomNumber,
       hotelId,
       hotelName,
+      category,
+      roomClass,
       roomType,
       floor,
       price,
@@ -2089,11 +2096,27 @@ function updateWalkinRoomOptions(preselectedRoomId = null) {
   const roomSelect = document.getElementById("wi-room-select");
   if (!hotelSelect || !roomSelect) return;
 
-  const hotelId = hotelSelect.value;
   const rooms = getAdminRooms();
 
-  // Tìm các phòng trống của hạng phòng này
-  let availRooms = rooms.filter(r => r.hotelId === hotelId && r.status === "available");
+  // Nếu có preselectedRoomId, tự động chọn đúng hạng phòng tương ứng
+  if (preselectedRoomId) {
+    const targetRoom = rooms.find(r => r.id === preselectedRoomId);
+    if (targetRoom && targetRoom.category) {
+      hotelSelect.value = targetRoom.category;
+    }
+  }
+
+  const selectedCategory = hotelSelect.value;
+
+  // Nếu chưa chọn hạng phòng, hiển thị thông báo
+  if (!selectedCategory) {
+    roomSelect.innerHTML = `<option value="">-- Vui lòng chọn hạng phòng trước --</option>`;
+    calculateWalkinTotal();
+    return;
+  }
+
+  // Tìm các phòng trống thuộc hạng phòng đã chọn
+  let availRooms = rooms.filter(r => r.category === selectedCategory && r.status === "available");
   
   if (availRooms.length === 0) {
     roomSelect.innerHTML = `<option value="">-- Hết phòng trống cho hạng phòng này --</option>`;
@@ -2144,8 +2167,8 @@ function handleWalkinSubmit(e) {
   const phone = document.getElementById("wi-customer-phone").value.trim();
   const email = document.getElementById("wi-customer-email").value.trim();
   const hotelSelect = document.getElementById("wi-hotel-select");
-  const hotelId = hotelSelect.value;
-  const hotelName = hotelSelect.options[hotelSelect.selectedIndex].text;
+  const hotelId = "lotte-hotel-hanoi";
+  const hotelName = "Lotte Hotel Hanoi";
   const roomSelect = document.getElementById("wi-room-select");
   const selectedOpt = roomSelect.options[roomSelect.selectedIndex];
 
