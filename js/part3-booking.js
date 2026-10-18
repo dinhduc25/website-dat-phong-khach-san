@@ -533,15 +533,15 @@ function updateBookingCalculation(hotelId) {
 
   const qrPanel = document.getElementById('booking-qr-payment');
   const paymentChoice = document.querySelector("input[name='paymentMethod']:checked");
-  if (qrPanel) qrPanel.hidden = !(paymentChoice && paymentChoice.value === 'QR Pay');
-  if (qrPanel && !qrPanel.hidden) {
-    const amount = document.getElementById('booking-modal')?.getAttribute('data-final-total') || finalTotal;
-    const refEl = document.getElementById('booking-qr-reference');
-    const existingRef = refEl && refEl.textContent.match(/LOTTE[A-Z0-9]+/);
-    const ref = existingRef ? existingRef[0] : 'LOTTE' + Math.random().toString(36).slice(2, 9).toUpperCase();
-    if (refEl) refEl.textContent = `Nội dung: ${ref} • Số tiền: ${Number(amount).toLocaleString('vi-VN')}₫`;
-    const qr = document.getElementById('booking-qr-image');
-    if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(`QR Pay|Nguoi nhan: Dinh Tien Duc|STK: 1234567899999|LOTTE HOTEL HANOI|${ref}|${amount}`);
+  const cashAtHotel = !!(paymentChoice && paymentChoice.value === 'Thanh toán tại khách sạn');
+  const showQRInfo = !!(paymentChoice && (paymentChoice.value === 'QR Pay' || cashAtHotel));
+  if (qrPanel) {
+    qrPanel.hidden = !showQRInfo;
+    if (cashAtHotel) {
+      qrPanel.innerHTML = '<div class="qr-pay-details"><strong>Đặt phòng và thanh toán tại khách sạn</strong><p>Sau khi admin xác nhận còn phòng, quý khách cần chuyển khoản cọc 30% tổng tiền phòng bằng QR trong vòng 24 giờ. Khi admin xác nhận đã nhận cọc, khách sạn sẽ xếp phòng. 70% còn lại thanh toán bằng tiền mặt tại quầy khi nhận phòng.</p></div>';
+    } else if (showQRInfo) {
+      qrPanel.innerHTML = '<div class="qr-pay-details"><strong>Thanh toán toàn bộ bằng QR</strong><p>Yêu cầu đặt phòng cần được admin xác nhận còn phòng trước. Sau đó, vào mục “Đặt chỗ của tôi” và bấm “Thanh toán online bằng QR” để thanh toán toàn bộ tiền phòng.</p></div>';
+    }
   }
   modal.setAttribute("data-hotel-id", hotel.id);
   modal.setAttribute("data-final-total", finalTotal);
@@ -551,14 +551,15 @@ function updateBookingCalculation(hotelId) {
 document.addEventListener('change', (event) => {
   if (event.target && event.target.name === 'paymentMethod') {
     const panel = document.getElementById('booking-qr-payment');
-    const show = event.target.value === 'QR Pay';
-    if (panel) panel.hidden = !show;
-    if (show) {
-      const ref = 'LOTTE' + Math.random().toString(36).slice(2, 9).toUpperCase();
-      const amount = document.getElementById('booking-modal')?.getAttribute('data-final-total') || '1000000';
-      const refEl = document.getElementById('booking-qr-reference'); if (refEl) refEl.textContent = `Nội dung: ${ref} • Số tiền: ${Number(amount).toLocaleString('vi-VN')}₫`;
-      const qr = document.getElementById('booking-qr-image');
-      if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(`QR Pay|Nguoi nhan: Dinh Tien Duc|STK: 1234567899999|LOTTE HOTEL HANOI|${ref}|${amount}`);
+    const cashAtHotel = event.target.value === 'Thanh toán tại khách sạn';
+    const show = event.target.value === 'QR Pay' || cashAtHotel;
+    if (panel) {
+      panel.hidden = !show;
+      if (cashAtHotel) {
+        panel.innerHTML = '<div class="qr-pay-details"><strong>Cọc 30% online, còn lại thanh toán tiền mặt tại quầy</strong><p>Sau khi admin xác nhận còn phòng, quý khách chuyển khoản cọc 30% bằng QR trong 24 giờ. Sau khi cọc được xác nhận và phòng được xếp, quý khách thanh toán 70% còn lại bằng tiền mặt tại quầy khi nhận phòng.</p></div>';
+      } else if (show) {
+        panel.innerHTML = '<div class="qr-pay-details"><strong>Thanh toán toàn bộ bằng QR</strong><p>Sau khi admin xác nhận còn phòng, mở “Đặt chỗ của tôi” và chọn “Thanh toán online bằng QR” để thanh toán toàn bộ.</p></div>';
+      }
     }
   }
 });
@@ -700,7 +701,7 @@ function submitBookingForm(e) {
     guests: `${currentSearchState.adults} người lớn, ${currentSearchState.children} trẻ em`,
     rooms: currentSearchState.rooms,
     totalPrice: typeof formatVND === 'function' ? formatVND(finalTotal) : finalTotal + '₫',
-    status: "Đã xác nhận",
+    status: "Chờ admin xác nhận",
     paymentMethod: paymentMethod,
     identityNumber: (document.getElementById("bm-guest-id") || {}).value || "",
     note: noteInput ? noteInput.value.trim() : "",
@@ -796,8 +797,12 @@ function openMyBookingsModal() {
           <h4 style="font-size: 1.05rem; font-weight: 800; color: #1c2430; margin: 4px 0 2px;">${b.hotelName}</h4>
           <div style="font-size: 0.85rem; font-weight: 700; color: #0194f3;">🛏️ ${b.roomType}</div>
           <div class="my-booking-dates">📅 ${typeof formatDateDisplay === 'function' ? formatDateDisplay(b.checkin) : b.checkin} - ${typeof formatDateDisplay === 'function' ? formatDateDisplay(b.checkout) : b.checkout} (${b.nights} đêm)</div>
-          <div style="font-size: 0.78rem; color: #718096;">👥 ${b.guests} &bull; 💳 ${b.paymentMethod}</div>
+          <div style="font-size: 0.78rem; color: #718096;">👥 ${b.guests || 'Theo yêu cầu'} &bull; 💳 ${b.paymentMethod || 'Chưa chọn'}</div>
           <div class="my-booking-price">${b.totalPrice}</div>
+          ${b.customerNotice ? `<div style="margin:8px 0;padding:10px 12px;border-radius:8px;background:${b.customerNotice.type === 'payment_confirmed' ? '#ecfdf5' : '#eff6ff'};border:1px solid ${b.customerNotice.type === 'payment_confirmed' ? '#a7f3d0' : '#bfdbfe'};color:#1e293b;font-size:.83rem;"><strong>${b.customerNotice.title || 'Thông báo từ khách sạn'}</strong><div style="margin-top:4px;line-height:1.5;">${b.customerNotice.message || ''}</div></div>` : ''}
+          ${b.status === 'Chờ thanh toán' ? `<div style="margin:8px 0;padding:10px 12px;border-radius:8px;background:#fff7ed;color:#9a3412;font-size:.82rem;">${b.paymentSubmittedAt ? (b.paymentPlan === 'deposit_30_cash_at_hotel' ? 'Bạn đã gửi yêu cầu xác nhận cọc 30%. Vui lòng chờ admin đối chiếu khoản cọc.' : 'Bạn đã gửi yêu cầu thanh toán. Vui lòng chờ admin kiểm tra giao dịch.') : (b.paymentPlan === 'deposit_30_cash_at_hotel' || String(b.paymentMethod || '').toLowerCase().includes('khách sạn') ? 'Khách sạn đã xác nhận còn phòng. Bạn cần cọc 30% online trong vòng 24 giờ; 70% còn lại thanh toán tiền mặt tại quầy.' : 'Khách sạn đã xác nhận còn phòng. Bạn cần thanh toán trong vòng 24 giờ.')}</div>${b.paymentSubmittedAt ? '' : `<button type="button" class="btn btn-primary" style="margin:0 6px 8px 0;" onclick="openBookingPayment('${b.bookingId}')">${b.paymentPlan === 'deposit_30_cash_at_hotel' || String(b.paymentMethod || '').toLowerCase().includes('khách sạn') ? 'Thanh toán cọc 30% bằng QR' : 'Thanh toán online bằng QR'}</button>`}` : ''}
+          ${b.status === 'Đã cọc 30% - chờ nhận phòng' && b.roomNumber ? `<div style="margin:8px 0;padding:10px 12px;border-radius:8px;background:#ccfbf1;color:#115e59;font-size:.85rem;"><strong>Đã xác nhận cọc 30%: ${typeof formatVND === 'function' ? formatVND(b.depositAmount || 0) : Number(b.depositAmount || 0).toLocaleString('vi-VN') + '₫'}</strong><br><strong>Phòng đã xếp: ${b.roomNumber}</strong> · Tầng ${b.floor || '—'}<br>Còn thanh toán tiền mặt tại quầy: <strong>${typeof formatVND === 'function' ? formatVND(b.remainingAmount || 0) : Number(b.remainingAmount || 0).toLocaleString('vi-VN') + '₫'}</strong></div>` : ''}
+          ${b.status === 'Đã thanh toán - chờ nhận phòng' && b.roomNumber ? `<div style="margin:8px 0;padding:10px 12px;border-radius:8px;background:#ecfdf5;color:#065f46;font-size:.85rem;"><strong>Phòng đã xếp: ${b.roomNumber}</strong> · Tầng ${b.floor || '—'}${b.cashBalancePaidAt ? '<br>Đã thu đủ tiền phòng (cọc online + tiền mặt tại quầy).' : ''}</div>` : ''}
           <button type="button" class="btn btn-outline" onclick="showBookingDetails('${b.bookingId}')">Xem chi tiết</button> <button type="button" class="btn-cancel-booking" onclick="handleCancelBooking('${b.bookingId}')">Hủy đặt phòng này</button>
         </div>
       </div>
@@ -806,6 +811,26 @@ function openMyBookingsModal() {
 
   modal.classList.add("active");
 }
+
+function openBookingPayment(bookingId) {
+  const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  const booking = (user && Array.isArray(user.bookings) ? user.bookings : []).find(b => b.bookingId === bookingId);
+  if (!booking) { alert('Không tìm thấy đơn đặt phòng trong tài khoản của bạn.'); return; }
+  if (booking.status !== 'Chờ thanh toán') {
+    alert('Bạn chỉ có thể thanh toán sau khi admin xác nhận còn phòng.');
+    return;
+  }
+  localStorage.setItem('lotte_selected_payment_booking', JSON.stringify(booking));
+  window.location.href = 'payment.html?bookingId=' + encodeURIComponent(bookingId);
+}
+
+// Khi admin cập nhật đơn từ tab khác, làm mới danh sách nếu modal đặt chỗ đang mở.
+window.addEventListener('storage', function (event) {
+  if (event.key === 'traveloka_hotel_users' || event.key === 'traveloka_all_bookings') {
+    const modal = document.getElementById('my-bookings-modal');
+    if (modal && modal.classList.contains('active')) openMyBookingsModal();
+  }
+});
 
 function showBookingDetails(bookingId) {
   const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;

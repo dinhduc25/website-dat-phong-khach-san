@@ -223,50 +223,7 @@ function addBookingToCurrentUser(bookingData) {
     allBookings.unshift(bookingData);
     localStorage.setItem("traveloka_all_bookings", JSON.stringify(allBookings));
 
-    // Cập nhật trạng thái phòng thực tế sang "occupied" (Đang có khách) nếu có trong danh sách phòng
-    const roomsStr = localStorage.getItem("traveloka_hotel_rooms");
-    if (roomsStr) {
-      let rooms = JSON.parse(roomsStr);
-      if (Array.isArray(rooms)) {
-        let targetRoom = null;
-        // 1. Ưu tiên tìm đúng mã phòng hoặc ID phòng khách hàng đã tự chọn từ sơ đồ tầng
-        if (bookingData.roomId) {
-          targetRoom = rooms.find(r => r.id === bookingData.roomId);
-        } else if (bookingData.roomNumber) {
-          targetRoom = rooms.find(r => r.roomNumber === bookingData.roomNumber);
-        }
-
-        // 2. Nếu chưa chọn phòng cụ thể hoặc phòng không khả dụng, tự động gán phòng trống thuộc đúng hạng phòng
-        if (!targetRoom || targetRoom.status !== "available") {
-          const cat = (bookingData.category || bookingData.roomType || "").toLowerCase();
-          targetRoom = rooms.find(r => {
-            const rCat = (r.category || r.roomType || "").toLowerCase();
-            const matchCat = (cat.includes("deluxe") && (rCat.includes("deluxe") || r.floor === 38)) ||
-                             (cat.includes("premier") && (rCat.includes("premier") || r.floor === 45)) ||
-                             (cat.includes("junior") && (rCat.includes("junior") || r.floor === 51)) ||
-                             (cat.includes("presidential") && (rCat.includes("president") || rCat.includes("grand") || r.floor === 60 || r.floor === 65));
-            return matchCat && r.status === "available";
-          });
-        }
-
-        // 3. Dự phòng bất kỳ phòng trống nào trong khách sạn
-        if (!targetRoom) {
-          targetRoom = rooms.find(r => r.status === "available");
-        }
-
-        if (targetRoom) {
-          targetRoom.status = "occupied";
-          targetRoom.guestName = bookingData.customerName;
-          targetRoom.guestPhone = bookingData.customerPhone;
-          targetRoom.bookingId = bookingData.bookingId;
-          targetRoom.checkin = bookingData.checkin;
-          targetRoom.checkout = bookingData.checkout;
-          bookingData.roomNumber = targetRoom.roomNumber;
-          bookingData.floor = targetRoom.floor;
-          localStorage.setItem("traveloka_hotel_rooms", JSON.stringify(rooms));
-        }
-      }
-    }
+    // Chưa giữ/gán phòng ở bước khách gửi yêu cầu. Admin kiểm tra phòng trống và xác nhận sau.
 
     // Thêm thông báo thời gian thực cho Quản Trị Viên (Admin)
     const notifsStr = localStorage.getItem("traveloka_admin_notifications");
