@@ -531,37 +531,10 @@ function updateBookingCalculation(hotelId) {
   if (calcDiscountEl) calcDiscountEl.textContent = appliedDiscount > 0 ? `-${typeof formatVND === 'function' ? formatVND(appliedDiscount) : appliedDiscount + '₫'}` : "0₫";
   if (calcTotalEl) calcTotalEl.textContent = typeof formatVND === 'function' ? formatVND(finalTotal) : finalTotal + '₫';
 
-  const qrPanel = document.getElementById('booking-qr-payment');
-  const paymentChoice = document.querySelector("input[name='paymentMethod']:checked");
-  if (qrPanel) qrPanel.hidden = !(paymentChoice && paymentChoice.value === 'QR Pay');
-  if (qrPanel && !qrPanel.hidden) {
-    const amount = document.getElementById('booking-modal')?.getAttribute('data-final-total') || finalTotal;
-    const refEl = document.getElementById('booking-qr-reference');
-    const existingRef = refEl && refEl.textContent.match(/LOTTE[A-Z0-9]+/);
-    const ref = existingRef ? existingRef[0] : 'LOTTE' + Math.random().toString(36).slice(2, 9).toUpperCase();
-    if (refEl) refEl.textContent = `Nội dung: ${ref} • Số tiền: ${Number(amount).toLocaleString('vi-VN')}₫`;
-    const qr = document.getElementById('booking-qr-image');
-    if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(`QR Pay|Nguoi nhan: Dinh Tien Duc|STK: 1234567899999|LOTTE HOTEL HANOI|${ref}|${amount}`);
-  }
   modal.setAttribute("data-hotel-id", hotel.id);
   modal.setAttribute("data-final-total", finalTotal);
   modal.setAttribute("data-room-name", room ? room.name : "Deluxe Room");
 }
-
-document.addEventListener('change', (event) => {
-  if (event.target && event.target.name === 'paymentMethod') {
-    const panel = document.getElementById('booking-qr-payment');
-    const show = event.target.value === 'QR Pay';
-    if (panel) panel.hidden = !show;
-    if (show) {
-      const ref = 'LOTTE' + Math.random().toString(36).slice(2, 9).toUpperCase();
-      const amount = document.getElementById('booking-modal')?.getAttribute('data-final-total') || '1000000';
-      const refEl = document.getElementById('booking-qr-reference'); if (refEl) refEl.textContent = `Nội dung: ${ref} • Số tiền: ${Number(amount).toLocaleString('vi-VN')}₫`;
-      const qr = document.getElementById('booking-qr-image');
-      if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(`QR Pay|Nguoi nhan: Dinh Tien Duc|STK: 1234567899999|LOTTE HOTEL HANOI|${ref}|${amount}`);
-    }
-  }
-});
 
 function getClientPromosList() {
   const DEFAULT_PROMOS_FALLBACK = [
@@ -676,17 +649,14 @@ function submitBookingForm(e) {
 
   const roomName = modal.getAttribute("data-room-name") || "Deluxe City View";
   const finalTotal = parseInt(modal.getAttribute("data-final-total") || hotel.price);
-  const paymentMethodInput = document.querySelector("input[name='paymentMethod']:checked");
-  const paymentMethod = paymentMethodInput ? paymentMethodInput.value : "Thanh toán tại khách sạn";
+  // Ở bước gửi yêu cầu, khách chưa chọn phương thức thanh toán và chưa chọn số phòng cụ thể.
+  // Sau khi admin xác nhận còn phòng, khách sẽ chọn 100% online hoặc cọc 30% ở payment.html.
+  const paymentPlan = "";
+  const paymentMethod = "Chọn sau khi admin xác nhận còn phòng";
   const noteInput = document.getElementById("bm-special-requests");
-
-  const selectedRoomNumber = modal.getAttribute("data-selected-room-number") || "";
-  const selectedRoomId = modal.getAttribute("data-selected-room-id") || "";
-  const selectedRoomFloor = modal.getAttribute("data-selected-room-floor") || "";
-
-  // Thanh toán online → tự động xác nhận | Thanh toán tại khách sạn → chờ admin xác nhận
-  const isOnlinePayment = paymentMethod !== "Thanh toán tại khách sạn";
-  const bookingStatus = isOnlinePayment ? "Đã xác nhận" : "Chờ xác nhận";
+  const guestNameInput = document.getElementById("bm-guest-name");
+  const guestEmailInput = document.getElementById("bm-guest-email");
+  const guestPhoneInput = document.getElementById("bm-guest-phone");
 
   const newBooking = {
     bookingId: "LT-HN-" + Math.floor(10000 + Math.random() * 90000),
@@ -695,17 +665,27 @@ function submitBookingForm(e) {
     hotelImage: hotel.image,
     category: hotel.category,
     roomType: roomName,
-    roomNumber: selectedRoomNumber,
-    roomId: selectedRoomId,
-    floor: selectedRoomFloor ? parseInt(selectedRoomFloor) : undefined,
+    roomNumber: "",
+    roomId: "",
+    floor: undefined,
     checkin: currentSearchState.checkin,
     checkout: currentSearchState.checkout,
     nights: currentSearchState.nights,
     guests: `${currentSearchState.adults} người lớn, ${currentSearchState.children} trẻ em`,
     rooms: currentSearchState.rooms,
     totalPrice: typeof formatVND === 'function' ? formatVND(finalTotal) : finalTotal + '₫',
-    status: bookingStatus,
+    status: "Chờ admin xác nhận",
     paymentMethod: paymentMethod,
+    paymentPlan: paymentPlan,
+    paymentStatus: "Chưa thanh toán",
+    paymentSubmittedAt: null,
+    depositAmount: 0,
+    remainingAmount: 0,
+    customerName: guestNameInput ? guestNameInput.value.trim() : (currentUser.fullName || currentUser.name || ""),
+    guestName: guestNameInput ? guestNameInput.value.trim() : (currentUser.fullName || currentUser.name || ""),
+    customerEmail: guestEmailInput ? guestEmailInput.value.trim() : currentUser.email,
+    customerPhone: guestPhoneInput ? guestPhoneInput.value.trim() : currentUser.phone,
+    rawAmount: finalTotal,
     identityNumber: (document.getElementById("bm-guest-id") || {}).value || "",
     note: noteInput ? noteInput.value.trim() : "",
     bookedAt: new Date().toISOString()
@@ -800,9 +780,13 @@ function openMyBookingsModal() {
           <h4 style="font-size: 1.05rem; font-weight: 800; color: #1c2430; margin: 4px 0 2px;">${b.hotelName}</h4>
           <div style="font-size: 0.85rem; font-weight: 700; color: #0194f3;">🛏️ ${b.roomType}</div>
           <div class="my-booking-dates">📅 ${typeof formatDateDisplay === 'function' ? formatDateDisplay(b.checkin) : b.checkin} - ${typeof formatDateDisplay === 'function' ? formatDateDisplay(b.checkout) : b.checkout} (${b.nights} đêm)</div>
-          <div style="font-size: 0.78rem; color: #718096;">👥 ${b.guests} &bull; 💳 ${b.paymentMethod}</div>
+          <div style="font-size: 0.78rem; color: #718096;">👥 ${b.guests || 'Theo yêu cầu'} &bull; 💳 ${getClientBookingPaymentLabel(b)}</div>
           <div class="my-booking-price">${b.totalPrice}</div>
-          <button type="button" class="btn btn-outline" onclick="showBookingDetails('${b.bookingId}')">Xem chi tiết</button> <button type="button" class="btn-cancel-booking" onclick="handleCancelBooking('${b.bookingId}')">Hủy đặt phòng này</button>
+          ${b.customerNotice ? `<div style="margin:8px 0;padding:10px 12px;border-radius:8px;background:${b.customerNotice.type === 'payment_confirmed' ? '#ecfdf5' : '#eff6ff'};border:1px solid ${b.customerNotice.type === 'payment_confirmed' ? '#a7f3d0' : '#bfdbfe'};color:#1e293b;font-size:.83rem;"><strong>${b.customerNotice.title || 'Thông báo từ khách sạn'}</strong><div style="margin-top:4px;line-height:1.5;">${b.customerNotice.message || ''}</div></div>` : ''}
+          ${b.status === 'Chờ thanh toán' ? `<div style="margin:8px 0;padding:10px 12px;border-radius:8px;background:#fff7ed;color:#9a3412;font-size:.82rem;">${b.paymentSubmittedAt ? (b.paymentPlan === 'deposit_30_cash_at_hotel' ? 'Bạn đã gửi yêu cầu xác nhận cọc 30%. Vui lòng chờ admin đối chiếu khoản cọc.' : 'Bạn đã gửi yêu cầu thanh toán. Vui lòng chờ admin kiểm tra giao dịch.') : (b.paymentPlan === 'deposit_30_cash_at_hotel' || (!b.paymentPlan && String(b.paymentMethod || '').toLowerCase().includes('khách sạn')) ? 'Khách sạn đã xác nhận còn phòng. Bạn cần cọc 30% online trong vòng 24 giờ; 70% còn lại thanh toán tiền mặt tại quầy.' : 'Khách sạn đã xác nhận còn phòng. Bạn cần thanh toán trong vòng 24 giờ.')}</div>${b.paymentSubmittedAt ? '' : `<button type="button" class="btn btn-primary" style="margin:0 6px 8px 0;" onclick="openBookingPayment('${b.bookingId}')">${b.paymentPlan === 'deposit_30_cash_at_hotel' || (!b.paymentPlan && String(b.paymentMethod || '').toLowerCase().includes('khách sạn')) ? 'Thanh toán cọc 30% bằng QR' : 'Thanh toán online bằng QR'}</button>`}` : ''}
+          ${b.status === 'Đã cọc 30% - chờ nhận phòng' && b.roomNumber ? `<div style="margin:8px 0;padding:10px 12px;border-radius:8px;background:#ccfbf1;color:#115e59;font-size:.85rem;"><strong>Đã xác nhận cọc 30%: ${typeof formatVND === 'function' ? formatVND(b.depositAmount || 0) : Number(b.depositAmount || 0).toLocaleString('vi-VN') + '₫'}</strong><br><strong>Phòng đã xếp: ${b.roomNumber}</strong> · Tầng ${b.floor || '—'}<br>Còn thanh toán tiền mặt tại quầy: <strong>${typeof formatVND === 'function' ? formatVND(b.remainingAmount || 0) : Number(b.remainingAmount || 0).toLocaleString('vi-VN') + '₫'}</strong></div>` : ''}
+          ${b.status === 'Đã thanh toán - chờ nhận phòng' && b.roomNumber ? `<div style="margin:8px 0;padding:10px 12px;border-radius:8px;background:#ecfdf5;color:#065f46;font-size:.85rem;"><strong>Phòng đã xếp: ${b.roomNumber}</strong> · Tầng ${b.floor || '—'}${b.cashBalancePaidAt ? '<br>Đã thu đủ tiền phòng (cọc online + tiền mặt tại quầy).' : ''}</div>` : ''}
+          <div class="my-booking-actions"><a class="my-booking-detail-btn" href="booking-detail.html?bookingId=${encodeURIComponent(b.bookingId)}"><span aria-hidden="true">▤</span> Xem chi tiết đặt phòng</a> <button type="button" class="btn-cancel-booking" onclick="handleCancelBooking('${b.bookingId}')">Hủy đặt phòng</button></div>
         </div>
       </div>
     `).join('');
@@ -811,11 +795,39 @@ function openMyBookingsModal() {
   modal.classList.add("active");
 }
 
-function showBookingDetails(bookingId) {
+function openBookingPayment(bookingId) {
   const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-  const booking = (user && user.bookings || []).find(b => b.bookingId === bookingId);
-  if (!booking) { alert('Không tìm thấy thông tin đặt phòng.'); return; }
-  alert(`CHI TIẾT ĐẶT PHÒNG\nMã đặt: ${booking.bookingId}\nKhách hàng: ${booking.guestName || user.fullName || user.name || '—'}\nHạng phòng: ${booking.roomType || '—'}\nSố sao: ${booking.stars || '—'}\nSố phòng: ${booking.roomNumber || booking.rooms || '—'}\nNgày nhận: ${booking.checkin || '—'}\nNgày trả: ${booking.checkout || '—'}\nPhương thức thanh toán: ${booking.paymentMethod || '—'}\nTrạng thái: ${booking.status || '—'}`);
+  const booking = (user && Array.isArray(user.bookings) ? user.bookings : []).find(b => b.bookingId === bookingId);
+  if (!booking) { alert('Không tìm thấy đơn đặt phòng trong tài khoản của bạn.'); return; }
+  if (booking.status !== 'Chờ thanh toán') {
+    alert('Bạn chỉ có thể thanh toán sau khi admin xác nhận còn phòng.');
+    return;
+  }
+  localStorage.setItem('lotte_selected_payment_booking', JSON.stringify(booking));
+  window.location.href = 'payment.html?bookingId=' + encodeURIComponent(bookingId);
+}
+
+// Khi admin cập nhật đơn từ tab khác, làm mới danh sách nếu modal đặt chỗ đang mở.
+window.addEventListener('storage', function (event) {
+  if (event.key === 'traveloka_hotel_users' || event.key === 'traveloka_all_bookings') {
+    const modal = document.getElementById('my-bookings-modal');
+    if (modal && modal.classList.contains('active')) openMyBookingsModal();
+  }
+});
+
+function getClientBookingPaymentLabel(booking) {
+  if (!booking) return "Chưa chọn";
+  if (booking.paymentSubmittedType === "deposit_30_percent" || booking.paymentPlan === "deposit_30_cash_at_hotel") return "Cọc 30% online · 70% tại quầy";
+  if (booking.paymentSubmittedType === "full_payment" || booking.paymentPlan === "full_online_qr") return "Thanh toán 100% online";
+  const method = String(booking.paymentMethod || "").toLowerCase();
+  if (method.includes("cọc 30%")) return "Cọc 30% online · 70% tại quầy";
+  if (method.includes("100% online")) return "Thanh toán 100% online";
+  return booking.status === "Chờ admin xác nhận" || booking.status === "Chờ thanh toán"
+    ? "Chọn ở bước thanh toán" : (booking.paymentMethod || "Chưa chọn");
+}
+
+function showBookingDetails(bookingId) {
+  window.location.href = "booking-detail.html?bookingId=" + encodeURIComponent(bookingId);
 }
 
 function handleCancelBooking(bookingId) {

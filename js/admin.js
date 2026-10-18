@@ -1318,7 +1318,10 @@ function renderRecentBookingsTable(bookings) {
         <div style="font-size: 0.74rem; color: #64748b;">${b.nights} đêm &bull; ${b.guests}</div>
       </td>
       <td><strong style="color: var(--admin-primary);">${b.totalPrice}</strong></td>
-      <td>${renderStatusBadge(b.status)}</td>
+      <td>
+        ${renderStatusBadge(b.status)}
+        ${b.status === "Chờ thanh toán" ? `<div style="margin-top:4px;font-size:.72rem;color:${b.paymentSubmittedAt ? '#b45309' : '#64748b'};">${b.paymentSubmittedAt ? 'Khách đã gửi yêu cầu thanh toán — cần admin kiểm tra' : 'Chưa ghi nhận yêu cầu thanh toán'}</div>` : ''}
+      </td>
       <td>
         <div class="table-actions">
           <button type="button" class="btn-table-action" title="Xem hóa đơn & In" onclick="openInvoiceModal('${b.bookingId}')">
@@ -1554,7 +1557,7 @@ function openEditRoomModal(roomId) {
   `;
   document.getElementById("room-form-id").value = room.id;
   document.getElementById("room-number").value = room.roomNumber;
-  document.getElementById("room-category").value = room.category || getRoomCategory(room);
+  document.getElementById("room-hotel").value = room.hotelId;
   document.getElementById("room-type").value = room.roomType;
   document.getElementById("room-floor").value = room.floor;
   document.getElementById("room-price").value = room.price;
@@ -1571,12 +1574,9 @@ function handleSaveRoomSubmit(e) {
   e.preventDefault();
   const id = document.getElementById("room-form-id").value;
   const roomNumber = document.getElementById("room-number").value.trim();
-  const categorySelect = document.getElementById("room-category");
-  const category = categorySelect.value;
-  const categoryLabels = { "deluxe": "Deluxe", "premier": "Premier", "junior-suite": "Junior Suite", "presidential-suite": "Presidential Suite" };
-  const roomClass = categoryLabels[category] || "Deluxe";
-  const hotelId = "lotte-hotel-hanoi";
-  const hotelName = "Lotte Hotel Hanoi";
+  const hotelId = document.getElementById("room-hotel").value;
+  const hotelSelect = document.getElementById("room-hotel");
+  const hotelName = hotelSelect.options[hotelSelect.selectedIndex].text.split("(")[0].trim();
   const roomType = document.getElementById("room-type").value.trim();
   const floor = parseInt(document.getElementById("room-floor").value) || 1;
   const price = parseInt(document.getElementById("room-price").value) || 2000000;
@@ -1598,8 +1598,6 @@ function handleSaveRoomSubmit(e) {
         roomNumber,
         hotelId,
         hotelName,
-        category,
-        roomClass,
         roomType,
         floor,
         price,
@@ -1618,8 +1616,6 @@ function handleSaveRoomSubmit(e) {
       roomNumber,
       hotelId,
       hotelName,
-      category,
-      roomClass,
       roomType,
       floor,
       price,
@@ -1930,7 +1926,26 @@ function handleCheckoutRoom(roomId) {
 // 8. SECTION 4: QUẢN LÝ ĐẶT PHÒNG (BOOKINGS MANAGEMENT)
 // ========================================================
 
+function expireUnpaidBookings() {
+  const bookings = getAdminBookings();
+  const now = Date.now();
+  let changed = false;
+  bookings.forEach(b => {
+    if (b.status === "Chờ thanh toán" && !b.paymentSubmittedAt && b.paymentDeadline && now > new Date(b.paymentDeadline).getTime()) {
+      b.status = "Đã hủy";
+      b.cancelReason = "Quá hạn thanh toán 24 giờ";
+      b.cancelledAt = new Date().toISOString();
+      syncBookingToCustomerAccount(b);
+      changed = true;
+      queueCustomerEmail(b, `LOTTE HOTEL HANOI - Yêu cầu ${b.bookingId} đã hết hạn`,
+        `Kính gửi ${b.customerName || "Quý khách"},\\n\\nYêu cầu đặt phòng ${b.bookingId} đã hết hạn do chưa ghi nhận thanh toán trong vòng 24 giờ kể từ khi xác nhận còn phòng. Nếu quý khách vẫn có nhu cầu, vui lòng gửi yêu cầu đặt phòng mới.\\n\\nTrân trọng,\\nLotte Hotel Hanoi`);
+    }
+  });
+  if (changed) saveAdminBookings(bookings);
+}
+
 function filterBookings() {
+  expireUnpaidBookings();
   const bookings = getAdminBookings();
   const search = (document.getElementById("filter-booking-search")?.value || "").trim().toLowerCase();
   const hotel = document.getElementById("filter-booking-hotel")?.value || "all";
@@ -1989,20 +2004,33 @@ function renderBookingsTable(bookings) {
       <td><strong style="color: var(--admin-primary); font-size: 0.95rem;">${b.totalPrice}</strong></td>
       <td>
         <span style="font-size: 0.76rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #334155;">
-          ${b.paymentMethod || "Tiền mặt"}
+          ${getBookingPaymentMethodLabel(b)}
         </span>
       </td>
-      <td>${renderStatusBadge(b.status)}</td>
+      <td>
+        ${renderStatusBadge(b.status)}
+        ${b.status === "Chờ thanh toán" ? `<div style="margin-top:4px;font-size:.72rem;color:${b.paymentSubmittedAt ? '#b45309' : '#64748b'};">${b.paymentSubmittedAt ? `Khách gửi yêu cầu ${isDepositCashPlan(b) ? 'cọc 30%: ' : 'thanh toán: '}${formatBookingMoney(b.paymentSubmittedAmount || 0)} — cần đối chiếu` : 'Chưa thanh toán'}</div>` : ''}
+        ${b.status === "Đã cọc 30% - chờ nhận phòng" ? `<div style="margin-top:4px;font-size:.72rem;color:#0f766e;">Đã cọc ${formatBookingMoney(b.depositAmount || 0)} · còn thu tại quầy ${formatBookingMoney(b.remainingAmount || 0)}</div>` : ''}
+      </td>
       <td>
         <div class="table-actions">
           <button type="button" class="btn-table-action" title="Xem hóa đơn & In" onclick="openInvoiceModal('${b.bookingId}')">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
           </button>
-          ${b.status === "Chờ xác nhận" ? `
-            <button type="button" class="btn-table-action" title="Xác nhận đơn (sau khi khách thanh toán tại quầy)" style="color: #0ea5e9; font-weight: 700;" onclick="changeBookingStatus('${b.bookingId}', 'Đã xác nhận')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          ${b.status === "Chờ admin xác nhận" ? `
+            <button type="button" class="btn-table-action btn-availability" title="Xác nhận còn phòng và gửi thông báo yêu cầu thanh toán trong 24 giờ" aria-label="Xác nhận còn phòng" onclick="approveBookingAvailability('${b.bookingId}')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"></path></svg>
+              <span>Xác nhận</span>
             </button>
-          ` : b.status === "Đã xác nhận" ? `
+          ` : ""}
+          ${b.status === "Chờ thanh toán" ? (b.paymentSubmittedAt ? `
+            <button type="button" class="btn-booking-action btn-booking-action--confirm" title="Đối chiếu giao dịch đã nhận, xác nhận thanh toán và tự động xếp phòng" onclick="markBookingPaidAndAssignRoom('${b.bookingId}')">${isDepositCashPlan(b) ? '✓ Xác nhận cọc & xếp phòng' : '✓ Xác nhận thanh toán'}</button>
+          ` : `<span style="font-size:.75rem;color:#b45309;padding:4px 6px;">Chờ khách ${isDepositCashPlan(b) ? 'cọc 30%' : 'thanh toán'}</span>`) : ""}
+          ${b.status === "Đã cọc 30% - chờ nhận phòng" ? `
+            <span style="font-size:.72rem;color:#0f766e;padding:3px 4px;">Đã cọc 30%</span>
+            ${!b.cashBalancePaidAt ? `<button type="button" class="btn-booking-action btn-booking-action--cash" title="Ghi nhận khoản 70% còn lại sau khi đã nhận tiền mặt tại quầy" onclick="confirmCashBalancePayment('${b.bookingId}')">₫ Thu tiền còn lại</button>` : `<span style="font-size:.72rem;color:#047857;padding:3px 4px;">Đã thu đủ</span>`}
+          ` : ""}
+          ${b.status === "Đã xác nhận" || b.status === "Đã thanh toán - chờ nhận phòng" ? `
             <button type="button" class="btn-table-action" title="Nhận phòng (Check-in)" style="color: #059669;" onclick="changeBookingStatus('${b.bookingId}', 'Đang lưu trú')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
             </button>
@@ -2020,6 +2048,419 @@ function renderBookingsTable(bookings) {
       </td>
     </tr>
   `).join("");
+}
+
+
+// Quy trình xác nhận đặt phòng: chỉ xác nhận nếu còn phòng phù hợp trong khoảng ngày khách chọn.
+function bookingDatesOverlap(aStart, aEnd, bStart, bEnd) {
+  if (!aStart || !aEnd || !bStart || !bEnd) return false;
+  return aStart < bEnd && bStart < aEnd;
+}
+
+function syncBookingToCustomerAccount(booking) {
+  try {
+    const raw = localStorage.getItem("traveloka_hotel_users");
+    if (!raw) return;
+    const users = JSON.parse(raw);
+    if (!Array.isArray(users)) return;
+    users.forEach(user => {
+      if (!Array.isArray(user.bookings)) return;
+      const item = user.bookings.find(b => b.bookingId === booking.bookingId);
+      if (item) Object.assign(item, booking);
+    });
+    localStorage.setItem("traveloka_hotel_users", JSON.stringify(users));
+    const current = JSON.parse(localStorage.getItem("traveloka_current_user") || "null");
+    if (current && Array.isArray(current.bookings)) {
+      const item = current.bookings.find(b => b.bookingId === booking.bookingId);
+      if (item) Object.assign(item, booking);
+      localStorage.setItem("traveloka_current_user", JSON.stringify(current));
+    }
+  } catch (e) { console.warn("Không thể đồng bộ trạng thái đặt phòng về tài khoản khách", e); }
+}
+
+function queueCustomerEmail(booking, subject, body) {
+  const outbox = JSON.parse(localStorage.getItem("LOTTE_EMAIL_OUTBOX") || "[]");
+  const message = {
+    id: "MAIL-" + Date.now(),
+    bookingId: booking.bookingId,
+    to: booking.customerEmail || "",
+    subject,
+    body,
+    createdAt: new Date().toISOString(),
+    status: "Chưa gửi - cần cấu hình SMTP"
+  };
+  outbox.unshift(message);
+  localStorage.setItem("LOTTE_EMAIL_OUTBOX", JSON.stringify(outbox));
+  // Trang web tĩnh không có máy chủ gửi email; mở trình soạn thư nếu khách có email.
+  if (message.to) {
+    const mailto = "mailto:" + encodeURIComponent(message.to) +
+      "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    window.open(mailto, "_blank");
+  }
+}
+
+function isDepositCashPlan(booking) {
+  if (!booking) return false;
+  // Sau khi khách gửi yêu cầu thanh toán, kiểu thanh toán đã gửi là thông tin mới nhất.
+  // Điều này cũng tự sửa các đơn cũ có paymentPlan và paymentMethod bị lệch nhau.
+  if (booking.paymentSubmittedType === "deposit_30_percent") return true;
+  if (booking.paymentSubmittedType === "full_payment") return false;
+  if (booking.paymentPlan === "deposit_30_cash_at_hotel") return true;
+  if (booking.paymentPlan === "full_online_qr") return false;
+  const method = String(booking.paymentMethod || "").toLowerCase();
+  return method.includes("cọc 30% online") || method.includes("thanh toán tại khách sạn") || method.includes("tiền mặt tại khách sạn");
+}
+
+function getBookingPaymentMethodLabel(booking) {
+  if (booking && booking.paymentSubmittedType === "deposit_30_percent") return "Cọc 30% online · 70% tiền mặt tại khách sạn";
+  if (booking && booking.paymentSubmittedType === "full_payment") return "Thanh toán 100% online bằng QR";
+  if (booking && booking.paymentPlan === "deposit_30_cash_at_hotel") return "Cọc 30% online · 70% tiền mặt tại khách sạn";
+  if (booking && booking.paymentPlan === "full_online_qr") return "Thanh toán 100% online bằng QR";
+  return (booking && booking.paymentMethod) || "Chưa chọn";
+}
+
+function getBookingTotalAmount(booking) {
+  if (!booking) return 0;
+  const raw = Number(booking.rawAmount);
+  if (Number.isFinite(raw) && raw > 0) return raw;
+  const text = String(booking.totalPrice || "");
+  const parsed = Number(text.replace(/[^\d]/g, ""));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatBookingMoney(amount) {
+  const value = Math.max(0, Number(amount) || 0);
+  return value.toLocaleString("vi-VN") + "₫";
+}
+
+/** Hộp xác nhận đồng bộ phong cách LOTTE, thay confirm() mặc định của trình duyệt. */
+function showLotteConfirm({ title = "Xác nhận thao tác", message = "Bạn có chắc muốn tiếp tục?", detail = "", confirmText = "Xác nhận", cancelText = "Quay lại", variant = "primary" } = {}) {
+  return new Promise(resolve => {
+    const existing = document.querySelector(".lotte-confirm-overlay");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.className = "lotte-confirm-overlay";
+    overlay.innerHTML = `
+      <section class="lotte-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="lotte-confirm-title" aria-describedby="lotte-confirm-message">
+        <div class="lotte-confirm-topline"></div>
+        <div class="lotte-confirm-content">
+          <div class="lotte-confirm-symbol ${variant === "danger" ? "is-danger" : variant === "success" ? "is-success" : ""}" aria-hidden="true">
+            ${variant === "danger" ? "!" : variant === "success" ? "✓" : "✓"}
+          </div>
+          <div class="lotte-confirm-brand">LOTTE HOTEL HANOI <span>•</span> XÁC NHẬN</div>
+          <h3 id="lotte-confirm-title"></h3>
+          <p id="lotte-confirm-message"></p>
+          ${detail ? '<div class="lotte-confirm-detail" id="lotte-confirm-detail"></div>' : ''}
+        </div>
+        <div class="lotte-confirm-footer">
+          <button type="button" class="lotte-confirm-btn lotte-confirm-cancel"></button>
+          <button type="button" class="lotte-confirm-btn lotte-confirm-accept"></button>
+        </div>
+      </section>`;
+
+    document.body.appendChild(overlay);
+    overlay.querySelector("#lotte-confirm-title").textContent = title;
+    overlay.querySelector("#lotte-confirm-message").textContent = message;
+    if (detail) overlay.querySelector("#lotte-confirm-detail").textContent = detail;
+    const cancelButton = overlay.querySelector(".lotte-confirm-cancel");
+    const acceptButton = overlay.querySelector(".lotte-confirm-accept");
+    cancelButton.textContent = cancelText;
+    acceptButton.textContent = confirmText;
+    if (variant === "danger") acceptButton.classList.add("is-danger");
+    if (variant === "success") acceptButton.classList.add("is-success");
+
+    let settled = false;
+    const finish = value => {
+      if (settled) return;
+      settled = true;
+      document.removeEventListener("keydown", onKeyDown);
+      overlay.classList.add("is-closing");
+      window.setTimeout(() => overlay.remove(), 140);
+      resolve(value);
+    };
+    const onKeyDown = event => {
+      if (event.key === "Escape") finish(false);
+      if (event.key === "Enter" && document.activeElement === acceptButton) finish(true);
+    };
+    cancelButton.addEventListener("click", () => finish(false));
+    acceptButton.addEventListener("click", () => finish(true));
+    overlay.addEventListener("click", event => { if (event.target === overlay) finish(false); });
+    document.addEventListener("keydown", onKeyDown);
+    window.requestAnimationFrame(() => {
+      overlay.classList.add("is-visible");
+      cancelButton.focus({ preventScroll: true });
+    });
+  });
+}
+
+async function approveBookingAvailability(bookingId) {
+  const bookings = getAdminBookings();
+  const booking = bookings.find(b => b.bookingId === bookingId);
+  if (!booking || booking.status !== "Chờ admin xác nhận") return;
+
+  const rooms = getAdminRooms();
+  const category = String(booking.roomType || booking.category || "").toLowerCase();
+  const matchingRooms = rooms.filter(r => {
+    const roomCategory = String(r.category || r.roomType || r.type || "").toLowerCase();
+    const categoryMatch = !category ||
+      roomCategory.includes(category) || category.includes(roomCategory) ||
+      (category.includes("deluxe") && String(r.floor) === "38") ||
+      (category.includes("premier") && String(r.floor) === "45") ||
+      (category.includes("junior") && String(r.floor) === "51") ||
+      (category.includes("presidential") && ["60","65"].includes(String(r.floor)));
+    return categoryMatch && (r.status === "available" || r.status === "reserved");
+  });
+
+  const overlapping = bookings.filter(b =>
+    b.bookingId !== bookingId &&
+    !["Đã hủy", "Hoàn thành"].includes(b.status) &&
+    b.roomNumber &&
+    bookingDatesOverlap(booking.checkin, booking.checkout, b.checkin, b.checkout)
+  );
+  const busyRoomNumbers = new Set(overlapping.map(b => String(b.roomNumber)));
+  const freeRoomCount = matchingRooms.filter(r =>
+    !busyRoomNumbers.has(String(r.roomNumber)) &&
+    (r.status === "available" || (r.status === "reserved" && r.bookingId === bookingId))
+  ).length;
+
+  if (!freeRoomCount) {
+    alert("Không còn phòng phù hợp trong khoảng ngày khách yêu cầu. Hãy liên hệ khách để chọn ngày hoặc hạng phòng khác.");
+    return;
+  }
+
+  const confirmedAvailability = await showLotteConfirm({
+    title: "Xác nhận còn phòng",
+    message: `Đã tìm thấy ${freeRoomCount} phòng phù hợp với thời gian lưu trú của khách.`,
+    detail: "Sau khi xác nhận, khách sẽ nhận thông báo và có 24 giờ để thanh toán hoặc cọc. Bước này chưa xác nhận đã thu tiền và chưa gán số phòng.",
+    confirmText: "Xác nhận còn phòng",
+    cancelText: "Kiểm tra lại",
+    variant: "primary"
+  });
+  if (!confirmedAvailability) return;
+
+  const now = new Date();
+  const deadline = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  // Chỉ xác nhận còn phòng; tuyệt đối không đánh dấu khách đã thanh toán hoặc gán phòng tại bước này.
+  booking.status = "Chờ thanh toán";
+  booking.availabilityConfirmedAt = now.toISOString();
+  booking.paymentDeadline = deadline.toISOString();
+  booking.paymentStatus = "Chưa thanh toán";
+  booking.paymentSubmittedAt = null;
+  booking.paymentConfirmedAt = null;
+  booking.paidAt = null;
+  booking.roomNumber = "";
+  booking.floor = "";
+  const hasPaymentChoice = booking.paymentPlan === "full_online_qr" || booking.paymentPlan === "deposit_30_cash_at_hotel" ||
+    booking.paymentSubmittedType === "full_payment" || booking.paymentSubmittedType === "deposit_30_percent" ||
+    String(booking.paymentMethod || "").toLowerCase().includes("100% online") || String(booking.paymentMethod || "").toLowerCase().includes("cọc 30%");
+  const depositPlan = hasPaymentChoice && isDepositCashPlan(booking);
+  const totalAmount = getBookingTotalAmount(booking);
+  const depositAmount = Math.round(totalAmount * 0.3);
+  const remainingAmount = Math.max(0, totalAmount - depositAmount);
+  if (hasPaymentChoice) {
+    booking.paymentPlan = depositPlan ? "deposit_30_cash_at_hotel" : "full_online_qr";
+    booking.paymentMethod = depositPlan ? "Cọc 30% online, còn lại tiền mặt tại khách sạn" : "Thanh toán 100% online bằng QR";
+  } else {
+    // Khách sẽ lựa chọn phương thức trên trang thanh toán sau khi biết còn phòng.
+    booking.paymentPlan = "";
+    booking.paymentMethod = "Chọn tại bước thanh toán";
+  }
+  booking.depositAmount = depositPlan ? depositAmount : 0;
+  booking.remainingAmount = depositPlan ? remainingAmount : 0;
+  booking.customerNotice = {
+    title: "Khách sạn đã xác nhận còn phòng",
+    message: !hasPaymentChoice
+      ? `Yêu cầu ${booking.bookingId} còn phòng. Vui lòng mở “Đặt chỗ của tôi” → “Thanh toán online bằng QR” trong vòng 24 giờ, trước ${deadline.toLocaleString("vi-VN")}. Tại trang thanh toán, bạn có thể chọn thanh toán 100% online hoặc cọc 30% online và trả 70% bằng tiền mặt tại quầy. Phòng sẽ được gán sau khi admin xác nhận đã nhận khoản thanh toán tương ứng.`
+      : (depositPlan
+        ? `Yêu cầu ${booking.bookingId} còn phòng. Vui lòng thanh toán cọc 30% (${formatBookingMoney(depositAmount)}) bằng QR trên website trong vòng 24 giờ, trước ${deadline.toLocaleString("vi-VN")}. Sau khi admin xác nhận đã nhận cọc, phòng sẽ được xếp cho quý khách; 70% còn lại (${formatBookingMoney(remainingAmount)}) thanh toán bằng tiền mặt tại quầy khi nhận phòng.`
+        : `Yêu cầu ${booking.bookingId} còn phòng. Vui lòng thanh toán toàn bộ bằng QR trên website trong vòng 24 giờ, trước ${deadline.toLocaleString("vi-VN")}. Đơn chỉ được xác nhận thanh toán sau khi admin kiểm tra giao dịch.`),
+    createdAt: now.toISOString(),
+    type: "payment_required"
+  };
+  saveAdminBookings(bookings);
+  syncBookingToCustomerAccount(booking);
+
+  const subject = `LOTTE HOTEL HANOI - Xác nhận còn phòng ${booking.bookingId}`;
+  const paymentInstructions = !hasPaymentChoice
+    ? `Quý khách chọn một trong hai phương án tại trang thanh toán: thanh toán 100% online (${formatBookingMoney(totalAmount)}) hoặc cọc 30% online (${formatBookingMoney(depositAmount)}) và thanh toán 70% còn lại bằng tiền mặt tại quầy (${formatBookingMoney(remainingAmount)}).\n`
+    : (depositPlan
+      ? `Tiền cọc 30% cần chuyển khoản: ${formatBookingMoney(depositAmount)}\nSố tiền còn lại trả tiền mặt tại quầy khi nhận phòng: ${formatBookingMoney(remainingAmount)}\n`
+      : `Số tiền cần thanh toán online: ${formatBookingMoney(totalAmount)}\n`);
+  const body = `Kính gửi ${booking.customerName || "Quý khách"},\n\nLotte Hotel Hanoi xác nhận hiện còn phòng phù hợp với yêu cầu đặt phòng của quý khách.\nMã đặt phòng: ${booking.bookingId}\nHạng phòng: ${booking.roomType || "Theo yêu cầu"}\nNhận phòng: ${booking.checkin}\nTrả phòng: ${booking.checkout}\nTổng tiền phòng: ${formatBookingMoney(totalAmount)}\n${paymentInstructions}\nVui lòng hoàn tất khoản cần thanh toán trong vòng 24 giờ kể từ thời điểm xác nhận (${deadline.toLocaleString("vi-VN")}). Nếu quá thời hạn, yêu cầu có thể được hủy để giải phóng phòng.\n\nTrân trọng,\nLotte Hotel Hanoi`;
+  queueCustomerEmail(booking, subject, body);
+  showAdminToast("Đã xác nhận còn phòng; yêu cầu thanh toán 24 giờ đã được tạo.");
+  filterBookings();
+  initDashboardData();
+}
+
+async function markBookingPaidAndAssignRoom(bookingId) {
+  const bookings = getAdminBookings();
+  const booking = bookings.find(b => b.bookingId === bookingId);
+  if (!booking || booking.status !== "Chờ thanh toán") return;
+  if (!booking.paymentSubmittedAt) {
+    alert("Khách chưa gửi yêu cầu thanh toán. Chỉ xác nhận sau khi khách chuyển khoản và admin đối chiếu giao dịch thực tế.");
+    return;
+  }
+  if (booking.paymentDeadline && Date.now() > new Date(booking.paymentDeadline).getTime()) {
+    const continueAfterDeadline = await showLotteConfirm({
+      title: "Đã quá hạn thanh toán",
+      message: "Đơn đặt phòng đã quá thời hạn thanh toán 24 giờ.",
+      detail: "Chỉ tiếp tục nếu bạn đã kiểm tra và thực nhận khoản tiền của khách.",
+      confirmText: "Vẫn xác nhận",
+      cancelText: "Quay lại",
+      variant: "danger"
+    });
+    if (!continueAfterDeadline) return;
+  }
+
+  const depositPlan = isDepositCashPlan(booking);
+  const totalAmount = getBookingTotalAmount(booking);
+  const expectedDeposit = Math.round(totalAmount * 0.3);
+  const submittedAmount = Number(booking.paymentSubmittedAmount || booking.depositAmount || 0);
+  if (depositPlan && submittedAmount !== expectedDeposit) {
+    alert(`Số tiền cọc trên đơn chưa khớp 30% tổng tiền phòng. Dự kiến cần nhận ${formatBookingMoney(expectedDeposit)}; vui lòng kiểm tra lại đơn thanh toán.`);
+    return;
+  }
+  if (!depositPlan && submittedAmount && submittedAmount !== totalAmount) {
+    alert(`Số tiền khách gửi yêu cầu chưa khớp tổng tiền phòng ${formatBookingMoney(totalAmount)}. Vui lòng kiểm tra trước khi xác nhận.`);
+    return;
+  }
+
+  const rooms = getAdminRooms();
+  const category = String(booking.roomType || booking.category || "").toLowerCase();
+  const overlapping = bookings.filter(b =>
+    b.bookingId !== bookingId &&
+    !["Đã hủy", "Hoàn thành"].includes(b.status) &&
+    b.roomNumber &&
+    bookingDatesOverlap(booking.checkin, booking.checkout, b.checkin, b.checkout)
+  );
+  const busy = new Set(overlapping.map(b => String(b.roomNumber)));
+  let room = rooms.find(r => {
+    const rc = String(r.category || r.roomType || r.type || "").toLowerCase();
+    const match = !category || rc.includes(category) || category.includes(rc) ||
+      (category.includes("deluxe") && String(r.floor) === "38") ||
+      (category.includes("premier") && String(r.floor) === "45") ||
+      (category.includes("junior") && String(r.floor) === "51") ||
+      (category.includes("presidential") && ["60","65"].includes(String(r.floor)));
+    return match && r.status === "available" && !busy.has(String(r.roomNumber));
+  });
+  if (!room) {
+    alert("Không tìm thấy phòng trống để xếp cho khách. Vui lòng kiểm tra sơ đồ phòng hoặc điều chỉnh hạng phòng.");
+    return;
+  }
+  const amountToConfirm = depositPlan ? expectedDeposit : totalAmount;
+  const confirmedPayment = await showLotteConfirm({
+    title: depositPlan ? "Xác nhận cọc 30% và xếp phòng" : "Xác nhận thanh toán và xếp phòng",
+    message: depositPlan
+      ? `Xác nhận đã nhận cọc ${formatBookingMoney(expectedDeposit)} và xếp phòng ${room.roomNumber}?`
+      : `Xác nhận đã nhận đủ ${formatBookingMoney(totalAmount)} và xếp phòng ${room.roomNumber}?`,
+    detail: depositPlan
+      ? `Số tiền còn lại ${formatBookingMoney(totalAmount - expectedDeposit)} sẽ được thu bằng tiền mặt tại quầy khi khách nhận phòng. Chỉ xác nhận sau khi đã đối chiếu giao dịch.`
+      : "Chỉ xác nhận sau khi đã đối chiếu và thực nhận khoản thanh toán của khách.",
+    confirmText: depositPlan ? "Đã nhận cọc & xếp phòng" : "Đã nhận tiền & xếp phòng",
+    cancelText: "Kiểm tra lại",
+    variant: "success"
+  });
+  if (!confirmedPayment) return;
+
+  const now = new Date().toISOString();
+  booking.roomNumber = room.roomNumber;
+  booking.floor = room.floor;
+  if (depositPlan) {
+    booking.status = "Đã cọc 30% - chờ nhận phòng";
+    booking.depositAmount = expectedDeposit;
+    booking.depositConfirmedAt = now;
+    booking.depositPaymentStatus = "Đã xác nhận cọc 30% online";
+    booking.remainingAmount = Math.max(0, totalAmount - expectedDeposit);
+    booking.paymentStatus = `Đã cọc 30% online (${formatBookingMoney(expectedDeposit)}); còn ${formatBookingMoney(booking.remainingAmount)} trả tiền mặt tại quầy`;
+    booking.paymentConfirmedAt = null;
+    booking.paidAt = null;
+    booking.cashBalancePaidAt = null;
+    booking.customerNotice = {
+      title: "Đã xác nhận tiền cọc 30% — phòng đã được xếp",
+      message: `Khách sạn đã xác nhận nhận cọc ${formatBookingMoney(expectedDeposit)}. Phòng ${room.roomNumber}, tầng ${room.floor || "theo sơ đồ khách sạn"} đã được giữ cho quý khách. Vui lòng thanh toán số tiền còn lại ${formatBookingMoney(booking.remainingAmount)} bằng tiền mặt tại quầy khi nhận phòng.`,
+      createdAt: now,
+      type: "deposit_confirmed"
+    };
+  } else {
+    booking.status = "Đã thanh toán - chờ nhận phòng";
+    booking.paymentStatus = "Đã xác nhận thanh toán toàn bộ";
+    booking.paymentConfirmedAt = now;
+    booking.paidAt = now;
+    booking.customerNotice = {
+      title: "Thanh toán đã được admin xác nhận",
+      message: `Khách sạn đã xác nhận thanh toán đầy đủ và xếp phòng ${room.roomNumber}, tầng ${room.floor || "theo sơ đồ khách sạn"}. Vui lòng lưu mã đặt phòng để nhận phòng.`,
+      createdAt: now,
+      type: "payment_confirmed"
+    };
+  }
+
+  room.status = "reserved";
+  room.guestName = booking.customerName;
+  room.guestPhone = booking.customerPhone;
+  room.bookingId = booking.bookingId;
+  room.checkin = booking.checkin;
+  room.checkout = booking.checkout;
+  saveAdminRooms(rooms);
+  saveAdminBookings(bookings);
+  syncBookingToCustomerAccount(booking);
+
+  const subject = `LOTTE HOTEL HANOI - Thông tin phòng ${booking.bookingId}`;
+  const paymentBody = depositPlan
+    ? `Chúng tôi đã xác nhận nhận tiền cọc 30% là ${formatBookingMoney(expectedDeposit)} cho mã đặt phòng ${booking.bookingId}. Phần còn lại ${formatBookingMoney(booking.remainingAmount)} sẽ được thanh toán bằng tiền mặt tại quầy khách sạn khi quý khách đến nhận phòng.`
+    : `Chúng tôi đã ghi nhận thanh toán đầy đủ ${formatBookingMoney(totalAmount)} cho mã đặt phòng ${booking.bookingId}.`;
+  const body = `Kính gửi ${booking.customerName || "Quý khách"},\n\n${paymentBody}\nThông tin phòng đã xếp:\n- Hạng phòng: ${booking.roomType || ""}\n- Số phòng: ${room.roomNumber}\n- Tầng: ${room.floor || "Theo sơ đồ khách sạn"}\n- Nhận phòng: ${booking.checkin}\n- Trả phòng: ${booking.checkout}\n\nVui lòng xuất trình mã đặt phòng khi đến nhận phòng.\nTrân trọng,\nLotte Hotel Hanoi`;
+  queueCustomerEmail(booking, subject, body);
+  showAdminToast(depositPlan
+    ? `Đã xác nhận cọc 30% và xếp phòng ${room.roomNumber}. Còn lại thu tại quầy.`
+    : `Đã ghi nhận thanh toán toàn bộ và xếp phòng ${room.roomNumber}.`);
+  filterBookings();
+  initDashboardData();
+}
+
+async function confirmCashBalancePayment(bookingId) {
+  const bookings = getAdminBookings();
+  const booking = bookings.find(b => b.bookingId === bookingId);
+  if (!booking || booking.status !== "Đã cọc 30% - chờ nhận phòng" || !isDepositCashPlan(booking)) return;
+  if (booking.cashBalancePaidAt) {
+    alert("Khoản tiền còn lại đã được ghi nhận là đã thu.");
+    return;
+  }
+  const totalAmount = getBookingTotalAmount(booking);
+  const depositAmount = Number(booking.depositAmount) || Math.round(totalAmount * 0.3);
+  const balance = Math.max(0, totalAmount - depositAmount);
+  const cashCollected = await showLotteConfirm({
+    title: "Xác nhận thu tiền tại quầy",
+    message: `Ghi nhận đã thu ${formatBookingMoney(balance)} tiền mặt cho đơn ${booking.bookingId}?`,
+    detail: "Sau khi xác nhận, đơn sẽ được ghi nhận đã thanh toán đủ. Chỉ tiếp tục khi khách đã giao tiền mặt thực tế.",
+    confirmText: "Đã thu tiền mặt",
+    cancelText: "Quay lại",
+    variant: "success"
+  });
+  if (!cashCollected) return;
+
+  const now = new Date().toISOString();
+  booking.cashBalancePaidAt = now;
+  booking.cashBalanceAmount = balance;
+  booking.cashBalancePaymentMethod = "Tiền mặt tại quầy khách sạn";
+  booking.paymentStatus = `Đã cọc online ${formatBookingMoney(depositAmount)} + đã thu tiền mặt ${formatBookingMoney(balance)} tại quầy`;
+  booking.status = "Đã thanh toán - chờ nhận phòng";
+  booking.paidAt = now;
+  booking.paymentConfirmedAt = booking.depositConfirmedAt || now;
+  booking.customerNotice = {
+    title: "Đã thu đủ tiền phòng",
+    message: `Khách sạn đã ghi nhận khoản cọc online ${formatBookingMoney(depositAmount)} và tiền mặt tại quầy ${formatBookingMoney(balance)}. Tổng thanh toán ${formatBookingMoney(totalAmount)} đã hoàn tất. Phòng ${booking.roomNumber || "đã được xếp"} đang chờ quý khách nhận phòng.`,
+    createdAt: now,
+    type: "payment_confirmed"
+  };
+  saveAdminBookings(bookings);
+  syncBookingToCustomerAccount(booking);
+  queueCustomerEmail(booking, `LOTTE HOTEL HANOI - Xác nhận đã thu đủ tiền ${booking.bookingId}`,
+    `Kính gửi ${booking.customerName || "Quý khách"},\n\nKhách sạn đã ghi nhận khoản cọc online ${formatBookingMoney(depositAmount)} và đã thu tiền mặt tại quầy ${formatBookingMoney(balance)}. Đơn đặt phòng ${booking.bookingId} đã được thanh toán đủ.\nSố phòng: ${booking.roomNumber || "Đã xếp"}\nTầng: ${booking.floor || "—"}\nNgày nhận phòng: ${booking.checkin}\nNgày trả phòng: ${booking.checkout}\n\nTrân trọng,\nLotte Hotel Hanoi`);
+  showAdminToast(`Đã ghi nhận thu tiền mặt ${formatBookingMoney(balance)} tại quầy.`);
+  filterBookings();
+  initDashboardData();
 }
 
 function changeBookingStatus(bookingId, newStatus) {
@@ -2055,17 +2496,25 @@ function changeBookingStatus(bookingId, newStatus) {
     if (!room) {
       room = rooms.find(r => r.hotelId === bookings[idx].hotelId && r.status === "available");
       if (room) {
-        room.status = "occupied";
         room.guestName = bookings[idx].customerName;
         room.guestPhone = bookings[idx].customerPhone;
         room.bookingId = bookingId;
         room.checkin = bookings[idx].checkin;
         room.checkout = bookings[idx].checkout;
         bookings[idx].roomNumber = room.roomNumber;
-        saveAdminRooms(rooms);
-        saveAdminBookings(bookings);
       }
     }
+    if (room) {
+      room.status = "occupied";
+      room.guestName = bookings[idx].customerName;
+      room.guestPhone = bookings[idx].customerPhone;
+      room.bookingId = bookingId;
+      room.checkin = bookings[idx].checkin;
+      room.checkout = bookings[idx].checkout;
+    }
+    saveAdminRooms(rooms);
+    saveAdminBookings(bookings);
+    syncBookingToCustomerAccount(bookings[idx]);
   }
 
   showAdminToast(`Đơn ${bookingId} đã cập nhật trạng thái: "${newStatus}"`);
@@ -2100,27 +2549,11 @@ function updateWalkinRoomOptions(preselectedRoomId = null) {
   const roomSelect = document.getElementById("wi-room-select");
   if (!hotelSelect || !roomSelect) return;
 
+  const hotelId = hotelSelect.value;
   const rooms = getAdminRooms();
 
-  // Nếu có preselectedRoomId, tự động chọn đúng hạng phòng tương ứng
-  if (preselectedRoomId) {
-    const targetRoom = rooms.find(r => r.id === preselectedRoomId);
-    if (targetRoom && targetRoom.category) {
-      hotelSelect.value = targetRoom.category;
-    }
-  }
-
-  const selectedCategory = hotelSelect.value;
-
-  // Nếu chưa chọn hạng phòng, hiển thị thông báo
-  if (!selectedCategory) {
-    roomSelect.innerHTML = `<option value="">-- Vui lòng chọn hạng phòng trước --</option>`;
-    calculateWalkinTotal();
-    return;
-  }
-
-  // Tìm các phòng trống thuộc hạng phòng đã chọn
-  let availRooms = rooms.filter(r => r.category === selectedCategory && r.status === "available");
+  // Tìm các phòng trống của hạng phòng này
+  let availRooms = rooms.filter(r => r.hotelId === hotelId && r.status === "available");
   
   if (availRooms.length === 0) {
     roomSelect.innerHTML = `<option value="">-- Hết phòng trống cho hạng phòng này --</option>`;
@@ -2171,8 +2604,8 @@ function handleWalkinSubmit(e) {
   const phone = document.getElementById("wi-customer-phone").value.trim();
   const email = document.getElementById("wi-customer-email").value.trim();
   const hotelSelect = document.getElementById("wi-hotel-select");
-  const hotelId = "lotte-hotel-hanoi";
-  const hotelName = "Lotte Hotel Hanoi";
+  const hotelId = hotelSelect.value;
+  const hotelName = hotelSelect.options[hotelSelect.selectedIndex].text;
   const roomSelect = document.getElementById("wi-room-select");
   const selectedOpt = roomSelect.options[roomSelect.selectedIndex];
 
@@ -2327,7 +2760,7 @@ function renderRevenueSection() {
         <td><span style="background: #f1f5f9; padding: 2px 7px; border-radius: 4px; font-size: 0.76rem; font-weight: 500;">${b.paymentMethod || "Tiền mặt"}</span></td>
         <td><strong style="color: var(--admin-primary); font-size: 0.95rem;">${b.totalPrice}</strong></td>
         <td>
-          ${b.status === 'Đã hủy' ? '<span class="status-badge cancelled">Không thu (Đã hủy)</span>' : b.status === 'Đã xác nhận' ? '<span class="status-badge confirmed">Chờ thu (Khi nhận phòng)</span>' : '<span class="status-badge completed">Đã thu tiền</span>'}
+          <span class="status-badge ${b.status === 'Đã hủy' ? 'cancelled' : (b.status === 'Đã thanh toán - chờ nhận phòng' || b.paymentStatus === 'Đã xác nhận thanh toán' ? 'completed' : 'confirmed')}">${getPaymentStatusText(b)}</span>
           ${b.eInvoiceExported ? `<div style="margin-top: 4px;"><span style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 4px; padding: 1px 6px; font-size: 0.7rem; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;" title="Mã HĐĐT: ${b.eInvoiceCode || ''}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Đã xuất HĐĐT</span></div>` : ''}
         </td>
         <td>
@@ -2370,7 +2803,7 @@ function renderCustomersTable() {
   const bookings = getAdminBookings();
 
   if (users.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 24px; color: #94a3b8;">Chưa có tài khoản khách hàng nào</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: #94a3b8;">Chưa có tài khoản khách hàng nào</td></tr>`;
     return;
   }
 
@@ -2378,26 +2811,16 @@ function renderCustomersTable() {
     // Tính tổng số lượt đặt và tổng chi tiêu của user này
     const userBookings = bookings.filter(b => b.customerPhone === u.phone || b.customerEmail === u.email);
     const totalSpent = userBookings.reduce((sum, b) => sum + (b.rawAmount || parseInt((b.totalPrice || "0").replace(/\D/g, "")) || 0), 0);
-    const cccd = u.idCard || u.identityNumber || "Chưa cập nhật";
-    const isSpecialAdmin = u.isAdmin || u.email === "admin@lottehotel.vn";
 
     return `
       <tr>
         <td>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="width: 32px; height: 32px; border-radius: 50%; background: ${isSpecialAdmin ? '#fef3c7' : '#e0f2fe'}; color: ${isSpecialAdmin ? '#b45309' : '#0284c7'}; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem;">
               ${(u.fullName || "K").charAt(0).toUpperCase()}
             </div>
-            <div>
-              <strong>${u.fullName}</strong>
-              ${isSpecialAdmin ? '<span style="background: #f59e0b; color: #fff; font-size: 0.65rem; padding: 1px 5px; border-radius: 3px; margin-left: 4px; font-weight: 800;">ADMIN</span>' : ''}
-            </div>
+            <strong>${u.fullName}</strong>
           </div>
-        </td>
-        <td>
-          <span style="font-family: monospace; font-weight: 700; color: #0f172a; background: #f8fafc; padding: 3px 8px; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.82rem; letter-spacing: 0.5px;">
-            ${cccd}
-          </span>
         </td>
         <td>${u.email}</td>
         <td><strong>${u.phone}</strong></td>
@@ -2410,21 +2833,9 @@ function renderCustomersTable() {
         <td><strong style="color: #059669;">${formatCurrencyVND(totalSpent)}</strong></td>
         <td>${formatDateDisplay(u.createdAt || "2026-09-01")}</td>
         <td>
-          <div style="display: flex; gap: 5px; align-items: center; justify-content: center; flex-wrap: wrap;">
-            <button type="button" class="btn" style="font-size: 0.74rem; padding: 4px 8px; background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;" onclick="openEditCustomerModal('${u.id}')" title="Sửa thông tin khách hàng & CCCD">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-              Sửa
-            </button>
-            ${!isSpecialAdmin ? `
-              <button type="button" class="btn" style="font-size: 0.74rem; padding: 4px 8px; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;" onclick="deleteCustomer('${u.id}')" title="Xóa khách hàng">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                Xóa
-              </button>
-            ` : ''}
-            <button type="button" class="btn btn-outline" style="font-size: 0.74rem; padding: 4px 8px; display: inline-flex; align-items: center; gap: 3px;" onclick="viewCustomerBookings('${u.phone}')" title="Xem lịch sử đặt phòng">
-              Lịch sử
-            </button>
-          </div>
+          <button type="button" class="btn btn-outline" style="font-size: 0.74rem; padding: 3px 8px;" onclick="viewCustomerBookings('${u.phone}')">
+            Xem lịch sử đặt
+          </button>
         </td>
       </tr>
     `;
@@ -2442,135 +2853,40 @@ function viewCustomerBookings(phone) {
 
 function openAddCustomerModal() {
   document.getElementById("form-customer").reset();
-  const idInput = document.getElementById("cust-id");
-  if (idInput) idInput.value = "";
-  const titleEl = document.getElementById("cust-modal-title");
-  if (titleEl) titleEl.textContent = "Thêm Khách Hàng / Hội Viên Mới";
-  const btnEl = document.getElementById("btn-save-customer");
-  if (btnEl) btnEl.textContent = "Lưu Khách Hàng";
-  openAdminModal("modal-customer");
-}
-
-function openEditCustomerModal(userId) {
-  const users = typeof getHotelUsersArray === "function" ? getHotelUsersArray() : [];
-  const u = users.find(x => x.id === userId);
-  if (!u) {
-    showAdminToast("Không tìm thấy thông tin khách hàng!");
-    return;
-  }
-
-  const idInput = document.getElementById("cust-id");
-  const nameInput = document.getElementById("cust-name");
-  const idCardInput = document.getElementById("cust-idcard");
-  const emailInput = document.getElementById("cust-email");
-  const phoneInput = document.getElementById("cust-phone");
-  const tierSelect = document.getElementById("cust-tier");
-  const titleEl = document.getElementById("cust-modal-title");
-  const btnEl = document.getElementById("btn-save-customer");
-
-  if (idInput) idInput.value = u.id;
-  if (nameInput) nameInput.value = u.fullName || "";
-  if (idCardInput) idCardInput.value = u.idCard || u.identityNumber || "";
-  if (emailInput) emailInput.value = u.email || "";
-  if (phoneInput) phoneInput.value = u.phone || "";
-  if (tierSelect) tierSelect.value = u.role || "Khách hàng Mới";
-  if (titleEl) titleEl.textContent = `Chỉnh Sửa Khách Hàng: ${u.fullName}`;
-  if (btnEl) btnEl.textContent = "Cập Nhật Khách Hàng";
-
   openAdminModal("modal-customer");
 }
 
 function handleSaveCustomerSubmit(e) {
   e.preventDefault();
-  const custId = document.getElementById("cust-id") ? document.getElementById("cust-id").value.trim() : "";
   const name = document.getElementById("cust-name").value.trim();
-  const idCard = document.getElementById("cust-idcard") ? document.getElementById("cust-idcard").value.trim() : "";
   const email = document.getElementById("cust-email").value.trim();
   const phone = document.getElementById("cust-phone").value.trim();
   const tier = document.getElementById("cust-tier").value;
 
-  if (!idCard) {
-    alert("Vui lòng nhập Số Căn Cước Công Dân (CCCD / CMND)!");
+  const users = typeof getHotelUsersArray === "function" ? getHotelUsersArray() : [];
+  if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+    alert("Email này đã tồn tại trong hệ thống!");
     return;
   }
 
-  if (idCard.length < 9 || idCard.length > 12 || !/^\d+$/.test(idCard)) {
-    alert("Số CCCD / CMND phải gồm từ 9 đến 12 chữ số!");
-    return;
-  }
+  const newUser = {
+    id: "usr_" + Date.now(),
+    fullName: name,
+    email,
+    phone,
+    password: "123",
+    role: tier,
+    createdAt: new Date().toISOString(),
+    bookings: [],
+    wishlist: []
+  };
 
-  let users = typeof getHotelUsersArray === "function" ? getHotelUsersArray() : [];
-
-  if (custId) {
-    // Chỉnh sửa khách hàng hiện có
-    const idx = users.findIndex(u => u.id === custId);
-    if (idx === -1) {
-      alert("Khách hàng không tồn tại trong hệ thống!");
-      return;
-    }
-
-    // Kiểm tra trùng email với tài khoản khác
-    if (users.some((u, i) => i !== idx && u.email.toLowerCase() === email.toLowerCase())) {
-      alert("Email này đã được sử dụng bởi khách hàng khác!");
-      return;
-    }
-
-    users[idx].fullName = name;
-    users[idx].idCard = idCard;
-    users[idx].identityNumber = idCard;
-    users[idx].email = email;
-    users[idx].phone = phone;
-    users[idx].role = tier;
-
-    if (typeof saveHotelUsersArray === "function") saveHotelUsersArray(users);
-    showAdminToast(`Đã cập nhật thông tin khách hàng ${name}`);
-  } else {
-    // Thêm khách hàng mới
-    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-      alert("Email này đã tồn tại trong hệ thống!");
-      return;
-    }
-
-    const newUser = {
-      id: "usr_" + Date.now(),
-      fullName: name,
-      idCard: idCard,
-      identityNumber: idCard,
-      email,
-      phone,
-      password: "123",
-      role: tier,
-      createdAt: new Date().toISOString(),
-      bookings: [],
-      wishlist: []
-    };
-
-    users.push(newUser);
-    if (typeof saveHotelUsersArray === "function") saveHotelUsersArray(users);
-    showAdminToast(`Đã thêm khách hàng ${name} vào hệ thống`);
-  }
+  users.push(newUser);
+  if (typeof saveHotelUsersArray === "function") saveHotelUsersArray(users);
 
   closeAdminModal("modal-customer");
+  showAdminToast(`Đã thêm khách hàng ${name}`);
   renderCustomersTable();
-}
-
-function deleteCustomer(userId) {
-  let users = typeof getHotelUsersArray === "function" ? getHotelUsersArray() : [];
-  const u = users.find(x => x.id === userId);
-  if (!u) return;
-
-  if (u.isAdmin || u.email === "admin@lottehotel.vn") {
-    alert("Không thể xóa tài khoản Quản Trị Viên hệ thống!");
-    return;
-  }
-
-  const cccdInfo = u.idCard || u.identityNumber ? ` (CCCD: ${u.idCard || u.identityNumber})` : "";
-  if (confirm(`Bạn có chắc chắn muốn xóa khách hàng "${u.fullName}"${cccdInfo} khỏi hệ thống?`)) {
-    users = users.filter(x => x.id !== userId);
-    if (typeof saveHotelUsersArray === "function") saveHotelUsersArray(users);
-    showAdminToast(`Đã xóa khách hàng ${u.fullName}`);
-    renderCustomersTable();
-  }
 }
 
 // ========================================================
@@ -3151,7 +3467,7 @@ function openInvoiceModal(bookingId) {
       <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
         <div>
           <div style="font-size: 0.82rem; color: #64748b;">Hình thức thanh toán: <strong style="color: #0f172a;">${b.paymentMethod || "Tiền mặt tại quầy"}</strong></div>
-          <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Trạng thái thanh toán: <strong>${b.status === 'Đã hủy' ? 'Không thu (Đơn hủy)' : b.status === 'Đã xác nhận' ? 'Chờ thu khi nhận phòng' : 'Đã thanh toán đủ'}</strong></div>
+          <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Trạng thái thanh toán: <strong>${getPaymentStatusText(b)}</strong></div>
         </div>
 
         <div style="min-width: 260px;">
@@ -3283,9 +3599,29 @@ function closeAdminModal(modalId) {
   if (modal) modal.classList.remove("active");
 }
 
+function getPaymentStatusText(booking) {
+  if (!booking) return "Chưa xác định";
+  if (booking.status === "Đã hủy") return "Không thu tiền (đơn đã hủy)";
+  if (booking.status === "Đã cọc 30% - chờ nhận phòng") return `Đã xác nhận cọc 30% (${formatBookingMoney(booking.depositAmount || 0)}); còn thu ${formatBookingMoney(booking.remainingAmount || 0)} tại quầy`;
+  if (booking.status === "Đã thanh toán - chờ nhận phòng" || booking.paymentStatus === "Đã xác nhận thanh toán" || booking.paymentStatus === "Đã xác nhận thanh toán toàn bộ" || (booking.paymentConfirmedAt && !isDepositCashPlan(booking)) || booking.cashBalancePaidAt) return "Đã được admin xác nhận thanh toán đủ";
+  if (booking.status === "Chờ thanh toán") {
+    return booking.paymentSubmittedAt ? "Khách đã gửi yêu cầu thanh toán — chờ admin xác nhận" : "Chưa thanh toán — chờ khách thanh toán";
+  }
+  if (booking.status === "Chờ admin xác nhận") return "Chưa thanh toán — chờ admin kiểm tra phòng";
+  if (booking.status === "Đã xác nhận") return "Chưa ghi nhận thanh toán";
+  if (booking.status === "Đang lưu trú" || booking.status === "Hoàn thành") return booking.paymentStatus || "Cần đối chiếu thanh toán";
+  return booking.paymentStatus || "Chưa xác nhận thu tiền";
+}
+
 function renderStatusBadge(status) {
-  if (status === "Chờ xác nhận") {
-    return `<span class="status-badge" style="background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;">⏳ Chờ xác nhận</span>`;
+  if (status === "Chờ admin xác nhận") {
+    return `<span class="status-badge" style="background:#fff7ed;color:#c2410c;">🟠 Chờ admin xác nhận</span>`;
+  } else if (status === "Chờ thanh toán") {
+    return `<span class="status-badge" style="background:#eff6ff;color:#1d4ed8;">⏳ Chờ thanh toán 24 giờ</span>`;
+  } else if (status === "Đã cọc 30% - chờ nhận phòng") {
+    return `<span class="status-badge" style="background:#ccfbf1;color:#0f766e;">✓ Đã cọc 30% / Đã xếp phòng</span>`;
+  } else if (status === "Đã thanh toán - chờ nhận phòng") {
+    return `<span class="status-badge" style="background:#ecfdf5;color:#047857;">💳 Đã thanh toán đủ / Đã xếp phòng</span>`;
   } else if (status === "Đang lưu trú") {
     return `<span class="status-badge occupied">🔵 Đang lưu trú</span>`;
   } else if (status === "Đã xác nhận") {
@@ -3307,6 +3643,8 @@ function renderRoomStatusBadge(status) {
     return `<span class="status-badge cleaning">🟡 Đang dọn dẹp</span>`;
   } else if (status === "maintenance") {
     return `<span class="status-badge maintenance">⚪ Đang bảo trì</span>`;
+  } else if (status === "reserved") {
+    return `<span class="status-badge confirmed">🟣 Đã xếp phòng</span>`;
   }
   return `<span class="status-badge available">${status}</span>`;
 }
@@ -3371,3 +3709,12 @@ function showAdminToast(message, type = "success") {
     setTimeout(() => toast.remove(), 300);
   }, 3200);
 }
+
+
+// Đồng bộ bảng quản lý đặt phòng khi trang thanh toán ở tab khác cập nhật LocalStorage.
+window.addEventListener("storage", function (event) {
+  if (event.key === "traveloka_all_bookings") {
+    if (typeof filterBookings === "function") filterBookings();
+    if (typeof initDashboardData === "function") initDashboardData();
+  }
+});
