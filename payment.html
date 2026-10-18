@@ -5,71 +5,238 @@
 <title>Thanh toán đặt phòng | Lotte Hotel Hanoi</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-body{background:#f4f7fb;color:#172033;font-family:Arial,sans-serif;margin:0}.pay-wrap{max-width:960px;margin:36px auto;padding:20px}.pay-head{margin-bottom:20px}.pay-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 8px 24px #0f172a0a}.pay-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.pay-card h2{margin:0 0 16px;font-size:20px}.info-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #edf1f6}.info-row span:first-child{color:#64748b}.coupon{display:flex;gap:8px}.coupon input{flex:1;min-width:0;padding:12px;border:1px solid #cbd5e1;border-radius:8px}.pay-method{display:block;border:1px solid #dbe3ed;border-radius:10px;padding:13px;margin:10px 0;cursor:pointer}.pay-method input{margin-right:8px}.btn{border:0;border-radius:9px;padding:13px 16px;font-weight:700;cursor:pointer}.btn-primary{background:#0878c9;color:white;width:100%;margin-top:12px}.btn-outline{background:white;border:1px solid #cbd5e1;color:#334155}.qr-area{text-align:center;padding:12px}.qr-area img{max-width:220px;width:100%;height:auto;border:1px solid #e2e8f0;border-radius:8px}.total{font-size:22px;font-weight:800;color:#e45a1a}.hint{color:#64748b;font-size:13px;line-height:1.5}.success{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;padding:12px;border-radius:9px;display:none}@media(max-width:700px){.pay-grid{grid-template-columns:1fr}.pay-wrap{padding:12px;margin:14px auto}.pay-card{padding:16px}}
+:root{--pay-blue:#0878c9;--pay-blue-dark:#075b9b;--pay-ink:#172b4d;--pay-muted:#64748b;--pay-line:#e2e8f0;--pay-bg:#f3f7fc;--pay-green:#11845b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pay-bg);color:var(--pay-ink);font-family:Inter,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.pay-wrap{width:min(1160px,100%);margin:34px auto 48px;padding:0 22px}
+.pay-head{margin:0 0 22px}
+.pay-back{display:inline-flex;gap:7px;align-items:center;color:var(--pay-blue);font-size:13px;font-weight:700;text-decoration:none}
+.pay-back:hover{text-decoration:underline}
+.pay-head h1{margin:9px 0 5px;font-size:clamp(25px,3vw,31px);line-height:1.2;letter-spacing:-.6px;color:#10233f}
+.hint{color:var(--pay-muted);font-size:12.5px;line-height:1.55;margin:7px 0}
+.pay-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(380px,.92fr);gap:18px;align-items:stretch}
+.pay-card{background:#fff;border:1px solid #dce5ef;border-radius:17px;padding:22px;box-shadow:0 9px 26px rgba(15,38,74,.045);min-width:0}
+.pay-card h2{font-size:18px;line-height:1.3;margin:0 0 17px;color:#10233f;letter-spacing:-.2px}
+.pay-card h3{font-size:14px;color:#10233f;margin:20px 0 10px}
+.info-row{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:10px 0;border-bottom:1px solid #edf1f6;font-size:12.5px;line-height:1.4}
+.info-row:last-child{border-bottom:0}
+.info-row span:first-child{color:#64748b;flex:0 0 auto}
+.info-row strong{text-align:right;color:#10233f;font-size:12.5px;max-width:65%;overflow-wrap:anywhere}
+.coupon{display:flex;gap:8px;margin:8px 0 6px}
+.coupon input{flex:1;min-width:0;height:42px;padding:0 12px;border:1px solid #cbd8e6;border-radius:9px;background:#fff;font:inherit;font-size:12px;outline:none}
+.coupon input:focus{border-color:#4e9fe0;box-shadow:0 0 0 3px rgba(8,120,201,.1)}
+.btn{border:0;border-radius:9px;padding:11px 15px;font-weight:750;font-size:12px;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.btn-outline{background:#fff;border:1px solid #cbd8e6;color:#234567;white-space:nowrap}
+.btn-outline:hover{background:#f5f9fd;border-color:#8eb9e0}
+.btn-primary{background:linear-gradient(135deg,#0a87d5,#076cb5);color:white;width:100%;margin-top:14px;box-shadow:0 5px 13px rgba(8,120,201,.18);min-height:44px}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(8,120,201,.25)}
+.btn-primary:disabled{opacity:.58;cursor:not-allowed;transform:none}
+.payment-methods{display:grid;gap:9px}
+.pay-method{display:grid;grid-template-columns:17px 38px minmax(0,1fr);align-items:start;gap:11px;padding:12px;border:1px solid #dbe4ef;border-radius:12px;margin:0;cursor:pointer;background:#fff;transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
+.pay-method:hover{border-color:#8ab9e4;background:#f9fcff}
+.pay-method:has(input:checked){border-color:#1884cf;background:#f1f8ff;box-shadow:0 0 0 2px rgba(8,120,201,.08)}
+.pay-method input{margin:5px 0 0;accent-color:#0878c9}
+.method-symbol{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800}
+.method-symbol--blue{background:#e0f2fe;color:#0369a1}
+.method-symbol--green{background:#dcfce7;color:#15803d}
+.method-copy{min-width:0;display:block}
+.method-copy strong{display:block;font-size:12.5px;color:#10233f;line-height:1.4}
+.method-copy small{display:block;margin-top:4px;color:#64748b;font-size:11.5px;line-height:1.45;font-weight:400}
+.qr-area{margin-top:15px;text-align:center;padding:17px 16px 15px;border:1px solid #dce7f4;border-radius:14px;background:linear-gradient(145deg,#f8fbff,#f1f7fd)}
+.qr-title{display:flex;justify-content:center;align-items:center;gap:8px;color:#10233f;font-size:13.5px;font-weight:800;margin:0 0 10px}
+.qr-image-shell{display:flex;justify-content:center;align-items:center;width:min(100%,226px);margin:0 auto 10px;padding:9px;background:#fff;border:1px solid #dbe5ef;border-radius:12px;box-shadow:0 6px 20px rgba(15,38,74,.06)}
+.qr-area img{display:block;width:100%;max-width:206px;height:auto;aspect-ratio:1;object-fit:contain;border-radius:5px}
+.qr-ref{margin:9px auto 5px;max-width:430px;padding:9px 11px;background:#fff;border:1px solid #e1eaf4;border-radius:9px;color:#375475;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.qr-help{margin:8px auto 0;max-width:440px;color:#64748b;font-size:11px;line-height:1.55}
+.total{font-size:21px!important;font-weight:850!important;color:#e85d16!important;letter-spacing:-.25px}
+#hotel-balance-row strong{color:#0f766e}
+.success{display:none;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;padding:12px 14px;border-radius:10px;margin:0 0 16px;font-size:13px;line-height:1.5}
+#booking-info{min-width:0}
+@media(max-width:820px){.pay-grid{grid-template-columns:minmax(0,1fr)}.pay-wrap{max-width:680px;margin-top:22px}.pay-card{padding:19px}}
+@media(max-width:480px){.pay-wrap{padding:0 12px;margin:16px auto 30px}.pay-head h1{font-size:25px}.pay-card{padding:15px;border-radius:14px}.info-row{gap:9px;padding:9px 0}.info-row span:first-child{max-width:44%}.info-row strong{max-width:58%}.pay-method{grid-template-columns:16px 32px minmax(0,1fr);gap:8px;padding:10px}.method-symbol{width:31px;height:31px}.qr-area{padding:13px 10px}.qr-image-shell{width:205px}}
 </style></head>
 <body>
 <main class="pay-wrap">
-  <div class="pay-head"><a href="index.html" style="color:#0878c9;text-decoration:none">← Quay lại trang chủ</a><h1>Thanh toán đặt phòng</h1><p class="hint">Kiểm tra thông tin đặt phòng, áp dụng mã ưu đãi và chọn phương thức thanh toán.</p></div>
+  <div class="pay-head"><a class="pay-back" href="index.html">← Quay lại trang chủ</a><h1>Thanh toán đặt phòng</h1><p class="hint">Kiểm tra thông tin đặt phòng, áp dụng ưu đãi và chọn cách thanh toán phù hợp.</p></div>
   <div id="payment-notice" class="success"></div>
   <div class="pay-grid">
     <section class="pay-card"><h2>Thông tin khách & đặt phòng</h2><div id="booking-info"><p>Đang tải thông tin đặt phòng…</p></div></section>
     <section class="pay-card">
       <h2>Ưu đãi & thanh toán</h2>
       <label for="coupon-code">Mã giảm giá</label><div class="coupon" style="margin:8px 0 6px"><input id="coupon-code" placeholder="Nhập mã ưu đãi"><button class="btn btn-outline" type="button" onclick="applyPaymentCoupon()">Áp dụng</button></div><p id="coupon-message" class="hint"></p>
-      <div class="info-row"><span>Tạm tính</span><strong id="subtotal">—</strong></div><div class="info-row"><span>Giảm giá</span><strong id="discount">0₫</strong></div><div class="info-row"><span>Tổng thanh toán</span><strong class="total" id="total">—</strong></div>
+      <div class="info-row"><span>Tổng tiền phòng</span><strong id="subtotal">—</strong></div><div class="info-row"><span>Giảm giá</span><strong id="discount">0₫</strong></div><div class="info-row" id="hotel-balance-row" style="display:none"><span>Còn thanh toán tại quầy (70%)</span><strong id="hotel-balance">—</strong></div><div class="info-row"><span id="amount-now-label">Thanh toán ngay</span><strong class="total" id="total">—</strong></div>
       <h3 style="margin:20px 0 8px">Phương thức thanh toán</h3>
-      <label class="pay-method"><input type="radio" name="payMethod" value="Chuyển khoản QR" checked onchange="renderQR()"> Chuyển khoản ngân hàng / QR Pay</label>
-      <label class="pay-method"><input type="radio" name="payMethod" value="Tiền mặt tại khách sạn" onchange="renderQR()"> Thanh toán tiền mặt tại khách sạn</label>
-      <div id="qr-area" class="qr-area"><p><strong>Mã QR thanh toán</strong></p><img id="qr-image" alt="Mã QR thanh toán"><p id="qr-ref" class="hint"></p><p class="hint">Mã QR được tạo theo mã tham chiếu của đơn này để demo luồng thanh toán. Đây chưa phải xác nhận giao dịch ngân hàng thực.</p></div>
-      <button class="btn btn-primary" onclick="completePayment()">Xác nhận thanh toán đặt phòng</button>
+      <div class="payment-methods" role="radiogroup" aria-label="Chọn phương thức thanh toán">
+        <label class="pay-method"><input type="radio" name="payMethod" value="full_online_qr" checked onchange="renderQR()"><span class="method-symbol method-symbol--blue" aria-hidden="true">↗</span><span class="method-copy"><strong>Thanh toán 100% online</strong><small>Chuyển khoản toàn bộ tiền phòng bằng QR sau khi khách sạn xác nhận còn phòng.</small></span></label>
+        <label class="pay-method"><input type="radio" name="payMethod" value="deposit_30_cash_at_hotel" onchange="renderQR()"><span class="method-symbol method-symbol--green" aria-hidden="true">₫</span><span class="method-copy"><strong>Cọc trước 30% online</strong><small>Chuyển khoản cọc bằng QR, 70% còn lại thanh toán tiền mặt tại quầy khi nhận phòng.</small></span></label>
+      </div>
+      <div id="qr-area" class="qr-area"><p class="qr-title"><span aria-hidden="true">▦</span> Mã QR thanh toán</p><div class="qr-image-shell"><img id="qr-image" alt="Mã QR thanh toán"></div><p id="qr-ref" class="qr-ref"></p><p id="qr-help" class="qr-help">Mã QR demo chưa tự xác minh giao dịch ngân hàng thực.</p></div>
+      <button id="submit-payment" class="btn btn-primary" onclick="completePayment()">Tôi đã chuyển khoản — gửi admin xác nhận</button>
     </section>
   </div>
 </main>
 <script>
-let booking=null,subtotalAmount=0,discountAmount=0,promoCode="";
+let booking=null,subtotalAmount=0,discountAmount=0,promoCode="",qrTransferReference="";
 const money=n=>Number(n||0).toLocaleString("vi-VN")+"₫";
+const safeParse=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback))}catch(e){return fallback}};
+function findAuthoritativeBooking(id){
+ const all=safeParse("traveloka_all_bookings",[]);
+ if(Array.isArray(all)){const match=all.find(b=>b.bookingId===id);if(match)return match;}
+ const users=safeParse("traveloka_hotel_users",[]);
+ if(Array.isArray(users))for(const user of users){const found=(user.bookings||[]).find(b=>b.bookingId===id);if(found)return found;}
+ const selected=safeParse("lotte_selected_payment_booking",null);
+ return selected&&(!id||selected.bookingId===id)?selected:null;
+}
+function isCashAtHotelPlan(bookingOrMethod){
+ if(bookingOrMethod && typeof bookingOrMethod === "object"){
+  // Nếu đã gửi yêu cầu thanh toán, dùng lựa chọn vừa gửi chứ không dùng nhãn cũ.
+  if(bookingOrMethod.paymentSubmittedType === "deposit_30_percent") return true;
+  if(bookingOrMethod.paymentSubmittedType === "full_payment") return false;
+  if(bookingOrMethod.paymentPlan === "deposit_30_cash_at_hotel") return true;
+  if(bookingOrMethod.paymentPlan === "full_online_qr") return false;
+  bookingOrMethod = bookingOrMethod.paymentMethod;
+ }
+ const value=String(bookingOrMethod||"").toLowerCase();
+ return value.includes("cọc 30% online") || value.includes("tiền mặt tại khách sạn") || value.includes("thanh toán tại khách sạn");
+}
+function selectedPaymentMethod(){return document.querySelector('input[name="payMethod"]:checked')?.value||"Chuyển khoản QR";}
+function isDepositPlan(){return selectedPaymentMethod()==="deposit_30_cash_at_hotel";}
+function amountDueNow(){const total=Math.max(0,subtotalAmount-discountAmount);return isDepositPlan()?Math.round(total*0.3):total;}
 function readBooking(){
  const id=new URLSearchParams(location.search).get("bookingId");
- try{booking=JSON.parse(localStorage.getItem("lotte_selected_payment_booking")||"null")}catch(e){}
- if(id&&booking&&booking.bookingId!==id) booking=null;
- if(!booking){document.getElementById("booking-info").innerHTML="<p>Không tìm thấy đơn đặt phòng. Hãy quay lại trang chủ và xác nhận đặt phòng trước.</p>";return}
+ booking=findAuthoritativeBooking(id);
+ const info=document.getElementById("booking-info"),submit=document.getElementById("submit-payment");
+ if(!booking){info.innerHTML="<p>Không tìm thấy đơn đặt phòng. Hãy mở mục “Đặt chỗ của tôi” và chọn thanh toán sau khi admin xác nhận còn phòng.</p>";submit.disabled=true;return;}
+ const cashOption=document.querySelector('input[name="payMethod"][value="deposit_30_cash_at_hotel"]');
+ const fullOption=document.querySelector('input[name="payMethod"][value="full_online_qr"]');
+ if(isCashAtHotelPlan(booking)) { if(cashOption) cashOption.checked=true; }
+ else if(fullOption) { fullOption.checked=true; }
+ if(booking.status!=="Chờ thanh toán"){
+  info.innerHTML="<p>Đơn này chưa ở trạng thái <strong>Chờ thanh toán</strong>. Bạn chỉ có thể thanh toán sau khi admin xác nhận còn phòng. Trạng thái hiện tại: <strong>"+(booking.status||"Chưa xác định")+"</strong>.</p>";
+  submit.disabled=true;
+  document.querySelectorAll('input[name="payMethod"],#coupon-code').forEach(el=>el.disabled=true);
+  document.querySelectorAll('.pay-card button').forEach(el=>el.disabled=true);
+  document.getElementById("qr-area").style.display="none";
+  return;
+ }
+ submit.disabled=!!booking.paymentSubmittedAt;
+ if(booking.paymentSubmittedAt){
+  const notice=document.getElementById("payment-notice");notice.style.display="block";
+  notice.textContent=booking.paymentPlan==="deposit_30_cash_at_hotel"
+   ? "Bạn đã gửi yêu cầu xác nhận cọc 30% ("+money(booking.paymentSubmittedAmount||booking.depositAmount||0)+") vào "+new Date(booking.paymentSubmittedAt).toLocaleString("vi-VN")+". Vui lòng chờ admin kiểm tra giao dịch. Sau khi cọc được xác nhận, 70% còn lại thanh toán bằng tiền mặt tại quầy khách sạn."
+   : "Bạn đã gửi yêu cầu xác nhận thanh toán vào "+new Date(booking.paymentSubmittedAt).toLocaleString("vi-VN")+". Vui lòng chờ admin kiểm tra giao dịch; trạng thái đơn chưa phải Đã thanh toán.";
+  document.querySelectorAll('input[name="payMethod"],#coupon-code').forEach(el=>el.disabled=true);
+  document.querySelectorAll('.pay-card button').forEach(el=>el.disabled=true);
+ }
  subtotalAmount=Number(booking.rawAmount)||Number(String(booking.totalPrice||"").replace(/[^\d]/g,""))||0;
  document.getElementById("booking-info").innerHTML=[
- ["Mã đặt phòng",booking.bookingId],["Khách hàng",booking.customerName||"—"],["Email",booking.customerEmail||"—"],["Điện thoại",booking.customerPhone||"—"],["Khách sạn",booking.hotelName||"Lotte Hotel Hanoi"],["Hạng phòng",booking.roomType||"—"],["Ngày nhận",booking.checkin||"—"],["Ngày trả",booking.checkout||"—"],["Số phòng",booking.rooms||1],["Trạng thái",booking.status||"Chờ admin xác nhận phòng"]
+ ["Mã đặt phòng",booking.bookingId],["Khách hàng",booking.customerName||"—"],["Email",booking.customerEmail||"—"],["Điện thoại",booking.customerPhone||"—"],["Khách sạn",booking.hotelName||"Lotte Hotel Hanoi"],["Hạng phòng",booking.roomType||"—"],["Ngày nhận",booking.checkin||"—"],["Ngày trả",booking.checkout||"—"],["Số phòng yêu cầu",booking.rooms||1],["Trạng thái đặt phòng",booking.status],["Trạng thái thanh toán",booking.paymentStatus||"Chưa thanh toán"]
  ].map(x=>`<div class="info-row"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");
+ if(booking.qrTransferReference){qrTransferReference=booking.qrTransferReference;}else{qrTransferReference="LOTTE"+String(booking.bookingId||"").replace(/[^A-Z0-9]/gi,"").slice(-8).toUpperCase();booking.qrTransferReference=qrTransferReference;}
  updateTotal();renderQR();
 }
-function updateTotal(){document.getElementById("subtotal").textContent=money(subtotalAmount);document.getElementById("discount").textContent="-"+money(discountAmount);document.getElementById("total").textContent=money(Math.max(0,subtotalAmount-discountAmount))}
+function updateTotal(){
+ const finalTotal=Math.max(0,subtotalAmount-discountAmount);
+ const depositMode=isDepositPlan();
+ document.getElementById("subtotal").textContent=money(subtotalAmount);
+ document.getElementById("discount").textContent="-"+money(discountAmount);
+ document.getElementById("total").textContent=money(amountDueNow());
+ document.getElementById("amount-now-label").textContent=depositMode?"Tiền cọc cần thanh toán ngay (30%)":"Thanh toán toàn bộ online";
+ document.getElementById("hotel-balance-row").style.display=depositMode?"flex":"none";
+ document.getElementById("hotel-balance").textContent=money(Math.max(0,finalTotal-amountDueNow()));
+}
 function applyPaymentCoupon(){
+ if(!booking||booking.status!=="Chờ thanh toán")return;
  const code=document.getElementById("coupon-code").value.trim().toUpperCase(),msg=document.getElementById("coupon-message");
- let promos=[];try{promos=JSON.parse(localStorage.getItem("traveloka_hotel_promos")||"[]")}catch(e){}
+ let promos=safeParse("traveloka_hotel_promos",[]);
  if(!promos.length)promos=[{code:"LOTTE500",discountType:"fixed",discountValue:500000,minSpend:2000000,maxDiscount:500000,isActive:true},{code:"HANOI30",discountType:"percent",discountValue:30,minSpend:3000000,maxDiscount:1000000,isActive:true},{code:"WEEKEND15",discountType:"percent",discountValue:15,minSpend:1500000,maxDiscount:500000,isActive:true}];
  const promo=promos.find(p=>String(p.code||"").toUpperCase()===code&&p.isActive!==false);
- if(!promo){msg.textContent="Mã không hợp lệ hoặc không hoạt động.";discountAmount=0;promoCode="";updateTotal();return}
+ if(!promo){msg.textContent="Mã không hợp lệ hoặc không hoạt động.";discountAmount=0;promoCode="";updateTotal();renderQR();return}
  if(promo.expiryDate&&promo.expiryDate<new Date().toISOString().slice(0,10)){msg.textContent="Mã ưu đãi đã hết hạn.";return}
  if(promo.minSpend&&subtotalAmount<promo.minSpend){msg.textContent="Đơn hàng chưa đạt giá trị tối thiểu của mã.";return}
  discountAmount=promo.discountType==="percent"?Math.min(Math.round(subtotalAmount*promo.discountValue/100),promo.maxDiscount||Infinity):Math.min(subtotalAmount,Number(promo.discountValue)||0);
- promoCode=promo.code;msg.textContent="Đã áp dụng mã "+promo.code+".";updateTotal();
+ promoCode=promo.code;msg.textContent="Đã áp dụng mã "+promo.code+".";updateTotal();renderQR();
 }
 function renderQR(){
- const method=document.querySelector('input[name="payMethod"]:checked')?.value||"Chuyển khoản QR";
- const area=document.getElementById("qr-area");area.style.display=method==="Chuyển khoản QR"?"block":"none";
- if(method!=="Chuyển khoản QR"||!booking)return;
- const ref="LOTTE"+String(booking.bookingId||"").replace(/[^A-Z0-9]/gi,"").slice(-8).toUpperCase()+Math.random().toString(36).slice(2,5).toUpperCase();
- const amount=Math.max(0,subtotalAmount-discountAmount);
- document.getElementById("qr-ref").textContent="Nội dung chuyển khoản: "+ref+" · "+money(amount)+" · Người nhận: Đinh Tiến Đức";
- document.getElementById("qr-image").src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data="+encodeURIComponent("LOTTE HOTEL HANOI|Nguoi nhan: Dinh Tien Duc|Ma don: "+booking.bookingId+"|Noi dung: "+ref+"|So tien: "+amount);
+ const method=selectedPaymentMethod();
+ const area=document.getElementById("qr-area");
+ area.style.display="block";
+ updateTotal();
+ if(!booking)return;
+ const depositMode=method==="deposit_30_cash_at_hotel";
+ const amount=amountDueNow();
+ document.getElementById("qr-ref").textContent=(depositMode?"Nội dung chuyển khoản tiền cọc: ":"Nội dung chuyển khoản: ")+qrTransferReference+" · "+money(amount)+" · Người nhận: Đinh Tiến Đức";
+ document.getElementById("qr-help").textContent=depositMode
+  ?"Chỉ chuyển khoản 30% tiền phòng theo mã QR này. Sau khi admin kiểm tra và xác nhận đã nhận cọc, khách sạn sẽ xếp phòng; 70% còn lại thanh toán tiền mặt tại quầy khi nhận phòng. QR demo chưa tự xác minh giao dịch ngân hàng."
+  :"Chuyển khoản 100% tổng tiền phòng theo mã QR này. Đơn chỉ chuyển sang đã thanh toán sau khi admin kiểm tra giao dịch. QR demo chưa tự xác minh giao dịch ngân hàng.";
+ document.getElementById("qr-image").src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data="+encodeURIComponent("LOTTE HOTEL HANOI|Nguoi nhan: Dinh Tien Duc|STK: 1234567899999|Ma don: "+booking.bookingId+"|Noi dung: "+qrTransferReference+(depositMode?" Tien coc 30%":" Thanh toan toan bo")+"|So tien: "+amount);
+ const btn=document.getElementById("submit-payment");
+ btn.textContent=depositMode?"Tôi đã chuyển khoản cọc 30% — gửi admin xác nhận":"Tôi đã thanh toán online — gửi admin xác nhận";
+}
+function updateBookingInUserAccounts(bookingId, fields){
+ const users=safeParse("traveloka_hotel_users",[]);
+ if(Array.isArray(users)){users.forEach(user=>{(user.bookings||[]).forEach(b=>{if(b.bookingId===bookingId)Object.assign(b,fields)});});localStorage.setItem("traveloka_hotel_users",JSON.stringify(users));}
+ const current=safeParse("traveloka_current_user",null);
+ if(current){(current.bookings||[]).forEach(b=>{if(b.bookingId===bookingId)Object.assign(b,fields)});localStorage.setItem("traveloka_current_user",JSON.stringify(current));}
 }
 function completePayment(){
  if(!booking){alert("Không có thông tin đơn đặt phòng.");return}
- const method=document.querySelector('input[name="payMethod"]:checked')?.value||"Chuyển khoản QR";
- booking.paymentMethod=method;booking.paymentStatus="Đã gửi yêu cầu thanh toán";booking.promoCode=promoCode;booking.discountAmount=discountAmount;booking.rawAmount=Math.max(0,subtotalAmount-discountAmount);booking.totalPrice=money(booking.rawAmount);booking.paymentReference=document.getElementById("qr-ref").textContent;
- try{
-  localStorage.setItem("lotte_selected_payment_booking",JSON.stringify(booking));
-  let all=JSON.parse(localStorage.getItem("traveloka_customer_pending_bookings")||"[]");const idx=all.findIndex(b=>b.bookingId===booking.bookingId);if(idx>=0)all[idx]=booking;else all.push(booking);localStorage.setItem("traveloka_customer_pending_bookings",JSON.stringify(all));
-  let admin=JSON.parse(localStorage.getItem("traveloka_all_bookings")||"[]");const ai=admin.findIndex(b=>b.bookingId===booking.bookingId);if(ai>=0)admin[ai]={...admin[ai],...booking};else admin.push(booking);localStorage.setItem("traveloka_all_bookings",JSON.stringify(admin));
- }catch(e){}
- const notice=document.getElementById("payment-notice");notice.style.display="block";notice.textContent="Đã lưu lựa chọn thanh toán cho đơn "+booking.bookingId+". Đơn vẫn chờ Admin chọn phòng và xác nhận; QR này là mã demo, chưa xác thực giao dịch ngân hàng.";
+ const all=safeParse("traveloka_all_bookings",[]);
+ const currentAdminBooking=Array.isArray(all)?all.find(b=>b.bookingId===booking.bookingId):null;
+ if(!currentAdminBooking||currentAdminBooking.status!=="Chờ thanh toán"){
+  alert("Đơn không còn ở trạng thái chờ thanh toán. Vui lòng tải lại danh sách đặt phòng.");return;
+ }
+ if(booking.status!=="Chờ thanh toán"){alert("Admin cần xác nhận còn phòng trước khi thanh toán.");return;}
+ if(booking.paymentSubmittedAt){alert("Bạn đã gửi yêu cầu thanh toán. Vui lòng chờ admin xác nhận.");return;}
+ if(currentAdminBooking.paymentDeadline && Date.now() > new Date(currentAdminBooking.paymentDeadline).getTime()){
+  alert("Đã hết thời hạn thanh toán 24 giờ. Vui lòng liên hệ khách sạn hoặc tạo yêu cầu đặt phòng mới.");return;
+ }
+ const method=selectedPaymentMethod();
+ const depositMode=method==="deposit_30_cash_at_hotel";
+ const finalTotal=Math.max(0,subtotalAmount-discountAmount);
+ const dueNow=depositMode?Math.round(finalTotal*0.3):finalTotal;
+ const balance=depositMode?Math.max(0,finalTotal-dueNow):0;
+ if(dueNow<=0){alert("Số tiền thanh toán không hợp lệ.");return;}
+ const now=new Date().toISOString();
+ const paymentMethod=depositMode?"Cọc 30% online, còn lại tiền mặt tại khách sạn":"Thanh toán 100% online bằng QR";
+ const fields={
+  paymentPlan:depositMode?"deposit_30_cash_at_hotel":"full_online_qr",
+  paymentMethod,
+  paymentStatus:depositMode?"Khách đã gửi yêu cầu xác nhận cọc 30% — chờ admin xác nhận":"Khách đã gửi yêu cầu xác nhận thanh toán toàn bộ — chờ admin xác nhận",
+  paymentSubmittedAt:now,
+  paymentSubmittedAmount:dueNow,
+  paymentSubmittedType:depositMode?"deposit_30_percent":"full_payment",
+  depositAmount:depositMode?dueNow:0,
+  remainingAmount:balance,
+  paymentReference:qrTransferReference,
+  promoCode:promoCode,
+  discountAmount:discountAmount,
+  rawAmount:finalTotal,
+  totalPrice:money(finalTotal),
+  customerNotice:{
+   title:depositMode?"Đã gửi yêu cầu xác nhận cọc 30%":"Đã gửi yêu cầu xác nhận thanh toán toàn bộ",
+   message:depositMode
+    ?"Bạn đã gửi yêu cầu xác nhận cọc "+money(dueNow)+". Đơn đang chờ admin kiểm tra giao dịch; phòng chỉ được xếp sau khi admin xác nhận đã nhận cọc. Phần còn lại "+money(balance)+" thanh toán bằng tiền mặt tại quầy khi nhận phòng."
+    :"Bạn đã gửi yêu cầu xác nhận thanh toán toàn bộ "+money(dueNow)+". Đơn đang chờ admin kiểm tra giao dịch; phòng chỉ được xếp sau khi admin xác nhận đã nhận đủ tiền.",
+   createdAt:now,
+   type:"payment_required"
+  }
+ };
+ // Chỉ ghi nhận yêu cầu khách gửi; chưa xác nhận đã thu tiền và chưa gán phòng.
+ Object.assign(currentAdminBooking,fields);
+ localStorage.setItem("traveloka_all_bookings",JSON.stringify(all));
+ updateBookingInUserAccounts(booking.bookingId,fields);
+ booking=Object.assign({},booking,fields);
+ localStorage.setItem("lotte_selected_payment_booking",JSON.stringify(booking));
+ const notice=document.getElementById("payment-notice");notice.style.display="block";
+ notice.textContent=depositMode
+  ?"Đã gửi yêu cầu xác nhận cọc 30% cho admin. Đơn chưa được xác nhận cọc hoặc xếp phòng cho đến khi admin kiểm tra giao dịch. Sau khi cọc được xác nhận, 70% còn lại thanh toán bằng tiền mặt tại quầy khách sạn."
+  :"Đã gửi thông tin thanh toán toàn bộ cho admin kiểm tra. Đơn chưa được xác nhận thanh toán cho đến khi admin đối chiếu giao dịch.";
+ const adminNotifs=safeParse("traveloka_admin_notifications",[]);
+ if(Array.isArray(adminNotifs)){adminNotifs.unshift({id:"notif_payment_"+Date.now(),title:depositMode?"Khách gửi yêu cầu xác nhận cọc 30%":"Khách gửi yêu cầu xác nhận thanh toán toàn bộ",desc:`${booking.customerName||"Khách hàng"} · ${booking.bookingId} · Đề nghị xác nhận ${money(dueNow)}`,time:"Vừa xong",timestamp:now,type:"payment",read:false});localStorage.setItem("traveloka_admin_notifications",JSON.stringify(adminNotifs.slice(0,50)));}
+ const btn=document.getElementById("submit-payment");btn.disabled=true;btn.textContent="Đã gửi — chờ admin xác nhận";
+ document.querySelectorAll('input[name="payMethod"]').forEach(el=>el.disabled=true);
+ document.querySelectorAll('.pay-card button').forEach(el=>el.disabled=true);
  window.scrollTo({top:0,behavior:"smooth"});
 }
 readBooking();

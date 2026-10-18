@@ -11,8 +11,6 @@ const DEFAULT_HOTEL_USERS = [
   {
     id: "usr_admin_01",
     fullName: "Quản Trị Viên Lotte (General Manager)",
-    idCard: "001090001234",
-    identityNumber: "001090001234",
     email: "admin@lottehotel.vn",
     phone: "0999888999",
     password: "admin",
@@ -25,8 +23,6 @@ const DEFAULT_HOTEL_USERS = [
   {
     id: "usr_lotte_01",
     fullName: "Nguyễn Hoàng Lotte",
-    idCard: "001202008899",
-    identityNumber: "001202008899",
     email: "demo@lottehotel.vn",
     phone: "0901234567",
     password: "123456",
@@ -38,7 +34,6 @@ const DEFAULT_HOTEL_USERS = [
         customerName: "Nguyễn Hoàng Lotte",
         customerPhone: "0901234567",
         customerEmail: "demo@lottehotel.vn",
-        identityNumber: "001202008899",
         hotelId: "lotte-hotel-hanoi",
         hotelName: "Lotte Hotel Hanoi (5 Sao Đẳng Cấp)",
         hotelImage: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
@@ -59,61 +54,7 @@ const DEFAULT_HOTEL_USERS = [
   },
   {
     id: "usr_lotte_02",
-    fullName: "Đỗ Minh Tuấn",
-    idCard: "001088012345",
-    identityNumber: "001088012345",
-    email: "minhtuan.do@gmail.com",
-    phone: "0912445566",
-    password: "123456",
-    role: "Khách hàng Thân thiết (Lotte Club Gold)",
-    createdAt: "2026-09-05T09:15:00Z",
-    bookings: [],
-    wishlist: ["lotte-deluxe"]
-  },
-  {
-    id: "usr_lotte_03",
-    fullName: "Phạm Hải Đăng",
-    idCard: "001092005678",
-    identityNumber: "001092005678",
-    email: "haidang.pham@vpb.com.vn",
-    phone: "0934889922",
-    password: "123456",
-    role: "VIP Diamond Club",
-    createdAt: "2026-09-10T14:20:00Z",
-    bookings: [],
-    wishlist: ["lotte-premier"]
-  },
-  {
-    id: "usr_lotte_04",
-    fullName: "Vũ Đình Trọng",
-    idCard: "001085009988",
-    identityNumber: "001085009988",
-    email: "trongvu@lottecenter.vn",
-    phone: "0977889900",
-    password: "123456",
-    role: "VIP Diamond Club",
-    createdAt: "2026-09-12T11:00:00Z",
-    bookings: [],
-    wishlist: ["lotte-presidential-suite"]
-  },
-  {
-    id: "usr_lotte_05",
-    fullName: "Hoàng Mai Linh",
-    idCard: "001195004321",
-    identityNumber: "001195004321",
-    email: "mailinh.hoang@gmail.com",
-    phone: "0988776655",
-    password: "123456",
-    role: "Hội viên Bạc (Silver Club)",
-    createdAt: "2026-09-14T16:30:00Z",
-    bookings: [],
-    wishlist: []
-  },
-  {
-    id: "usr_lotte_06",
     fullName: "Trần Thị Bích",
-    idCard: "034195007766",
-    identityNumber: "034195007766",
     email: "khachhang@gmail.com",
     phone: "0987654321",
     password: "123456",
@@ -134,37 +75,13 @@ function getHotelUsersArray() {
   try {
     const parsed = JSON.parse(stored);
     let users = Array.isArray(parsed) && parsed.length > 0 ? parsed : [...DEFAULT_HOTEL_USERS];
-
-    // Tự động gán idCard / CCCD nếu bản ghi cũ chưa có
-    let hasChanges = false;
-    users = users.map((u, i) => {
-      if (!u.idCard && !u.identityNumber) {
-        const phoneDigits = (u.phone || "").replace(/\D/g, "");
-        const mockCCCD = phoneDigits ? ("001" + phoneDigits).slice(0, 12).padEnd(12, "8") : ("0012020088" + (10 + i));
-        u.idCard = mockCCCD;
-        u.identityNumber = mockCCCD;
-        hasChanges = true;
-      } else if (!u.idCard && u.identityNumber) {
-        u.idCard = u.identityNumber;
-        hasChanges = true;
-      } else if (u.idCard && !u.identityNumber) {
-        u.identityNumber = u.idCard;
-        hasChanges = true;
-      }
-      return u;
-    });
-
     // Đảm bảo luôn có tài khoản Admin và có cờ isAdmin
     const adminIdx = users.findIndex(u => u.email === "admin@lottehotel.vn");
     if (adminIdx === -1) {
       users.unshift(DEFAULT_HOTEL_USERS[0]);
-      hasChanges = true;
+      saveHotelUsersArray(users);
     } else if (!users[adminIdx].isAdmin) {
       users[adminIdx].isAdmin = true;
-      hasChanges = true;
-    }
-
-    if (hasChanges) {
       saveHotelUsersArray(users);
     }
     return users;
@@ -306,96 +223,16 @@ function addBookingToCurrentUser(bookingData) {
     allBookings.unshift(bookingData);
     localStorage.setItem("traveloka_all_bookings", JSON.stringify(allBookings));
 
-    // Gán phòng và cập nhật trạng thái CHỈ khi đơn đã được xác nhận (thanh toán online)
-    // Đơn "Chờ xác nhận" (thanh toán tại khách sạn) → admin sẽ gán phòng sau khi khách thanh toán
-    if (bookingData.status !== "Chờ xác nhận") {
-      const roomsStr = localStorage.getItem("traveloka_hotel_rooms");
-      if (roomsStr) {
-        let rooms = JSON.parse(roomsStr);
-        if (Array.isArray(rooms)) {
-          // Hàm kiểm tra trùng lịch nội tuyến
-          function hasDateConflict(roomNumber, reqIn, reqOut) {
-            return allBookings.some(b => {
-              if (b.status === "Đã hủy" || b.status === "Hoàn thành") return false;
-              if (b.roomNumber !== roomNumber) return false;
-              // Bỏ qua chính đơn hiện tại (vừa thêm ở trên)
-              if (b.bookingId === bookingData.bookingId) return false;
-              const bIn = new Date(b.checkin);
-              const bOut = new Date(b.checkout);
-              if (isNaN(bIn) || isNaN(bOut)) return false;
-              return reqIn < bOut && bIn < reqOut;
-            });
-          }
-
-          const reqIn = new Date(bookingData.checkin);
-          const reqOut = new Date(bookingData.checkout);
-
-          let targetRoom = null;
-          // 1. Ưu tiên tìm đúng mã phòng hoặc ID phòng khách hàng đã tự chọn từ sơ đồ tầng
-          if (bookingData.roomId) {
-            targetRoom = rooms.find(r => r.id === bookingData.roomId);
-          } else if (bookingData.roomNumber) {
-            targetRoom = rooms.find(r => r.roomNumber === bookingData.roomNumber);
-          }
-
-          // 2. Nếu chưa chọn phòng cụ thể hoặc phòng không khả dụng hoặc trùng lịch, tự động gán phòng trống thuộc đúng hạng phòng
-          if (!targetRoom || targetRoom.status !== "available" || hasDateConflict(targetRoom.roomNumber, reqIn, reqOut)) {
-            const cat = (bookingData.category || bookingData.roomType || "").toLowerCase();
-            targetRoom = rooms.find(r => {
-              const rCat = (r.category || r.roomType || "").toLowerCase();
-              const matchCat = (cat.includes("deluxe") && (rCat.includes("deluxe") || r.floor === 38)) ||
-                               (cat.includes("premier") && (rCat.includes("premier") || r.floor === 45)) ||
-                               (cat.includes("junior") && (rCat.includes("junior") || r.floor === 51)) ||
-                               (cat.includes("presidential") && (rCat.includes("president") || rCat.includes("grand") || r.floor === 60 || r.floor === 65));
-              return matchCat && r.status === "available" && !hasDateConflict(r.roomNumber, reqIn, reqOut);
-            });
-          }
-
-          // 3. Dự phòng bất kỳ phòng trống nào không trùng lịch
-          if (!targetRoom) {
-            targetRoom = rooms.find(r => r.status === "available" && !hasDateConflict(r.roomNumber, reqIn, reqOut));
-          }
-
-          if (targetRoom) {
-            // Xác định check-in hôm nay hay tương lai
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const checkinDate = new Date(bookingData.checkin);
-            checkinDate.setHours(0, 0, 0, 0);
-            const isCheckinToday = checkinDate.getTime() <= today.getTime();
-
-            if (isCheckinToday) {
-              // Check-in hôm nay → chuyển phòng thành occupied
-              targetRoom.status = "occupied";
-              targetRoom.guestName = bookingData.customerName;
-              targetRoom.guestPhone = bookingData.customerPhone;
-              targetRoom.bookingId = bookingData.bookingId;
-              targetRoom.checkin = bookingData.checkin;
-              targetRoom.checkout = bookingData.checkout;
-            }
-            // Đặt phòng tương lai → phòng GIỮ NGUYÊN "available"
-            // Lịch đặt đã lưu trong allBookings, hàm hasDateConflict sẽ ngăn đặt chồng
-
-            bookingData.roomNumber = targetRoom.roomNumber;
-            bookingData.roomId = targetRoom.id;
-            bookingData.floor = targetRoom.floor;
-            localStorage.setItem("traveloka_hotel_rooms", JSON.stringify(rooms));
-          }
-        }
-      }
-    }
+    // Chưa giữ/gán phòng ở bước khách gửi yêu cầu. Admin kiểm tra phòng trống và xác nhận sau.
 
     // Thêm thông báo thời gian thực cho Quản Trị Viên (Admin)
-    const isPending = bookingData.status === "Chờ xác nhận";
     const notifsStr = localStorage.getItem("traveloka_admin_notifications");
     let notifs = notifsStr ? JSON.parse(notifsStr) : [];
     if (!Array.isArray(notifs)) notifs = [];
     notifs.unshift({
       id: "notif_" + Date.now(),
-      title: isPending ? "Đơn đặt phòng mới — Chờ xác nhận" : "Đơn đặt phòng mới vừa tạo",
-      desc: isPending
-        ? `${bookingData.customerName} đặt ${bookingData.roomType} (${bookingData.totalPrice}) — Thanh toán tại khách sạn, cần Admin xác nhận`
-        : `${bookingData.customerName} vừa đặt ${bookingData.roomType} tại ${bookingData.hotelName} (${bookingData.totalPrice})`,
+      title: "Đơn đặt phòng mới vừa tạo",
+      desc: `${bookingData.customerName} vừa đặt ${bookingData.roomType} tại ${bookingData.hotelName} (${bookingData.totalPrice})`,
       time: "Vừa xong",
       timestamp: new Date().toISOString(),
       type: "booking",

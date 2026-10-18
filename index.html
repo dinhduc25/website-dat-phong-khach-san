@@ -65,6 +65,7 @@
             </svg>
             Phòng nghỉ
           </a>
+          <a href="chat.html" class="nav-link">Tư vấn trực tuyến</a>
           <a href="#contact-section" class="nav-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
@@ -922,7 +923,7 @@
             <h4 id="bm-hotel-name" class="b-hotel-name">Lotte Hotel Hanoi</h4>
             <div id="bm-hotel-address" class="b-hotel-geo">54 Liễu Giai, Ba Đình, Hà Nội</div>
             <div style="font-size: 0.8rem; color: var(--success); font-weight: 700; margin-top: 4px;">
-              ✓ Xác nhận tức thì &bull; Miễn phí hủy phòng trước 24h
+              ✓ Khách sạn xác nhận tình trạng phòng trước khi thanh toán
             </div>
           </div>
         </div>
@@ -1004,31 +1005,15 @@
             </div>
           </div>
 
-          <!-- Phương thức thanh toán -->
-          <div class="form-group">
-            <label class="form-label">Phương Thức Thanh Toán</label>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-              <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
-                <input type="radio" name="paymentMethod" value="Thanh toán tại khách sạn" checked>
-                <span><strong>Thanh toán tiền mặt</strong> - Thanh toán trực tiếp tại khách sạn</span>
-              </label>
-              <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
-                <input type="radio" name="paymentMethod" value="QR Pay">
-                <span><strong>QR Pay</strong> - Quét mã QR để thanh toán</span>
-              </label>
-
-            </div>
-          </div>
-
-          <div id="booking-qr-payment" class="booking-qr-payment" hidden>
-            <div class="qr-pay-details"><strong>Mã QR thanh toán</strong><p>Quét mã bằng ứng dụng ngân hàng.</p><div class="qr-reference" id="booking-qr-reference"></div><div class="qr-account-details"><div><span>Tên người nhận</span><strong>Đinh Tiến Đức</strong></div><div><span>Số tài khoản</span><strong>1234567899999</strong></div></div></div>
-            <img id="booking-qr-image" alt="Mã QR thanh toán" width="180" height="180">
+          <div class="booking-next-step-note" role="note">
+            <span class="booking-next-step-icon" aria-hidden="true">i</span>
+            <div><strong>Tiếp theo là gì?</strong><p>Khách sạn sẽ kiểm tra tình trạng phòng và phản hồi yêu cầu của bạn. Khi admin xác nhận còn phòng, bạn mới chọn thanh toán 100% online hoặc cọc 30% bằng QR. Số phòng sẽ được gán sau khi khoản thanh toán được xác nhận.</p></div>
           </div>
 
           <!-- Yêu cầu đặc biệt -->
           <div class="form-group">
             <label class="form-label" for="bm-special-requests">Yêu cầu đặc biệt (Không bắt buộc)</label>
-            <textarea id="bm-special-requests" class="form-input" rows="2" placeholder="Ví dụ: Phòng tầng cao, 1 giường đôi lớn, nhận phòng sớm..."></textarea>
+            <textarea id="bm-special-requests" class="form-input" rows="2" placeholder="Ví dụ: 1 giường đôi lớn, hướng nhìn yêu thích, nhận phòng sớm..."></textarea>
           </div>
 
           <button type="submit" class="btn btn-accent" style="width: 100%; padding: 14px; font-size: 1.05rem;">
@@ -1139,6 +1124,17 @@
 
   <!-- MASTER SCRIPT: Điều phối và khởi chạy toàn bộ 4 thành viên -->
   <script src="js/main.js"></script>
-  <script src="js/room-picker-addon.js"></script>
+  <script>
+    // Mở lại trực tiếp mục Đặt chỗ của tôi khi khách quay về từ trang chi tiết.
+    (function () {
+      if (new URLSearchParams(window.location.search).get('showBookings') === '1') {
+        window.addEventListener('load', function () {
+          window.setTimeout(function () {
+            if (typeof openMyBookingsModal === 'function') openMyBookingsModal();
+          }, 150);
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

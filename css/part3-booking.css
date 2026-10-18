@@ -801,3 +801,63 @@
 .qr-account-details span { font-size: .78rem; color: #64748b; }
 .qr-account-details strong { color: #0f172a; overflow-wrap: anywhere; }
 @media (max-width: 560px) { .booking-qr-payment { grid-template-columns: 1fr; } .booking-qr-payment > img, .qr-pay-details { grid-column: 1; grid-row: auto; } .booking-qr-payment > img { justify-self: center; } }
+
+
+/* Phương thức thanh toán — thẻ lựa chọn gọn, rõ và đồng bộ giao diện LOTTE */
+.booking-payment-option {
+  display: grid;
+  grid-template-columns: 18px 38px minmax(0, 1fr);
+  align-items: start;
+  gap: 11px;
+  padding: 13px 14px;
+  margin: 8px 0;
+  border: 1px solid #d8e2ee;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.booking-payment-option:hover { border-color: #80b7e8; background: #f8fbff; }
+.booking-payment-option:has(input:checked) {
+  border-color: #0788cc;
+  background: #f0f8ff;
+  box-shadow: 0 0 0 2px rgba(7,136,204,.09);
+}
+.booking-payment-option > input { margin: 4px 0 0; accent-color: #0788cc; }
+.booking-payment-icon {
+  width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px; background: #e0f2fe; color: #0369a1; font-size: 21px; font-weight: 800;
+}
+.booking-payment-icon--deposit { background: #dcfce7; color: #15803d; }
+.booking-payment-copy { display: block; min-width: 0; }
+.booking-payment-copy strong { display: block; color: #10233f; font-size: .92rem; line-height: 1.35; }
+.booking-payment-copy small { display: block; margin-top: 4px; color: #63748b; font-size: .78rem; line-height: 1.5; font-weight: 400; }
+.booking-qr-payment { grid-template-columns: minmax(0,1fr) 190px; gap: 16px; padding: 16px; border-color: #d7e6f6; background: linear-gradient(135deg,#f5faff,#eef6ff); }
+.booking-qr-payment > img { width: 184px; height: 184px; padding: 8px; border: 1px solid #d8e4f1; box-shadow: 0 5px 16px rgba(15,23,42,.06); }
+.qr-pay-details strong { color: #10233f; }
+@media (max-width: 560px) {
+ .booking-payment-option { grid-template-columns: 18px 34px minmax(0,1fr); gap: 8px; padding: 11px; }
+ .booking-payment-icon { width: 32px; height: 32px; }
+ .booking-qr-payment { grid-template-columns: minmax(0,1fr); }
+ .booking-qr-payment > img { grid-column: 1; grid-row: auto; width: 180px; height: 180px; justify-self: center; }
+ .qr-pay-details { grid-column: 1; grid-row: auto; }
+}
+
+
+/* Ghi chú quy trình: lựa chọn thanh toán và gán số phòng diễn ra sau khi admin xác nhận còn phòng */
+.booking-next-step-note {
+  display: flex; align-items: flex-start; gap: 11px; padding: 13px 15px; margin: 6px 0 16px;
+  border: 1px solid #cfe4f8; border-radius: 12px; color: #24415f;
+  background: linear-gradient(135deg, #f5faff, #eff7ff); line-height: 1.55;
+}
+.booking-next-step-icon {
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 25px;
+  width: 25px; height: 25px; border-radius: 50%; background: #dbeeff; color: #087bc1; font-weight: 900;
+}
+.booking-next-step-note strong { display: block; margin-bottom: 3px; color: #10345a; font-size: .9rem; }
+.booking-next-step-note p { margin: 0; color: #506983; font-size: .82rem; }
+.my-booking-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.my-booking-actions .btn { margin:0; }
+.my-booking-detail-btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; border:1px solid #cfe0f1; color:#075985; background:#f7fbff; border-radius:9px; padding:8px 12px; font-weight:800; font-size:.82rem; cursor:pointer; text-decoration:none; }
+.my-booking-detail-btn:hover { background:#eaf5ff; border-color:#8bc6ef; }
+@media(max-width:560px){.booking-next-step-note{padding:11px}.booking-next-step-note p{font-size:.79rem}}

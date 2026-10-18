@@ -85,6 +85,12 @@
             <span class="nav-badge" id="badge-total-contacts" style="background:#ef4444; color:#fff; display:none;">0</span>
           </a>
         </li>
+        <li class="nav-item">
+          <a href="chat.html">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-12.2 7.6L3 21l1.9-5.8A8.5 8.5 0 1 1 21 11.5z"></path></svg>
+            Tư vấn & Tin nhắn
+          </a>
+        </li>
         <li class="nav-item" data-section="section-settings">
           <a href="#settings">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -416,6 +422,10 @@
 
             <select class="filter-select" id="filter-room-status" onchange="filterRooms()">
               <option value="all">Tất cả Trạng Thái</option>
+              <option value="Chờ admin xác nhận">Chờ admin xác nhận</option>
+              <option value="Chờ thanh toán">Chờ thanh toán</option>
+              <option value="Đã cọc 30% - chờ nhận phòng">Đã cọc 30% - chờ nhận phòng</option>
+              <option value="Đã thanh toán - chờ nhận phòng">Đã thanh toán - chờ nhận phòng</option>
               <option value="available">🟢 Phòng Trống (Sẵn sàng)</option>
               <option value="occupied">🔵 Đang Có Khách</option>
               <option value="cleaning">🟡 Đang Dọn Dẹp</option>
@@ -567,7 +577,10 @@
 
             <select class="filter-select" id="filter-booking-status" onchange="filterBookings()">
               <option value="all">Tất cả Trạng Thái</option>
-              <option value="Chờ xác nhận">⏳ Chờ xác nhận (Chưa thanh toán)</option>
+              <option value="Chờ admin xác nhận">Chờ admin xác nhận</option>
+              <option value="Chờ thanh toán">Chờ thanh toán</option>
+              <option value="Đã cọc 30% - chờ nhận phòng">Đã cọc 30% - chờ nhận phòng</option>
+              <option value="Đã thanh toán - chờ nhận phòng">Đã thanh toán - chờ nhận phòng</option>
               <option value="Đã xác nhận">Đã xác nhận</option>
               <option value="Đang lưu trú">Đang lưu trú (Checked-in)</option>
               <option value="Hoàn thành">Hoàn thành (Checked-out)</option>
@@ -582,8 +595,8 @@
 
         <!-- BOOKINGS TABLE -->
         <div class="card" style="padding: 0;">
-          <div class="table-responsive">
-            <table class="admin-table">
+          <div class="table-responsive bookings-table-responsive">
+            <table class="admin-table bookings-admin-table">
               <thead>
                 <tr>
                   <th>Mã Đặt</th>
@@ -699,14 +712,13 @@
               <thead>
                 <tr>
                   <th>Họ Và Tên</th>
-                  <th>Số CCCD / CMND</th>
                   <th>Email</th>
                   <th>Số Điện Thoại</th>
                   <th>Hạng Thành Viên</th>
                   <th>Số Lần Đặt</th>
                   <th>Tổng Chi Tiêu</th>
                   <th>Ngày Gia Nhập</th>
-                  <th style="text-align: center; min-width: 175px;">Thao Tác</th>
+                  <th>Thao Tác</th>
                 </tr>
               </thead>
               <tbody id="customers-table-tbody">
@@ -958,14 +970,9 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="room-category">Hạng phòng *</label>
-              <select id="room-category" class="form-control" required>
-                <option value="">-- Chọn hạng phòng --</option>
-                <option value="deluxe">Deluxe</option>
-                <option value="premier">Premier</option>
-                <option value="junior-suite">Junior Suite</option>
-                <option value="presidential-suite">Presidential Suite</option>
-              </select>
+              <label class="form-label" for="room-hotel">Hạng phòng *</label>
+              <select id="room-hotel" class="form-control" required>
+                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi (5 sao duy nhất)</option></select>
             </div>
           </div>
 
@@ -1064,11 +1071,7 @@
             <div class="form-group">
               <label class="form-label" for="wi-hotel-select">Chọn hạng phòng *</label>
               <select id="wi-hotel-select" class="form-control" required onchange="updateWalkinRoomOptions()">
-                <option value="">-- Chọn hạng phòng --</option>
-                <option value="deluxe">Deluxe (Tầng 38)</option>
-                <option value="premier">Premier (Tầng 45)</option>
-                <option value="junior-suite">Junior Suite (Tầng 51)</option>
-                <option value="presidential-suite">Presidential Suite (Tầng 60-65)</option>
+                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi • Hệ thống duy nhất</option>
             </select>
             </div>
           </div>
@@ -1190,24 +1193,19 @@
   </div>
 
   <!-- ========================================================
-       MODAL 5: THÊM & SỬA KHÁCH HÀNG (ADD & EDIT CUSTOMER)
+       MODAL 5: THÊM KHÁCH HÀNG (ADD CUSTOMER)
        ======================================================== -->
   <div class="modal-overlay" id="modal-customer">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title" id="cust-modal-title">Thêm Khách Hàng / Hội Viên Mới</h3>
+        <h3 class="modal-title">Thêm Khách Hàng / Hội Viên Mới</h3>
         <button type="button" class="btn-close-modal" onclick="closeAdminModal('modal-customer')">&times;</button>
       </div>
       <form id="form-customer" onsubmit="handleSaveCustomerSubmit(event)">
-        <input type="hidden" id="cust-id" value="">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label" for="cust-name">Họ và tên khách hàng *</label>
             <input type="text" id="cust-name" class="form-control" required placeholder="Nguyễn Văn A">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="cust-idcard">Số Căn Cước Công Dân (CCCD / CMND) *</label>
-            <input type="text" id="cust-idcard" class="form-control" required placeholder="Ví dụ: 001202008899" maxlength="12" pattern="[0-9]{9,12}" title="Vui lòng nhập từ 9 đến 12 chữ số CCCD/CMND">
           </div>
           <div class="form-grid-2">
             <div class="form-group">
@@ -1231,7 +1229,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline" onclick="closeAdminModal('modal-customer')">Hủy bỏ</button>
-          <button type="submit" class="btn btn-primary" id="btn-save-customer">Lưu Khách Hàng</button>
+          <button type="submit" class="btn btn-primary">Lưu Khách Hàng</button>
         </div>
       </form>
     </div>
