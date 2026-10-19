@@ -9,22 +9,22 @@
   <style>
     body{background:#f4f7fb;color:#182337;font-family:Arial,sans-serif;margin:0}
     .chat-shell{max-width:1180px;margin:34px auto;padding:0 18px 40px}
-    .chat-heading{background:linear-gradient(120deg,#102a43,#1c4966);color:#fff;padding:28px 30px;border-radius:18px;margin-bottom:22px}
+    .chat-heading{background:linear-gradient(120deg,#102a43,#1c4966);color:#fff;padding:24px 28px;border-radius:18px;margin-bottom:18px;box-shadow:0 10px 28px #102a4318}
     .chat-heading h1{margin:0 0 8px;font-size:28px}.chat-heading p{margin:0;color:#dce8f2}
     .chat-layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:18px;min-height:550px}
-    .chat-panel{background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 8px 25px #0f172a0a}
-    .chat-panel-title{padding:18px 20px;border-bottom:1px solid #e8edf3;font-weight:700}
+    .chat-panel{background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 8px 25px #0f172a0a;min-width:0}
+    .chat-panel-title{padding:18px 20px;border-bottom:1px solid #e8edf3;font-weight:700;background:#fff;color:#17344a}
     #conversation-list{padding:8px;max-height:480px;overflow:auto}
     .conversation{display:block;width:100%;text-align:left;border:0;background:#fff;padding:13px;border-radius:10px;cursor:pointer;margin-bottom:4px}
     .conversation.active,.conversation:hover{background:#edf6ff}.conversation strong{display:block;color:#12304a}.conversation small{color:#64748b}
-    #chat-messages{height:400px;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:12px;background:#fbfdff}
+    #chat-messages{height:430px;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:12px;background:#f3f7fb}
     .chat-bubble{max-width:78%;padding:12px 15px;border-radius:14px;line-height:1.45;overflow-wrap:anywhere}
-    .chat-bubble.mine{align-self:flex-end;background:#0e7490;color:#fff;border-bottom-right-radius:4px}
-    .chat-bubble.theirs{align-self:flex-start;background:#eaf0f6;color:#1e293b;border-bottom-left-radius:4px}
+    .chat-bubble.mine{align-self:flex-end;background:#c9e9d8;color:#183b2c;border-bottom-right-radius:4px}
+    .chat-bubble.theirs{align-self:flex-start;background:#fff;color:#1e293b;border-bottom-left-radius:4px;box-shadow:0 2px 6px #0f172a0a}
     .chat-bubble time{display:block;font-size:10px;opacity:.75;margin-top:5px}
     .chat-compose{display:flex;gap:10px;padding:15px;border-top:1px solid #e8edf3}
     #chat-input{flex:1;resize:vertical;min-height:48px;max-height:120px;border:1px solid #cbd5e1;border-radius:10px;padding:12px;font:inherit}
-    #chat-send{border:0;background:#b28a45;color:#fff;font-weight:700;border-radius:10px;padding:0 22px;cursor:pointer}
+    #chat-send{border:0;background:#b28a45;color:#102a43;font-weight:700;border-radius:10px;padding:0 22px;cursor:pointer}#chat-send:disabled{opacity:.55;cursor:not-allowed}
     #chat-status{padding:10px 18px;color:#64748b;font-size:13px}.empty-state{padding:24px;text-align:center;color:#64748b}
     .chat-top-actions{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:15px}
     .chat-top-actions a{color:#0e7490;text-decoration:none;font-weight:700}
@@ -35,8 +35,8 @@
   <main class="chat-shell">
     <div class="chat-top-actions"><a href="index.html">← Quay về trang chủ</a><a id="admin-return" href="admin.html" style="display:none">Quay lại quản trị</a></div>
     <header class="chat-heading">
-      <h1>Trung tâm tư vấn Lotte Hotel Hanoi</h1>
-      <p>Nhắn tin trực tiếp với đội ngũ hỗ trợ về hạng phòng, đặt phòng và thanh toán.</p>
+      <h1>Trung tâm tin nhắn Lotte Hotel Hanoi</h1>
+      <p>Trao đổi trực tiếp với khách hàng và đội ngũ hỗ trợ về hạng phòng, đặt phòng và thanh toán.</p>
     </header>
     <div class="chat-layout">
       <aside class="chat-panel" id="conversation-panel">
@@ -46,7 +46,7 @@
       <section class="chat-panel">
         <div class="chat-panel-title" id="active-chat-title">Tư vấn trực tuyến</div>
         <div id="chat-messages"><div class="empty-state">Xin chào! Hãy gửi câu hỏi để được hỗ trợ.</div></div>
-        <div id="chat-status">Tin nhắn được đồng bộ trên trình duyệt này. Đội ngũ hỗ trợ sẽ phản hồi sớm nhất.</div>
+        <div id="chat-status">Bản hiện tại lưu tin nhắn trong trình duyệt. Để đồng bộ giữa nhiều máy, cần cấu hình cơ sở dữ liệu dùng chung.</div>
         <form class="chat-compose" id="chat-form">
           <textarea id="chat-input" placeholder="Nhập nội dung cần tư vấn…" maxlength="2000" required></textarea>
           <button id="chat-send" type="submit">Gửi tin</button>

@@ -1,0 +1,13 @@
+/* Floating customer messaging launcher */
+.lotte-chat-launcher{position:fixed;right:24px;bottom:24px;z-index:9998;display:flex;align-items:center;gap:10px;border:0;border-radius:999px;padding:13px 19px;background:linear-gradient(135deg,#12334d,#176b83);color:#fff;font:700 15px/1.2 Arial,sans-serif;box-shadow:0 12px 34px #102a4340;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.lotte-chat-launcher:hover{transform:translateY(-3px);box-shadow:0 16px 38px #102a4355}
+.lotte-chat-launcher .chat-launcher-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#c5a059;color:#102a43;font-size:18px}
+.lotte-chat-popover{position:fixed;right:24px;bottom:88px;z-index:9999;width:min(340px,calc(100vw - 32px));padding:20px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 18px 55px #102a4330;color:#172b3b;display:none;font-family:Arial,sans-serif}
+.lotte-chat-popover.open{display:block;animation:lotteChatIn .18s ease-out}
+.lotte-chat-popover-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.lotte-chat-popover-avatar{width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:#12334d;color:#fff;font-size:22px}
+.lotte-chat-popover h3{font-size:17px;margin:0 0 4px}.lotte-chat-online{font-size:12px;color:#16845b}.lotte-chat-popover p{font-size:14px;line-height:1.55;color:#526274;margin:12px 0 17px}
+.lotte-chat-open-link{display:flex;justify-content:center;align-items:center;width:100%;box-sizing:border-box;padding:12px 14px;border-radius:10px;background:#c5a059;color:#102a43;text-decoration:none;font-weight:800}
+.lotte-chat-popover-close{position:absolute;right:12px;top:10px;border:0;background:transparent;color:#64748b;font-size:22px;cursor:pointer}
+@keyframes lotteChatIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:480px){.lotte-chat-launcher{right:14px;bottom:14px;padding:10px 14px}.lotte-chat-popover{right:12px;bottom:76px}}

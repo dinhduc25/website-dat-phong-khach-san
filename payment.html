@@ -54,7 +54,24 @@ body{margin:0;background:var(--pay-bg);color:var(--pay-ink);font-family:Inter,"S
 #booking-info{min-width:0}
 @media(max-width:820px){.pay-grid{grid-template-columns:minmax(0,1fr)}.pay-wrap{max-width:680px;margin-top:22px}.pay-card{padding:19px}}
 @media(max-width:480px){.pay-wrap{padding:0 12px;margin:16px auto 30px}.pay-head h1{font-size:25px}.pay-card{padding:15px;border-radius:14px}.info-row{gap:9px;padding:9px 0}.info-row span:first-child{max-width:44%}.info-row strong{max-width:58%}.pay-method{grid-template-columns:16px 32px minmax(0,1fr);gap:8px;padding:10px}.method-symbol{width:31px;height:31px}.qr-area{padding:13px 10px}.qr-image-shell{width:205px}}
-</style></head>
+
+/* Unified client visual system: Lotte navy + gold, consistent with homepage */
+.pay-wrap{margin-top:26px}
+.pay-head{padding:24px 26px;border-radius:20px;background:linear-gradient(120deg,#102a43,#1d4965);color:#fff;box-shadow:0 12px 28px rgba(16,42,67,.14)}
+.pay-head h1{color:#fff;margin-top:12px}
+.pay-head .hint{color:#dbe8f3}
+.pay-back{color:#f2cf88}
+.pay-grid{gap:22px}
+.pay-card{border-color:#e5eaf0;border-radius:20px;box-shadow:0 10px 28px rgba(16,42,67,.06);padding:25px}
+.pay-card h2{display:flex;align-items:center;gap:9px}
+.pay-card h2:before{content:"";width:4px;height:21px;border-radius:4px;background:#c5a059;display:inline-block}
+.btn-primary{background:linear-gradient(135deg,#173c5b,#0e7490);box-shadow:0 7px 16px rgba(14,116,144,.18)}
+.btn-primary:hover{background:linear-gradient(135deg,#102a43,#0b6078)}
+.btn-outline{border-color:#d8c49a;color:#173c5b}
+@media(max-width:760px){.pay-wrap{padding:0 14px;margin:16px auto 30px}.pay-head{padding:20px;border-radius:15px}.pay-card{padding:18px}.pay-grid{grid-template-columns:minmax(0,1fr)}}
+
+</style>  <link rel="stylesheet" href="css/chat-widget.css">
+</head>
 <body>
 <main class="pay-wrap">
   <div class="pay-head"><a class="pay-back" href="index.html">← Quay lại trang chủ</a><h1>Thanh toán đặt phòng</h1><p class="hint">Kiểm tra thông tin đặt phòng, áp dụng ưu đãi và chọn cách thanh toán phù hợp.</p></div>
@@ -240,4 +257,5 @@ function completePayment(){
  window.scrollTo({top:0,behavior:"smooth"});
 }
 readBooking();
-</script></body></html>
+</script>  <script src="js/chat-widget.js"></script>
+</body></html>
