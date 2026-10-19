@@ -1,7 +1,11 @@
 (() => {
   const KEY = "LOTTE_SUPPORT_CHAT_MESSAGES";
-  const current = typeof getCurrentUser === "function" ? getCurrentUser() : null;
-  const admin = !!(current && (current.isAdmin || (typeof isAdminUser === "function" && isAdminUser(current))));
+  // Admin nhúng khung tư vấn ngay trong admin.html; không phụ thuộc vào phiên
+  // đăng nhập phía khách hàng để tránh bị kẹt ở trạng thái "Đang tải cuộc trò chuyện…".
+  const adminPage = !!document.getElementById("section-consultation");
+  let current = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+  const admin = adminPage || !!(current && (current.isAdmin || (typeof isAdminUser === "function" && isAdminUser(current))));
+  if (admin && !current) current = { id: "lotte_admin", fullName: "Tư vấn viên Lotte", isAdmin: true };
   const messagesEl = document.getElementById("chat-messages");
   const listEl = document.getElementById("conversation-list");
   const titleEl = document.getElementById("active-chat-title");
@@ -13,13 +17,18 @@
 
   if (!current) {
     document.getElementById("chat-status").textContent = "Bạn cần đăng nhập để trò chuyện. Hãy đăng nhập ở trang chủ rồi quay lại đây.";
-    input.disabled = true;
-    document.getElementById("chat-send").disabled = true;
+    if (input) input.disabled = true;
+    const sendButton = document.getElementById("chat-send");
+    if (sendButton) sendButton.disabled = true;
+    if (listEl) listEl.innerHTML = '<div class="empty-state">Vui lòng đăng nhập để xem cuộc trò chuyện.</div>';
     return;
   }
   if (admin) {
-    document.getElementById("admin-return").style.display = "inline";
-    document.getElementById("conversation-title").textContent = "Khách hàng cần tư vấn";
+    // admin.html dùng khung tư vấn nhúng nên không có nút #admin-return như chat.html.
+    const adminReturn = document.getElementById("admin-return");
+    if (adminReturn) adminReturn.style.display = "inline";
+    const conversationTitle = document.getElementById("conversation-title");
+    if (conversationTitle) conversationTitle.textContent = "Khách hàng cần tư vấn";
     activeId = "";
   } else {
     activeId = String(current.id || current.email);

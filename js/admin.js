@@ -906,6 +906,7 @@ function handleHashNavigation() {
     customers: "section-customers",
     promos: "section-promos",
     contacts: "section-contacts",
+    consultation: "section-consultation",
     settings: "section-settings"
   };
   if (hash && hashMap[hash]) {
