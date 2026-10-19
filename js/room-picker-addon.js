@@ -10,19 +10,19 @@
 
   // Dữ liệu 13 phòng chuẩn của Lotte Hotel Hanoi
   const FALLBACK_ROOMS = [
-    { id: "rm-lotte-3801", roomNumber: "P.3801", category: "deluxe", floor: 38, roomType: "Deluxe King City View", status: "available", price: 2750000 },
-    { id: "rm-lotte-3802", roomNumber: "P.3802", category: "deluxe", floor: 38, roomType: "Deluxe King City View", status: "occupied", price: 2750000 },
-    { id: "rm-lotte-3803", roomNumber: "P.3803", category: "deluxe", floor: 38, roomType: "Deluxe Twin City View", status: "cleaning", price: 2750000 },
-    { id: "rm-lotte-3804", roomNumber: "P.3804", category: "deluxe", floor: 38, roomType: "Deluxe King City View", status: "available", price: 2750000 },
-    { id: "rm-lotte-4501", roomNumber: "P.4501", category: "premier", floor: 45, roomType: "Premier Lake View", status: "available", price: 3200000 },
-    { id: "rm-lotte-4502", roomNumber: "P.4502", category: "premier", floor: 45, roomType: "Premier Lake View", status: "occupied", price: 3200000 },
-    { id: "rm-lotte-4503", roomNumber: "P.4503", category: "premier", floor: 45, roomType: "Premier Lake View", status: "cleaning", price: 3200000 },
-    { id: "rm-lotte-5101", roomNumber: "P.5101", category: "junior-suite", floor: 51, roomType: "Club Junior Suite", status: "available", price: 3850000 },
-    { id: "rm-lotte-5102", roomNumber: "P.5102", category: "junior-suite", floor: 51, roomType: "Club Junior Suite", status: "occupied", price: 3850000 },
-    { id: "rm-lotte-5103", roomNumber: "P.5103", category: "junior-suite", floor: 51, roomType: "Club Junior Suite", status: "maintenance", price: 3850000 },
-    { id: "rm-lotte-6001", roomNumber: "P.6001", category: "presidential-suite", floor: 60, roomType: "Executive Grand Suite", status: "available", price: 4950000 },
-    { id: "rm-lotte-6002", roomNumber: "P.6002", category: "presidential-suite", floor: 60, roomType: "Executive Grand Suite", status: "occupied", price: 4950000 },
-    { id: "rm-lotte-6501", roomNumber: "P.6501", category: "presidential-suite", floor: 65, roomType: "Presidential Luxury Suite", status: "cleaning", price: 8900000 }
+    { id: "rm-lotte-3801", roomNumber: "P.3801", category: "deluxe", floor: 38, roomType: "Deluxe King City View", status: "available", price: 3800000 },
+    { id: "rm-lotte-3802", roomNumber: "P.3802", category: "deluxe", floor: 38, roomType: "Deluxe King City View", status: "occupied", price: 3800000 },
+    { id: "rm-lotte-3803", roomNumber: "P.3803", category: "deluxe", floor: 38, roomType: "Deluxe Twin City View", status: "cleaning", price: 3800000 },
+    { id: "rm-lotte-3804", roomNumber: "P.3804", category: "deluxe", floor: 38, roomType: "Deluxe King City View", status: "available", price: 3800000 },
+    { id: "rm-lotte-4501", roomNumber: "P.4501", category: "premier", floor: 45, roomType: "Premier Lake View", status: "available", price: 4900000 },
+    { id: "rm-lotte-4502", roomNumber: "P.4502", category: "premier", floor: 45, roomType: "Premier Lake View", status: "occupied", price: 4900000 },
+    { id: "rm-lotte-4503", roomNumber: "P.4503", category: "premier", floor: 45, roomType: "Premier Lake View", status: "cleaning", price: 4900000 },
+    { id: "rm-lotte-5101", roomNumber: "P.5101", category: "junior-suite", floor: 51, roomType: "Club Junior Suite", status: "available", price: 6800000 },
+    { id: "rm-lotte-5102", roomNumber: "P.5102", category: "junior-suite", floor: 51, roomType: "Club Junior Suite", status: "occupied", price: 6800000 },
+    { id: "rm-lotte-5103", roomNumber: "P.5103", category: "junior-suite", floor: 51, roomType: "Club Junior Suite", status: "maintenance", price: 6800000 },
+    { id: "rm-lotte-6001", roomNumber: "P.6001", category: "presidential-suite", floor: 60, roomType: "Executive Grand Suite", status: "available", price: 16000000 },
+    { id: "rm-lotte-6002", roomNumber: "P.6002", category: "presidential-suite", floor: 60, roomType: "Executive Grand Suite", status: "occupied", price: 16000000 },
+    { id: "rm-lotte-6501", roomNumber: "P.6501", category: "presidential-suite", floor: 65, roomType: "Presidential Luxury Suite", status: "cleaning", price: 28000000 }
   ];
 
   function getLiveRooms() {
@@ -31,15 +31,20 @@
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Bổ sung category nếu thiếu
+          // Bổ sung category & tự động nâng cấp giá nếu còn dùng giá cũ
           return parsed.map(r => {
+            const f = Number(r.floor);
             if (!r.category) {
-              const f = Number(r.floor);
               if (f === 38) r.category = "deluxe";
               else if (f === 45) r.category = "premier";
               else if (f === 51) r.category = "junior-suite";
               else if (f === 60 || f === 65) r.category = "presidential-suite";
             }
+            if (r.price === 2750000) r.price = 3800000;
+            else if (r.price === 3200000) r.price = 4900000;
+            else if (r.price === 3850000) r.price = 6800000;
+            else if (r.price === 4950000) r.price = 16000000;
+            else if (r.price === 8900000) r.price = 28000000;
             return r;
           });
         }

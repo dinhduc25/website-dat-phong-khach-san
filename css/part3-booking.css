@@ -570,7 +570,7 @@
 .room-type-options {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 18px;
 }
 
@@ -579,37 +579,250 @@
   border-radius: var(--radius-md, 10px);
   padding: 12px 16px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   cursor: pointer;
-  transition: var(--transition, all 0.22s ease);
+  transition: all 0.22s ease;
+  background: #ffffff;
+  position: relative;
 }
 
 .room-option-card:hover {
   border-color: var(--primary, #0194f3);
-  background: var(--primary-tint, #f2f9fe);
+  background: var(--primary-tint, #f8fbff);
 }
 
 .room-option-card.selected {
   border-color: var(--primary, #0194f3);
-  background: var(--primary-light, #e8f5fd);
+  background: #f0f7ff;
+  box-shadow: 0 4px 14px rgba(1, 148, 243, 0.1);
+}
+
+.room-option-card.selected[data-room-stars="5"] {
+  border-color: #f59e0b;
+  background: #fffdf5;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.16);
+}
+
+.room-option-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+}
+
+.room-option-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.room-option-radio {
+  accent-color: #0194f3;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.room-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.room-option-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .room-option-title {
   font-weight: 800;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   color: var(--text-main, #1c2430);
 }
 
-.room-option-desc {
+.service-star-icons {
+  color: #f59e0b;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.service-tier-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.service-tier-badge.badge-standard {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.service-tier-badge.badge-comfort {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.service-tier-badge.badge-premium {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.service-tier-badge.badge-luxury {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.service-tier-badge.badge-royal {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.service-tier-short-desc {
   font-size: 0.78rem;
-  color: var(--text-muted, #718096);
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.room-option-price-col {
+  text-align: right;
+  flex-shrink: 0;
 }
 
 .room-option-price {
   font-weight: 800;
   color: var(--accent, #ff5e1f);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+.room-option-unit {
+  font-size: 0.75rem;
+  color: #718096;
+  font-weight: 600;
+}
+
+/* KHU VỰC HIỂN THỊ DỊCH VỤ THEO HẠNG SAO */
+.service-tier-details {
+  display: none;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.room-option-card.selected .service-tier-details,
+.service-tier-details.open {
+  display: block;
+  animation: tierFadeIn 0.25s ease-out;
+}
+
+@keyframes tierFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.service-tier-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tier-header-label {
+  font-size: 0.82rem;
+  color: #0f172a;
+}
+
+.vip-level-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.vip-level-pill.vip-high {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.service-perks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 6px 12px;
+}
+
+.service-perk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 0.8rem;
+  color: #334155;
+  line-height: 1.4;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.service-perk-item.highlight {
+  background: #fefce8;
+  border-color: #facc15;
+  color: #854d0e;
+  font-weight: 700;
+}
+
+.service-perk-item.base-perk {
+  color: #64748b;
+  font-style: italic;
+  background: rgba(241, 245, 249, 0.6);
+}
+
+.perk-bullet {
+  flex-shrink: 0;
+  font-size: 0.88rem;
+}
+
+.perk-text {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .room-option-main-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .room-option-price-col {
+    align-self: flex-end;
+  }
+  .service-perks-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .coupon-input-group {

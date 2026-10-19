@@ -23,7 +23,7 @@ const HANOI_HOTELS_DATA = [
     id: "lotte-deluxe",
     name: "Deluxe", hotelName: "Lotte Hotel Hanoi", roomClass: "Deluxe", stars: 5, category: "deluxe",
     district: "Ba Đình", address: "54 Liễu Giai, Phường Cống Vị, Quận Ba Đình, Hà Nội",
-    score: 9.6, scoreText: "Xuất sắc", reviews: 3240, price: 2750000, oldPrice: 3200000,
+    score: 9.6, scoreText: "Xuất sắc", reviews: 3240, price: 3800000, oldPrice: 4500000,
     image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=650&q=80",
     tag: "DELUXE • 5 SAO", isLotte: true, maxGuests: 2, area: "42m²",
     description: "Hạng phòng Deluxe rộng 42m², tiêu chuẩn 5 sao, phù hợp tối đa 2 khách. Quý khách có thể chọn nhiều hướng nhìn tùy tình trạng phòng.",
@@ -38,7 +38,7 @@ const HANOI_HOTELS_DATA = [
     id: "lotte-premier",
     name: "Premier", hotelName: "Lotte Hotel Hanoi", roomClass: "Premier", stars: 5, category: "premier",
     district: "Ba Đình", address: "54 Liễu Giai, Phường Cống Vị, Quận Ba Đình, Hà Nội",
-    score: 9.7, scoreText: "Tuyệt hảo", reviews: 2810, price: 3200000, oldPrice: 3900000,
+    score: 9.7, scoreText: "Tuyệt hảo", reviews: 2810, price: 4900000, oldPrice: 5900000,
     image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=650&q=80",
     tag: "PREMIER • 5 SAO", isLotte: true, maxGuests: 3, area: "48m²",
     description: "Hạng phòng Premier rộng 48m², tiêu chuẩn 5 sao, phù hợp tối đa 3 khách với nhiều lựa chọn tầm nhìn.",
@@ -53,7 +53,7 @@ const HANOI_HOTELS_DATA = [
     id: "lotte-junior-suite",
     name: "Junior Suite", hotelName: "Lotte Hotel Hanoi", roomClass: "Junior Suite", stars: 5, category: "junior-suite",
     district: "Ba Đình", address: "54 Liễu Giai, Phường Cống Vị, Quận Ba Đình, Hà Nội",
-    score: 9.8, scoreText: "Đặc quyền", reviews: 1960, price: 3850000, oldPrice: 4600000,
+    score: 9.8, scoreText: "Đặc quyền", reviews: 1960, price: 6800000, oldPrice: 8200000,
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=650&q=80",
     tag: "JUNIOR SUITE • 5 SAO", isLotte: true, maxGuests: 3, area: "65m²",
     description: "Hạng phòng Junior Suite rộng 65m², tiêu chuẩn 5 sao, phù hợp tối đa 3 khách và có nhiều lựa chọn view cùng đặc quyền Club.",
@@ -68,7 +68,7 @@ const HANOI_HOTELS_DATA = [
     id: "lotte-presidential-suite",
     name: "Presidential Suite", hotelName: "Lotte Hotel Hanoi", roomClass: "Presidential Suite", stars: 5, category: "presidential-suite",
     district: "Ba Đình", address: "54 Liễu Giai, Phường Cống Vị, Quận Ba Đình, Hà Nội",
-    score: 9.9, scoreText: "Đẳng cấp thượng hạng", reviews: 860, price: 5950000, oldPrice: 7200000,
+    score: 9.9, scoreText: "Đẳng cấp thượng hạng", reviews: 860, price: 16000000, oldPrice: 20000000,
     image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=650&q=80",
     tag: "PRESIDENTIAL • SIGNATURE", isLotte: true, maxGuests: 4, area: "140m²",
     description: "Hạng phòng Presidential Suite rộng 140m², tiêu chuẩn 5 sao, phù hợp tối đa 4 khách với các lựa chọn view Signature cao cấp.",
@@ -106,14 +106,136 @@ function getLiveAvailableRoomCount(category) {
   return 1;
 }
 
-// Mỗi hạng phòng có 5 lựa chọn mức sao (1*–5*), giá tăng dần theo mức sao.
+// DỮ LIỆU DỊCH VỤ & TIỆN ÍCH THEO HẠNG SAO (1 - 5 SAO)
+// Số sao càng cao, dịch vụ càng VIP và đẳng cấp
+const STAR_SERVICES_DATA = {
+  1: {
+    tierName: "Tiêu chuẩn",
+    badge: "Tiêu chuẩn",
+    badgeClass: "badge-standard",
+    vipLevel: 1,
+    summary: "Wifi tốc độ cao, dọn phòng hàng ngày & nước uống miễn phí",
+    services: [
+      { icon: "📶", name: "Wifi tốc độ cao không giới hạn tại phòng & sảnh" },
+      { icon: "🧹", name: "Dịch vụ dọn phòng & thay khăn tiêu chuẩn hàng ngày" },
+      { icon: "💧", name: "02 chai nước khoáng tinh khiết miễn phí mỗi ngày" },
+      { icon: "☕", name: "Trà túi lọc & Cà phê gói miễn phí tại phòng" },
+      { icon: "🧴", name: "Bộ đồ dùng vệ sinh cá nhân cơ bản (bàn chải, xà bông, dầu gội)" }
+    ]
+  },
+  2: {
+    tierName: "Tiện ích",
+    badge: "Tiện ích",
+    badgeClass: "badge-comfort",
+    vipLevel: 2,
+    summary: "Bao gồm 1★ + Bữa sáng món nóng & Hỗ trợ giữ hành lý 24/7",
+    services: [
+      { icon: "✨", name: "Bao gồm toàn bộ dịch vụ tiêu chuẩn của Hạng 1 sao", isBase: true },
+      { icon: "🍳", name: "Bữa sáng món nóng tiêu chuẩn hàng ngày tại nhà hàng" },
+      { icon: "🧳", name: "Dịch vụ hỗ trợ nhận giữ & bảo quản hành lý miễn phí 24/7" },
+      { icon: "⚡", name: "Ưu tiên quầy thủ tục nhận phòng nhanh (Fast Check-in)" },
+      { icon: "🫖", name: "Ấm đun nước siêu tốc & tiện ích trà, cà phê nâng cao" }
+    ]
+  },
+  3: {
+    tierName: "Nâng cao",
+    badge: "Nâng cao",
+    badgeClass: "badge-premium",
+    vipLevel: 3,
+    summary: "Bao gồm 2★ + Buffet sáng Á-Âu, Hồ bơi vô cực & Gym 5 sao",
+    services: [
+      { icon: "✨", name: "Bao gồm toàn bộ dịch vụ tiện ích của Hạng 2 sao", isBase: true },
+      { icon: "🥐", name: "Buffet sáng Á - Âu cao cấp không giới hạn (International Buffet)" },
+      { icon: "🏊", name: "Miễn phí vé sử dụng Hồ bơi vô cực bốn mùa ngắm toàn cảnh Hà Nội" },
+      { icon: "🏋️", name: "Miễn phí phòng Gym / Fitness Center trang thiết bị Technogym 5 sao" },
+      { icon: "🍹", name: "Đồ uống chào mừng (Welcome Drink) hương vị đặc biệt khi nhận phòng" },
+      { icon: "🍎", name: "Đĩa trái cây tươi theo mùa đón tiếp tại phòng" },
+      { icon: "🕒", name: "Miễn phí chính sách hủy / đổi ngày nhận phòng trước 24 giờ" }
+    ]
+  },
+  4: {
+    tierName: "Cao cấp VIP",
+    badge: "VIP Cao Cấp",
+    badgeClass: "badge-luxury",
+    vipLevel: 4,
+    summary: "Bao gồm 3★ + Sauna/Jacuzzi, Giặt ủi cao cấp, Minibar & Xe đón sân bay",
+    services: [
+      { icon: "✨", name: "Bao gồm toàn bộ quyền lợi cao cấp của Hạng 3 sao", isBase: true },
+      { icon: "🍽️", name: "Buffet sáng thượng hạng có đầu bếp phục vụ món nóng theo yêu cầu" },
+      { icon: "🧖", name: "Miễn phí khu xông hơi đá muối Sauna & Bồn sục thủy lực Jacuzzi tại Spa" },
+      { icon: "👔", name: "Miễn phí dịch vụ giặt ủi đồ cao cấp lấy ngay (02 món/ngày)" },
+      { icon: "🍷", name: "Miễn phí toàn bộ Minibar trong phòng (nước ngọt, bia, snack bổ sung mỗi ngày)" },
+      { icon: "🚗", name: "Xe riêng đưa đón sân bay Nội Bài 1 chiều (hoặc xe riêng nội thành)" },
+      { icon: "⏰", name: "Đặc quyền miễn phí trả phòng muộn đến 14:00 (Late Check-out)" }
+    ]
+  },
+  5: {
+    tierName: "Siêu VIP Hoàng Gia",
+    badge: "👑 Siêu VIP Hoàng Gia",
+    badgeClass: "badge-royal",
+    vipLevel: 5,
+    summary: "Đặc quyền tối thượng: Club Lounge, Quản gia riêng 24/7, Spa trị liệu & Limousine khứ hồi",
+    services: [
+      { icon: "👑", name: "Trải nghiệm đặc quyền thượng lưu cao cấp nhất Lotte Hotel Hanoi", isHighlight: true },
+      { icon: "🍸", name: "Đặc quyền Executive Club Lounge tầng cao (Trà chiều chuẩn Anh & Tiệc Cocktail tối)" },
+      { icon: "🛎️", name: "Quản gia riêng phục vụ 24/7 (Dedicated Private Butler) chu đáo mọi lúc" },
+      { icon: "🍳", name: "Bữa sáng thực đơn chuẩn Michelin phục vụ tại phòng bất kỳ thời gian nào" },
+      { icon: "💆", name: "Tặng gói Spa & Massage trị liệu thư giãn 60 phút dành cho 2 khách" },
+      { icon: "🚘", name: "Xe sang Limousine / Mercedes đón & tiễn sân bay Nội Bài khứ hồi 2 chiều" },
+      { icon: "🍾", name: "Rượu vang Pháp hảo hạng & Set quà tặng Socola nghệ thuật chào đón tại phòng" },
+      { icon: "🔑", name: "Thủ tục Check-in & Check-out riêng tư tại phòng hoặc sảnh VIP Club Lounge" },
+      { icon: "⏰", name: "Miễn phí trả phòng muộn linh hoạt đến 16:00 (Late Check-out)" }
+    ]
+  }
+};
+window.STAR_SERVICES_DATA = STAR_SERVICES_DATA;
+
+// BẢNG ĐIỀU CHỈNH GIÁ DỊCH VỤ THEO HẠNG PHÒNG & HẠNG SAO (1★ - 5★)
+// Tương xứng với chất lượng khách sạn 5 sao quốc tế Lotte Hotel Hanoi
+const CATEGORY_TIER_PRICES = {
+  "deluxe": [
+    { stars: 1, extraPrice: 0 },          // Tổng: 3.800.000₫ / đêm
+    { stars: 2, extraPrice: 800000 },     // Tổng: 4.600.000₫ / đêm
+    { stars: 3, extraPrice: 2000000 },    // Tổng: 5.800.000₫ / đêm
+    { stars: 4, extraPrice: 3800000 },    // Tổng: 7.600.000₫ / đêm
+    { stars: 5, extraPrice: 6000000 }     // Tổng: 9.800.000₫ / đêm (Siêu VIP)
+  ],
+  "premier": [
+    { stars: 1, extraPrice: 0 },          // Tổng: 4.900.000₫ / đêm
+    { stars: 2, extraPrice: 1000000 },    // Tổng: 5.900.000₫ / đêm
+    { stars: 3, extraPrice: 2500000 },    // Tổng: 7.400.000₫ / đêm
+    { stars: 4, extraPrice: 4700000 },    // Tổng: 9.600.000₫ / đêm
+    { stars: 5, extraPrice: 7600000 }     // Tổng: 12.500.000₫ / đêm (Siêu VIP)
+  ],
+  "junior-suite": [
+    { stars: 1, extraPrice: 0 },          // Tổng: 6.800.000₫ / đêm
+    { stars: 2, extraPrice: 1400000 },    // Tổng: 8.200.000₫ / đêm
+    { stars: 3, extraPrice: 3400000 },    // Tổng: 10.200.000₫ / đêm
+    { stars: 4, extraPrice: 6400000 },    // Tổng: 13.200.000₫ / đêm
+    { stars: 5, extraPrice: 10700000 }    // Tổng: 17.500.000₫ / đêm (Siêu VIP)
+  ],
+  "presidential-suite": [
+    { stars: 1, extraPrice: 0 },          // Tổng: 16.000.000₫ / đêm
+    { stars: 2, extraPrice: 3500000 },    // Tổng: 19.500.000₫ / đêm
+    { stars: 3, extraPrice: 8500000 },    // Tổng: 24.500.000₫ / đêm
+    { stars: 4, extraPrice: 16000000 },   // Tổng: 32.000.000₫ / đêm
+    { stars: 5, extraPrice: 26000000 }    // Tổng: 42.000.000₫ / đêm (Siêu VIP)
+  ]
+};
+window.CATEGORY_TIER_PRICES = CATEGORY_TIER_PRICES;
+
+// Mỗi hạng phòng có 5 lựa chọn mức sao (1*–5*), giá tăng dần theo mức sao và mức độ VIP của dịch vụ.
 HANOI_HOTELS_DATA.forEach((hotel, hotelIndex) => {
   const original = hotel.roomTypes[0];
-  const starBase = [0.55, 0.72, 0.86, 1.0, 1.18];
+  const tierPricing = CATEGORY_TIER_PRICES[hotel.category] || CATEGORY_TIER_PRICES["deluxe"];
   hotel.roomTypes = [1, 2, 3, 4, 5].map((stars, idx) => ({
-    name: `${hotel.roomClass} • ${stars} sao`, stars,
-    extraPrice: Math.round(hotel.price * (starBase[idx] - 1) / 50000) * 50000,
-    desc: `${hotel.area} • ${stars} sao • ${original.desc.split('•').slice(-1)[0].trim()}`,
+    name: `${hotel.roomClass} • ${stars} sao`,
+    stars,
+    extraPrice: tierPricing[idx] ? tierPricing[idx].extraPrice : 0,
+    desc: `${hotel.area} • Hạng dịch vụ ${stars} sao • ${STAR_SERVICES_DATA[stars].tierName}`,
+    tierName: STAR_SERVICES_DATA[stars].tierName,
+    summary: STAR_SERVICES_DATA[stars].summary,
+    services: STAR_SERVICES_DATA[stars].services,
     get availableRooms() {
       return getLiveAvailableRoomCount(hotel.category);
     }
@@ -125,6 +247,7 @@ HANOI_HOTELS_DATA.forEach((hotel, hotelIndex) => {
     {name:'Lê Thu Hà', rating:5, text:'Không gian thoải mái, view đẹp và dịch vụ tốt.'}
   ];
 });
+window.HANOI_HOTELS_DATA = HANOI_HOTELS_DATA;
 
 // Hàm tìm kiếm khách sạn theo ID
 function getHotelById(hotelId) {
@@ -172,7 +295,7 @@ function renderHotelsGrid(hotels) {
             <div class="highlight-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 11c2.8.4 5 2.8 5 5.7V20"></path></svg>Tối đa ${hotel.maxGuests} khách</div>
             <div class="highlight-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20l6-6 4 4 8-9"></path></svg>${viewOptions}</div>
           </div>
-          <div class="room-star-options" aria-label="Các mức phòng từ 1 đến 5 sao">${hotel.roomTypes.map(rt => `<div class="room-star-option"><span>${'★'.repeat(rt.stars)}<span class="room-star-label"> ${rt.stars} sao</span></span><strong>${typeof formatVND === 'function' ? formatVND(hotel.price + rt.extraPrice) : (hotel.price + rt.extraPrice) + '₫'}</strong><small style="${rt.availableRooms === 0 ? 'color:#ef4444; font-weight:700;' : ''}">${rt.availableRooms === 0 ? 'Hết phòng' : `Còn ${rt.availableRooms} phòng`}</small></div>`).join('')}</div>
+          <div class="room-star-options" aria-label="Các mức dịch vụ từ 1 đến 5 sao">${hotel.roomTypes.map(rt => `<div class="room-star-option" onclick="handleBookHotelClick('${hotel.id}', ${rt.stars})" style="cursor: pointer;" title="Chọn dịch vụ ${rt.stars} sao và đặt ngay"><span>${'★'.repeat(rt.stars)}<span class="room-star-label"> ${rt.stars} sao</span></span><strong>${typeof formatVND === 'function' ? formatVND(hotel.price + rt.extraPrice) : (hotel.price + rt.extraPrice) + '₫'}</strong><small style="${rt.availableRooms === 0 ? 'color:#ef4444; font-weight:700;' : ''}">${rt.availableRooms === 0 ? 'Hết phòng' : `Còn ${rt.availableRooms} phòng`}</small></div>`).join('')}</div>
           <div class="hotel-pricing-box">
             <div class="pricing-left">
               <span class="old-price">${typeof formatVND === 'function' ? formatVND(hotel.oldPrice) : hotel.oldPrice + '₫'}</span>
@@ -249,8 +372,8 @@ function openHotelDetailModal(hotelId) {
         <h4 style="font-size:1rem;font-weight:800;color:#1c2430;margin-top:20px;">Đánh giá người dùng</h4>
         <div class="user-reviews-list">${(hotel.recentReviews || []).map(r => `<div class="user-review-card"><div><strong>${r.name}</strong> <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div><p>${r.text}</p></div>`).join('')}</div>
 
-        <!-- Danh sách các hạng phòng lựa chọn -->
-        <h4 style="font-size: 1rem; font-weight: 800; color: #1c2430; margin-top: 20px;">Các lựa chọn view trong hạng phòng ${hotel.roomClass}</h4>
+        <!-- Danh sách các hạng dịch vụ lựa chọn -->
+        <h4 style="font-size: 1rem; font-weight: 800; color: #1c2430; margin-top: 20px;">Các gói dịch vụ theo số sao (${hotel.roomClass})</h4>
         <div class="detail-room-tier-list">
           ${hotel.roomTypes.map(rt => `
             <div class="detail-room-tier-card">
@@ -262,8 +385,8 @@ function openHotelDetailModal(hotelId) {
                 <div style="font-weight: 800; color: #ff5e1f; font-size: 1.05rem;">
                   ${typeof formatVND === 'function' ? formatVND(hotel.price + (rt.extraPrice || 0)) : (hotel.price + (rt.extraPrice || 0)) + '₫'}
                 </div>
-                <button type="button" class="btn btn-primary" style="padding: 5px 12px; font-size: 0.8rem; margin-top: 4px;" onclick="closeModal('hotel-detail-modal'); handleBookHotelClick('${hotel.id}');">
-                  Chọn phòng này
+                <button type="button" class="btn btn-primary" style="padding: 5px 12px; font-size: 0.8rem; margin-top: 4px;" onclick="closeModal('hotel-detail-modal'); handleBookHotelClick('${hotel.id}', ${rt.stars});">
+                  Chọn gói này
                 </button>
               </div>
             </div>
