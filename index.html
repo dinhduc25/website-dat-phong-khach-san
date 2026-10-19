@@ -933,8 +933,12 @@
 
         <form onsubmit="submitBookingForm(event)">
           <!-- Lựa chọn loại phòng -->
+          <!-- Lựa chọn hạng dịch vụ -->
           <div class="form-group">
-            <label class="form-label">Chọn Hạng Phòng</label>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
+              <label class="form-label" style="margin-bottom: 0;">Chọn Hạng Dịch Vụ</label>
+              <span style="font-size: 0.78rem; color: #64748b; font-weight: 600;">Tiêu chuẩn dịch vụ từ 1★ đến 5★ VIP</span>
+            </div>
             <div class="room-type-options" id="bm-room-types">
               <!-- Rendered via JS -->
             </div>
@@ -991,8 +995,8 @@
           <!-- Bảng tính giá -->
           <div class="pricing-receipt-box">
             <div class="receipt-row">
-              <span id="bm-calc-room-price">2.750.000₫ × 2 đêm × 1 phòng</span>
-              <span id="bm-calc-subtotal">5.500.000₫</span>
+              <span id="bm-calc-room-price">3.800.000₫ × 2 đêm × 1 phòng</span>
+              <span id="bm-calc-subtotal">7.600.000₫</span>
             </div>
             <div class="receipt-row discount">
               <span>Mã giảm giá đã áp dụng</span>
@@ -1004,7 +1008,7 @@
             </div>
             <div class="receipt-row total">
               <span>Tổng thanh toán</span>
-              <span id="bm-calc-total">5.500.000₫</span>
+              <span id="bm-calc-total">7.600.000₫</span>
             </div>
           </div>
 
@@ -1094,18 +1098,11 @@
   </div>
 
   <!-- Floating Admin Switcher Button -->
-  <a href="admin.html" id="floating-admin-btn" style="display: none; position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1e293b, #0f172a); color: #c5a059; padding: 12px 18px; border-radius: 9999px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.35); border: 1.5px solid rgba(197, 160, 89, 0.5); font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 28px rgba(15, 23, 42, 0.45)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(15, 23, 42, 0.35)'">
+  <a href="admin.html" id="floating-admin-btn" style="display: none; position: fixed; bottom: 24px; left: 24px; z-index: 999; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1e293b, #0f172a); color: #c5a059; padding: 12px 18px; border-radius: 9999px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.35); border: 1.5px solid rgba(197, 160, 89, 0.5); font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 28px rgba(15, 23, 42, 0.45)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(15, 23, 42, 0.35)'">
     <span style="font-size: 1.1rem;">👑</span>
     <span>Trang Quản Trị Hệ Thống</span>
     <span style="background: #c5a059; color: #0f172a; padding: 2px 7px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">ADMIN</span>
   </a>
-
-  <!-- Floating Test Suite Runner Button (THÀNH VIÊN 4: STT 37 - 40) -->
-  <button type="button" class="test-suite-floating-btn" onclick="showTestReportModal()" title="Bấm để xem báo cáo kiểm thử tự động 40 tiêu chí của 4 thành viên">
-    <span style="font-size: 1.1rem;">🧪</span>
-    <span>Kiểm Thử Hệ Thống (40 STT)</span>
-    <span class="test-badge-pass">PASS</span>
-  </button>
 
   <!-- ======================================================================
        CÁC FILE JAVASCRIPT ĐƯỢC CHIA TÁCH RIÊNG BIỆT THEO 4 THÀNH VIÊN

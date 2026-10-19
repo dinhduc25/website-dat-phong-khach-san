@@ -401,7 +401,7 @@ function triggerSearch() {
 }
 
 // STT 29: XÂY DỰNG FORM THÔNG TIN KHÁCH HÀNG & MỞ MODAL ĐẶT PHÒNG
-function handleBookHotelClick(hotelId) {
+function handleBookHotelClick(hotelId, preferredStars) {
   if (typeof HANOI_HOTELS_DATA === 'undefined') return;
   const hotel = HANOI_HOTELS_DATA.find(h => h.id === hotelId);
   if (!hotel) return;
@@ -418,10 +418,10 @@ function handleBookHotelClick(hotelId) {
   }
 
   // ĐÃ ĐĂNG NHẬP -> MỞ MODAL ĐẶT PHÒNG
-  openBookingModal(hotel);
+  openBookingModal(hotel, preferredStars);
 }
 
-function openBookingModal(hotel) {
+function openBookingModal(hotel, preferredStars) {
   const modal = document.getElementById("booking-modal");
   if (!modal) return;
 
@@ -435,18 +435,71 @@ function openBookingModal(hotel) {
   if (nameEl) nameEl.textContent = hotel.name;
   if (addressEl) addressEl.textContent = hotel.address;
 
-  // Render các hạng phòng
+  // Xác định hạng sao mặc định khi mở modal
+  const starSelect = document.getElementById("search-room-stars");
+  const starVal = starSelect && starSelect.value !== "all" ? parseInt(starSelect.value) : null;
+  const defaultIdx = (typeof preferredStars === 'number' && preferredStars >= 1 && preferredStars <= 5)
+    ? (preferredStars - 1)
+    : (starVal ? (starVal - 1) : 4);
+
+  // Render các hạng dịch vụ (giữ nguyên số sao 1 - 5 sao, hiển thị dịch vụ theo số sao, số sao càng cao càng VIP)
   const roomTypesContainer = document.getElementById("bm-room-types");
   if (roomTypesContainer) {
-    roomTypesContainer.innerHTML = hotel.roomTypes.map((r, idx) => `
-      <label class="room-option-card ${idx === 4 ? 'selected' : ''}" data-room-stars="${r.stars || 5}">
-        <div>
-          <input type="radio" name="selectedRoomType" value="${idx}" ${idx === 4 ? 'checked' : ''} onchange="updateBookingCalculation('${hotel.id}')" style="margin-right: 8px;">
-          <span class="room-option-title">${r.name}</span>
-        </div>
-        <span class="room-option-price">${typeof formatVND === 'function' ? formatVND(hotel.price + r.extraPrice) : (hotel.price + r.extraPrice) + '₫'} / đêm</span>
-      </label>
-    `).join('');
+    const servicesMap = (typeof STAR_SERVICES_DATA !== 'undefined' && STAR_SERVICES_DATA) ? STAR_SERVICES_DATA : (window.STAR_SERVICES_DATA || {});
+
+    roomTypesContainer.innerHTML = hotel.roomTypes.map((r, idx) => {
+      const stars = r.stars || (idx + 1);
+      const tierData = servicesMap[stars] || {
+        tierName: `${stars} sao`,
+        badge: `${stars} sao`,
+        badgeClass: "badge-standard",
+        vipLevel: stars,
+        summary: `Gói dịch vụ ${stars} sao`,
+        services: []
+      };
+      const isSelected = (idx === defaultIdx);
+      const formattedPrice = typeof formatVND === 'function' ? formatVND(hotel.price + r.extraPrice) : (hotel.price + r.extraPrice) + '₫';
+      const starIcons = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+
+      return `
+        <label class="room-option-card ${isSelected ? 'selected' : ''}" data-room-stars="${stars}" for="rt-option-${idx}">
+          <div class="room-option-main-row">
+            <div class="room-option-left">
+              <input type="radio" id="rt-option-${idx}" name="selectedRoomType" value="${idx}" ${isSelected ? 'checked' : ''} onchange="updateBookingCalculation('${hotel.id}')" class="room-option-radio">
+              <div class="room-option-info">
+                <div class="room-option-title-row">
+                  <span class="room-option-title">${r.name}</span>
+                  <span class="service-star-icons" title="${stars} sao">${starIcons}</span>
+                  <span class="service-tier-badge ${tierData.badgeClass}">${tierData.badge}</span>
+                </div>
+                <div class="service-tier-short-desc">${tierData.summary}</div>
+              </div>
+            </div>
+            <div class="room-option-price-col">
+              <div class="room-option-price">${formattedPrice} <span class="room-option-unit">/ đêm</span></div>
+            </div>
+          </div>
+
+          <!-- Danh sách dịch vụ tương ứng với số sao (số sao càng cao dịch vụ càng VIP) -->
+          <div class="service-tier-details ${isSelected ? 'open' : ''}" id="tier-details-${idx}">
+            <div class="service-tier-details-header">
+              <span class="tier-header-label">
+                ✨ <strong>Dịch vụ & Đặc quyền Hạng ${stars} sao (${tierData.tierName}):</strong>
+              </span>
+              <span class="vip-level-pill ${stars >= 4 ? 'vip-high' : ''}">Cấp VIP: ${stars}/5 ${stars === 5 ? '👑' : ''}</span>
+            </div>
+            <div class="service-perks-grid">
+              ${tierData.services.map(s => `
+                <div class="service-perk-item ${s.isHighlight ? 'highlight' : ''} ${s.isBase ? 'base-perk' : ''}">
+                  <span class="perk-bullet">${s.icon}</span>
+                  <span class="perk-text">${s.name}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </label>
+      `;
+    }).join('');
   }
 
   // Điền thông tin khách
@@ -508,9 +561,14 @@ function updateBookingCalculation(hotelId) {
   const roomIdx = selectedRadio ? parseInt(selectedRadio.value) : 0;
   const room = hotel.roomTypes[roomIdx] || hotel.roomTypes[0];
 
-  // Đánh dấu lại class selected
+  // Đánh dấu lại class selected và toggle hiển thị danh sách dịch vụ của hạng sao tương ứng
   document.querySelectorAll(".room-option-card").forEach((card, idx) => {
-    card.classList.toggle("selected", idx === roomIdx);
+    const isSelected = (idx === roomIdx);
+    card.classList.toggle("selected", isSelected);
+    const details = card.querySelector(".service-tier-details");
+    if (details) {
+      details.classList.toggle("open", isSelected);
+    }
   });
 
   const basePricePerNight = hotel.price + (room ? room.extraPrice : 0);
@@ -534,6 +592,9 @@ function updateBookingCalculation(hotelId) {
   modal.setAttribute("data-hotel-id", hotel.id);
   modal.setAttribute("data-final-total", finalTotal);
   modal.setAttribute("data-room-name", room ? room.name : "Deluxe Room");
+  if (room && room.stars) {
+    modal.setAttribute("data-service-stars", room.stars);
+  }
 }
 
 function getClientPromosList() {
@@ -648,6 +709,9 @@ function submitBookingForm(e) {
   }
 
   const roomName = modal.getAttribute("data-room-name") || "Deluxe City View";
+  const serviceStars = parseInt(modal.getAttribute("data-service-stars") || "5");
+  const servicesMap = (typeof STAR_SERVICES_DATA !== 'undefined' && STAR_SERVICES_DATA) ? STAR_SERVICES_DATA : (window.STAR_SERVICES_DATA || {});
+  const serviceTierName = (servicesMap[serviceStars] ? servicesMap[serviceStars].tierName : `${serviceStars} sao`);
   const finalTotal = parseInt(modal.getAttribute("data-final-total") || hotel.price);
   // Ở bước gửi yêu cầu, khách chưa chọn phương thức thanh toán và chưa chọn số phòng cụ thể.
   // Sau khi admin xác nhận còn phòng, khách sẽ chọn 100% online hoặc cọc 30% ở payment.html.
@@ -665,6 +729,8 @@ function submitBookingForm(e) {
     hotelImage: hotel.image,
     category: hotel.category,
     roomType: roomName,
+    serviceStars: serviceStars,
+    serviceTierName: serviceTierName,
     roomNumber: "",
     roomId: "",
     floor: undefined,

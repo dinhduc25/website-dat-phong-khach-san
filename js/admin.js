@@ -37,7 +37,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Deluxe",
     roomType: "Deluxe King City View",
     floor: 38,
-    price: 2750000,
+    price: 3800000,
     status: "available",
     capacity: 2,
     bed: "1 Giường King 2m",
@@ -58,7 +58,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Deluxe",
     roomType: "Deluxe King City View",
     floor: 38,
-    price: 2750000,
+    price: 3800000,
     status: "occupied",
     capacity: 2,
     bed: "1 Giường King 2m",
@@ -79,7 +79,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Deluxe",
     roomType: "Deluxe Twin City View",
     floor: 38,
-    price: 2750000,
+    price: 3800000,
     status: "cleaning",
     capacity: 2,
     bed: "2 Giường Đơn Twin",
@@ -100,7 +100,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Deluxe",
     roomType: "Deluxe King City View",
     floor: 38,
-    price: 2750000,
+    price: 3800000,
     status: "available",
     capacity: 2,
     bed: "1 Giường King 2m",
@@ -123,7 +123,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Premier",
     roomType: "Premier Lake View",
     floor: 45,
-    price: 3200000,
+    price: 4900000,
     status: "available",
     capacity: 3,
     bed: "1 Giường King siêu lớn",
@@ -144,7 +144,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Premier",
     roomType: "Premier Lake View",
     floor: 45,
-    price: 3200000,
+    price: 4900000,
     status: "occupied",
     capacity: 3,
     bed: "1 Giường King siêu lớn",
@@ -165,7 +165,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Premier",
     roomType: "Premier Lake View",
     floor: 45,
-    price: 3200000,
+    price: 4900000,
     status: "cleaning",
     capacity: 3,
     bed: "1 Giường King",
@@ -188,7 +188,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Junior Suite",
     roomType: "Club Junior Suite",
     floor: 51,
-    price: 3850000,
+    price: 6800000,
     status: "available",
     capacity: 3,
     bed: "1 Giường King Master",
@@ -209,7 +209,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Junior Suite",
     roomType: "Club Junior Suite",
     floor: 51,
-    price: 3850000,
+    price: 6800000,
     status: "occupied",
     capacity: 3,
     bed: "1 Giường King Master",
@@ -230,7 +230,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Junior Suite",
     roomType: "Club Junior Suite",
     floor: 51,
-    price: 3850000,
+    price: 6800000,
     status: "maintenance",
     capacity: 3,
     bed: "1 Giường King Master",
@@ -253,7 +253,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Presidential Suite",
     roomType: "Executive Grand Suite",
     floor: 60,
-    price: 4950000,
+    price: 16000000,
     status: "available",
     capacity: 4,
     bed: "1 Giường King + Sofa bed",
@@ -274,7 +274,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Presidential Suite",
     roomType: "Executive Grand Suite",
     floor: 60,
-    price: 4950000,
+    price: 16000000,
     status: "occupied",
     capacity: 4,
     bed: "1 Giường King + Sofa bed",
@@ -295,7 +295,7 @@ const DEFAULT_HOTEL_ROOMS = [
     roomClass: "Presidential Suite",
     roomType: "Presidential Luxury Suite",
     floor: 65,
-    price: 8900000,
+    price: 28000000,
     status: "cleaning",
     capacity: 4,
     bed: "2 Giường King Hoàng Gia",
@@ -688,10 +688,11 @@ function getAdminRooms() {
   try {
     const parsed = JSON.parse(data);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      // Tự động làm sạch dữ liệu cũ nếu phát hiện phòng demo ngoài Lotte hoặc thiếu category
+      // Tự động làm sạch dữ liệu cũ nếu phát hiện phòng demo ngoài Lotte, thiếu category hoặc giá cũ
       const hasLegacyRooms = parsed.some(r => r.id && (r.id.startsWith("rm-pan") || r.id.startsWith("rm-inter") || r.id.startsWith("rm-apricot") || r.id.startsWith("rm-melia")));
       const missingCategory = parsed.some(r => !r.category);
-      if (hasLegacyRooms || missingCategory || parsed.length !== 13) {
+      const hasOldPrices = parsed.some(r => r.price === 2750000 || r.price === 3200000);
+      if (hasLegacyRooms || missingCategory || hasOldPrices || parsed.length !== 13) {
         saveAdminRooms(DEFAULT_HOTEL_ROOMS);
         return [...DEFAULT_HOTEL_ROOMS];
       }
@@ -1540,7 +1541,7 @@ function openAddRoomModal() {
   `;
   document.getElementById("room-form-id").value = "";
   document.getElementById("form-room").reset();
-  document.getElementById("room-price").value = 2750000;
+  document.getElementById("room-price").value = 3800000;
   document.getElementById("room-floor").value = 38;
   document.getElementById("room-image").value = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=650&q=80";
   

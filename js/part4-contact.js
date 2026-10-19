@@ -307,11 +307,6 @@ function initApplicationIntegration() {
   // Khởi chạy bộ lắng nghe sự kiện đóng/mở modals
   initSharedModals();
 
-  // Chạy tự động kiểm thử chẩn đoán hệ thống
-  setTimeout(() => {
-    runSystemTestSuite();
-  }, 500);
-
   console.log("✓ [TÍCH HỢP THÀNH CÔNG] Tất cả 4 thành viên đã kết nối nhịp nhàng!");
 }
 
