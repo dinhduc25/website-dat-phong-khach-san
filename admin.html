@@ -988,34 +988,35 @@
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label" for="room-number">Số / Mã Phòng * (Ví dụ: P.5102, P.3804)</label>
-              <input type="text" id="room-number" class="form-control" required placeholder="P.3801">
+              <input type="text" id="room-number" class="form-control" required placeholder="P.3805" oninput="validateRoomNumberLive()">
+              <small id="room-number-feedback" style="display: none; font-size: 0.78rem; margin-top: 4px; font-weight: 600;"></small>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="room-hotel">Hạng phòng *</label>
-              <select id="room-hotel" class="form-control" required>
-                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi (5 sao duy nhất)</option></select>
+              <label class="form-label" for="room-category">Hạng phòng *</label>
+              <select id="room-category" class="form-control" required onchange="handleRoomCategoryChange()">
+                <option value="deluxe">Deluxe</option>
+                <option value="premier">Premier</option>
+                <option value="junior-suite">Junior Suite</option>
+                <option value="presidential-suite">Presidential Suite</option>
+              </select>
             </div>
           </div>
 
           <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label" for="room-type">Hạng Phòng *</label>
-              <input type="text" id="room-type" class="form-control" required placeholder="Deluxe King City View">
-            </div>
-
             <div class="form-group">
               <label class="form-label" for="room-floor">Tầng * (Số tầng)</label>
               <input type="number" id="room-floor" class="form-control" required min="1" max="100" value="38">
             </div>
-          </div>
 
-          <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label" for="room-price">Giá Phòng Mỗi Đêm (VNĐ) *</label>
               <input type="number" id="room-price" class="form-control" required min="100000" step="10000" value="3800000">
             </div>
+          </div>
 
+          <!-- Row 3: Trạng thái phòng & Sức chứa -->
+          <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label" for="room-status-select">Trạng Thái Phòng Hiện Tại *</label>
               <select id="room-status-select" class="form-control" required>
@@ -1025,25 +1026,27 @@
                 <option value="maintenance">⚪ Đang Bảo Trì Sửa Chữa</option>
               </select>
             </div>
-          </div>
 
-          <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label" for="room-capacity">Sức Chứa Tối Đa (Người)</label>
               <input type="number" id="room-capacity" class="form-control" min="1" max="10" value="2">
             </div>
+          </div>
 
+          <!-- Row 4: Loại giường & Link ảnh -->
+          <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label" for="room-bed">Loại Giường</label>
               <input type="text" id="room-bed" class="form-control" value="1 Giường King siêu lớn 2m">
             </div>
+
+            <div class="form-group">
+              <label class="form-label" for="room-image">Link Ảnh Phòng (URL)</label>
+              <input type="url" id="room-image" class="form-control" value="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=650&q=80">
+            </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="room-image">Link Ảnh Phòng (URL)</label>
-            <input type="url" id="room-image" class="form-control" value="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=650&q=80">
-          </div>
-
+          <!-- Row 5: Tiện nghi phòng -->
           <div class="form-group">
             <label class="form-label" for="room-amenities">Tiện Nghi Phòng (Ngăn cách bằng dấu phẩy)</label>
             <textarea id="room-amenities" class="form-control" rows="2" placeholder="View Hồ Tây, Bồn tắm nằm, Smart TV 65 inch, Máy pha cafe espresso..."></textarea>
@@ -1093,8 +1096,11 @@
             <div class="form-group">
               <label class="form-label" for="wi-hotel-select">Chọn hạng phòng *</label>
               <select id="wi-hotel-select" class="form-control" required onchange="updateWalkinRoomOptions()">
-                <option value="lotte-hotel-hanoi">Lotte Hotel Hanoi • Hệ thống duy nhất</option>
-            </select>
+                <option value="deluxe">Deluxe</option>
+                <option value="premier">Premier</option>
+                <option value="junior-suite">Junior Suite</option>
+                <option value="presidential-suite">Presidential Suite</option>
+              </select>
             </div>
           </div>
 

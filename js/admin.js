@@ -1533,19 +1533,117 @@ function renderRoomsTable(rooms) {
   `).join("");
 }
 
+// Tìm mã phòng kế tiếp chưa từng được sử dụng để gợi ý khi thêm phòng mới
+function getNextAvailableRoomNumber(category = "deluxe") {
+  const rooms = getAdminRooms();
+  let startNum = 3801;
+
+  if (category === "deluxe") {
+    startNum = 3801;
+  } else if (category === "premier") {
+    startNum = 4501;
+  } else if (category === "junior-suite") {
+    startNum = 5101;
+  } else if (category === "presidential-suite") {
+    startNum = 6001;
+  }
+
+  const existingNumbers = new Set(rooms.map(r => (r.roomNumber || "").trim().toLowerCase()));
+  let candidate = startNum;
+  while (existingNumbers.has(`p.${candidate}`) || existingNumbers.has(`p${candidate}`) || existingNumbers.has(`${candidate}`)) {
+    candidate++;
+  }
+  return `P.${candidate}`;
+}
+
+// Kiểm tra trùng lặp mã phòng khi nhập liệu (live validation)
+function validateRoomNumberLive() {
+  const input = document.getElementById("room-number");
+  const feedback = document.getElementById("room-number-feedback");
+  const editId = document.getElementById("room-form-id")?.value;
+  if (!input || !feedback) return true;
+
+  const val = input.value.trim().toLowerCase();
+  if (!val) {
+    feedback.style.display = "none";
+    input.style.borderColor = "";
+    input.style.boxShadow = "";
+    return false;
+  }
+
+  const rooms = getAdminRooms();
+  const duplicate = rooms.find(r => {
+    if (editId && r.id === editId) return false;
+    return (r.roomNumber || "").trim().toLowerCase() === val;
+  });
+
+  if (duplicate) {
+    feedback.style.display = "block";
+    feedback.style.color = "#ef4444";
+    feedback.textContent = `⚠️ Mã phòng "${input.value.trim()}" đã tồn tại (${duplicate.roomClass || duplicate.roomType || 'Phòng sẵn có'})! Vui lòng chọn số khác.`;
+    input.style.borderColor = "#ef4444";
+    input.style.boxShadow = "0 0 0 3px rgba(239, 68, 68, 0.15)";
+    return false;
+  } else {
+    feedback.style.display = "block";
+    feedback.style.color = "#10b981";
+    feedback.textContent = `✓ Mã phòng "${input.value.trim()}" hợp lệ (chưa sử dụng)`;
+    input.style.borderColor = "#10b981";
+    input.style.boxShadow = "0 0 0 3px rgba(16, 185, 129, 0.15)";
+    return true;
+  }
+}
+
 // Modal Thêm / Sửa Phòng
 function openAddRoomModal() {
   document.getElementById("room-modal-title").innerHTML = `
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-    Thêm Phòng Hạng Phòng Mới
+    Thêm Phòng Mới
   `;
   document.getElementById("room-form-id").value = "";
   document.getElementById("form-room").reset();
-  document.getElementById("room-price").value = 3800000;
+  const catSelect = document.getElementById("room-category");
+  if (catSelect) catSelect.value = "deluxe";
+  document.getElementById("room-number").value = getNextAvailableRoomNumber("deluxe");
   document.getElementById("room-floor").value = 38;
+  document.getElementById("room-price").value = 3800000;
+  document.getElementById("room-bed").value = "1 Giường King siêu lớn 2m";
   document.getElementById("room-image").value = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=650&q=80";
   
+  const feedback = document.getElementById("room-number-feedback");
+  if (feedback) feedback.style.display = "none";
+  const numInput = document.getElementById("room-number");
+  if (numInput) { numInput.style.borderColor = ""; numInput.style.boxShadow = ""; }
+
   openAdminModal("modal-room-form");
+}
+
+function handleRoomCategoryChange() {
+  const catSelect = document.getElementById("room-category");
+  if (!catSelect) return;
+  const cat = catSelect.value;
+  const isAdd = !document.getElementById("room-form-id")?.value;
+  if (isAdd) {
+    document.getElementById("room-number").value = getNextAvailableRoomNumber(cat);
+    validateRoomNumberLive();
+    if (cat === "deluxe") {
+      document.getElementById("room-floor").value = 38;
+      document.getElementById("room-price").value = 3800000;
+      document.getElementById("room-bed").value = "1 Giường King siêu lớn 2m";
+    } else if (cat === "premier") {
+      document.getElementById("room-floor").value = 45;
+      document.getElementById("room-price").value = 4900000;
+      document.getElementById("room-bed").value = "1 Giường King hoặc 2 Giường Đơn";
+    } else if (cat === "junior-suite") {
+      document.getElementById("room-floor").value = 51;
+      document.getElementById("room-price").value = 6800000;
+      document.getElementById("room-bed").value = "1 Giường King Siêu Sang + Sofa Bed";
+    } else if (cat === "presidential-suite") {
+      document.getElementById("room-floor").value = 60;
+      document.getElementById("room-price").value = 16000000;
+      document.getElementById("room-bed").value = "1 Giường King Hoàng Gia Cỡ Lớn";
+    }
+  }
 }
 
 function openEditRoomModal(roomId) {
@@ -1559,8 +1657,10 @@ function openEditRoomModal(roomId) {
   `;
   document.getElementById("room-form-id").value = room.id;
   document.getElementById("room-number").value = room.roomNumber;
-  document.getElementById("room-hotel").value = room.hotelId;
-  document.getElementById("room-type").value = room.roomType;
+  const catSelect = document.getElementById("room-category");
+  if (catSelect) {
+    catSelect.value = room.category || getRoomCategory(room) || "deluxe";
+  }
   document.getElementById("room-floor").value = room.floor;
   document.getElementById("room-price").value = room.price;
   document.getElementById("room-status-select").value = room.status;
@@ -1569,19 +1669,55 @@ function openEditRoomModal(roomId) {
   document.getElementById("room-image").value = room.image || "";
   document.getElementById("room-amenities").value = Array.isArray(room.amenities) ? room.amenities.join(", ") : "";
 
+  const feedback = document.getElementById("room-number-feedback");
+  if (feedback) feedback.style.display = "none";
+  const numInput = document.getElementById("room-number");
+  if (numInput) { numInput.style.borderColor = ""; numInput.style.boxShadow = ""; }
+
   openAdminModal("modal-room-form");
 }
 
 function handleSaveRoomSubmit(e) {
   e.preventDefault();
   const id = document.getElementById("room-form-id").value;
-  const roomNumber = document.getElementById("room-number").value.trim();
-  const hotelId = document.getElementById("room-hotel").value;
-  const hotelSelect = document.getElementById("room-hotel");
-  const hotelName = hotelSelect.options[hotelSelect.selectedIndex].text.split("(")[0].trim();
-  const roomType = document.getElementById("room-type").value.trim();
+  const roomNumberInput = document.getElementById("room-number");
+  const roomNumber = roomNumberInput.value.trim();
+
+  if (!roomNumber) {
+    showAdminToast("Vui lòng nhập số/mã phòng!", "error");
+    roomNumberInput.focus();
+    return;
+  }
+
+  let rooms = getAdminRooms();
+
+  // Kiểm tra không được trùng với phòng sẵn có
+  const duplicate = rooms.find(r => {
+    if (id && r.id === id) return false; // Cho phép giữ nguyên mã khi đang chỉnh sửa chính phòng đó
+    return (r.roomNumber || "").trim().toLowerCase() === roomNumber.toLowerCase();
+  });
+
+  if (duplicate) {
+    showAdminToast(`Mã/số phòng "${roomNumber}" đã tồn tại trong hệ thống! Vui lòng nhập số phòng khác.`, "error");
+    roomNumberInput.focus();
+    roomNumberInput.style.borderColor = "#ef4444";
+    roomNumberInput.style.boxShadow = "0 0 0 3px rgba(239, 68, 68, 0.2)";
+    const feedback = document.getElementById("room-number-feedback");
+    if (feedback) {
+      feedback.style.display = "block";
+      feedback.style.color = "#ef4444";
+      feedback.textContent = `⚠️ Mã phòng "${roomNumber}" đã tồn tại (${duplicate.roomClass || duplicate.roomType || 'Phòng sẵn có'})! Vui lòng chọn số khác.`;
+    }
+    return;
+  }
+
+  const catSelect = document.getElementById("room-category");
+  const category = catSelect ? catSelect.value : "deluxe";
+  const categoryLabel = catSelect ? catSelect.options[catSelect.selectedIndex].text : "Deluxe";
+  const hotelId = "lotte-hotel-hanoi";
+  const hotelName = "Lotte Hotel Hanoi";
   const floor = parseInt(document.getElementById("room-floor").value) || 1;
-  const price = parseInt(document.getElementById("room-price").value) || 2000000;
+  const price = parseInt(document.getElementById("room-price").value) || 3800000;
   const status = document.getElementById("room-status-select").value;
   const capacity = parseInt(document.getElementById("room-capacity").value) || 2;
   const bed = document.getElementById("room-bed").value.trim();
@@ -1589,17 +1725,22 @@ function handleSaveRoomSubmit(e) {
   const amenitiesStr = document.getElementById("room-amenities").value.trim();
   const amenities = amenitiesStr ? amenitiesStr.split(",").map(a => a.trim()).filter(Boolean) : [];
 
-  let rooms = getAdminRooms();
-
   if (id) {
     // Cập nhật
     const idx = rooms.findIndex(r => r.id === id);
     if (idx !== -1) {
+      const existing = rooms[idx];
+      let roomType = existing.roomType;
+      if (!roomType || existing.category !== category) {
+        roomType = `${categoryLabel} Room`;
+      }
       rooms[idx] = {
-        ...rooms[idx],
+        ...existing,
         roomNumber,
         hotelId,
         hotelName,
+        category,
+        roomClass: categoryLabel,
         roomType,
         floor,
         price,
@@ -1613,11 +1754,14 @@ function handleSaveRoomSubmit(e) {
     }
   } else {
     // Thêm mới
+    const roomType = `${categoryLabel} Room`;
     const newRoom = {
       id: "rm-" + Date.now(),
       roomNumber,
       hotelId,
       hotelName,
+      category,
+      roomClass: categoryLabel,
       roomType,
       floor,
       price,
@@ -1633,7 +1777,7 @@ function handleSaveRoomSubmit(e) {
       amenities: amenities.length ? amenities : ["Phòng 5 sao đẳng cấp", "View toàn cảnh"]
     };
     rooms.unshift(newRoom);
-    showAdminToast(`Đã thêm phòng ${roomNumber} vào hệ thống`);
+    showAdminToast(`Đã thêm phòng ${roomNumber} (${categoryLabel}) vào hệ thống`);
   }
 
   saveAdminRooms(rooms);
@@ -2542,6 +2686,17 @@ function openWalkinModal(preselectedRoomId = null) {
   if (inEl) inEl.value = checkinStr;
   if (outEl) outEl.value = checkoutStr;
 
+  const hotelSelect = document.getElementById("wi-hotel-select");
+  if (preselectedRoomId) {
+    const rooms = getAdminRooms();
+    const targetRoom = rooms.find(r => r.id === preselectedRoomId);
+    if (targetRoom && hotelSelect) {
+      hotelSelect.value = getRoomCategory(targetRoom);
+    }
+  } else if (hotelSelect) {
+    hotelSelect.value = "deluxe";
+  }
+
   updateWalkinRoomOptions(preselectedRoomId);
   openAdminModal("modal-walkin");
 }
@@ -2551,14 +2706,19 @@ function updateWalkinRoomOptions(preselectedRoomId = null) {
   const roomSelect = document.getElementById("wi-room-select");
   if (!hotelSelect || !roomSelect) return;
 
-  const hotelId = hotelSelect.value;
+  const selectedCategory = hotelSelect.value;
   const rooms = getAdminRooms();
 
-  // Tìm các phòng trống của hạng phòng này
-  let availRooms = rooms.filter(r => r.hotelId === hotelId && r.status === "available");
+  // Tìm các phòng trống của hạng phòng được chọn
+  let availRooms = rooms.filter(r => {
+    const rCat = getRoomCategory(r);
+    const matchCat = !selectedCategory || selectedCategory === "all" || rCat === selectedCategory;
+    return matchCat && (r.status === "available" || r.id === preselectedRoomId);
+  });
   
   if (availRooms.length === 0) {
-    roomSelect.innerHTML = `<option value="">-- Hết phòng trống cho hạng phòng này --</option>`;
+    const catLabel = hotelSelect.options[hotelSelect.selectedIndex]?.text || "hạng phòng này";
+    roomSelect.innerHTML = `<option value="">-- Hết phòng trống cho hạng ${catLabel} --</option>`;
     calculateWalkinTotal();
     return;
   }
@@ -2606,8 +2766,10 @@ function handleWalkinSubmit(e) {
   const phone = document.getElementById("wi-customer-phone").value.trim();
   const email = document.getElementById("wi-customer-email").value.trim();
   const hotelSelect = document.getElementById("wi-hotel-select");
-  const hotelId = hotelSelect.value;
-  const hotelName = hotelSelect.options[hotelSelect.selectedIndex].text;
+  const category = hotelSelect ? hotelSelect.value : "deluxe";
+  const categoryLabel = hotelSelect ? hotelSelect.options[hotelSelect.selectedIndex].text : "Deluxe";
+  const hotelId = "lotte-hotel-hanoi";
+  const hotelName = "Lotte Hotel Hanoi";
   const roomSelect = document.getElementById("wi-room-select");
   const selectedOpt = roomSelect.options[roomSelect.selectedIndex];
 
@@ -2642,6 +2804,8 @@ function handleWalkinSubmit(e) {
     customerEmail: email || "khach.vanglai@lottehotel.vn",
     hotelId,
     hotelName,
+    roomClass: categoryLabel,
+    category,
     roomNumber,
     roomType,
     checkin,
